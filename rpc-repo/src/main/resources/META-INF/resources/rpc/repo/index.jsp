@@ -242,7 +242,7 @@
                 <table style="width: 100%">
                     <tr>
                         <td style="text-align: left"><label class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label></td>
-                        <td style="text-align: right; padding-right: 12px"><a id="github" title="Brutusin-RPC project site" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
+                        <td style="text-align: right; padding-right: 12px"><a id="github" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
                     </tr>
                 </table>
             </div>
