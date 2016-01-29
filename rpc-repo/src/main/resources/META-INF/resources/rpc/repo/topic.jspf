@@ -1,0 +1,90 @@
+<script>
+    var schema;
+    var previousTopic;
+    renderTopic = function () {
+        var desc;
+        if (topic.description) {
+            desc = markdown.toHTML(topic.description);
+        } else {
+            desc = "";
+        }
+        document.getElementById("topicDesc").innerHTML = desc;
+        document.getElementById("topicId").innerHTML = topic.id;
+        wsk.exec({service: "rpc.topics.schema",
+            load: function (response) {
+                schema = response.result;
+                setCodeMirrorValue("schema", schema);
+            },
+            input: {id: topic.id}
+        });
+        var messageList = messageLists[topic.id];
+        var tab = document.getElementById("wskTopicsTableBody");
+        function addRow(message) {
+            function pad(num, size) {
+                var s = "00" + num;
+                return s.substr(s.length - size);
+            }
+            if (tab.rows.length === maxMessagesPerTopic) {
+                tab.deleteRow(tab.rows.length - 1);
+            }
+            var tr = tab.insertRow(0);
+            var td1 = createElement("td", message.id, "left");
+            tr.appendChild(td1);
+            var code = createElement("code", JSON.stringify(message.message));
+            var td2 = createElement("td", code, "left", "max-width:360px; white-space: nowrap; overflow: hidden;text-overflow: ellipsis");
+            tr.appendChild(td2);
+            var td3 = createElement("td", pad(message.date.getHours(), 2) + ":" + pad(message.date.getMinutes(), 2) + ":" + pad(message.date.getSeconds(), 2) + ":" + pad(message.date.getMilliseconds(), 3), "left");
+            tr.appendChild(td3);
+        }
+        while (tab.firstChild) {
+            tab.removeChild(tab.firstChild);
+        }
+        for (i = 0; i < messageList.length; i++) {
+            var message = messageList[i];
+            addRow(message);
+        }
+
+        if (previousTopic) {
+            delete topicListeners[previousTopic.id];
+        }
+        topicListeners[topic.id] = function (message) {
+            addRow(message);
+        }
+        previousTopic = topic;
+        $('a[href="#messages"]').tab('show');
+    }
+
+</script>
+<div class="bs-callout bs-callout-default">
+    <h4><span id="topicId"></span></h4>
+    <span class="label label-primary">Topic</span>
+    <p id="topicDesc" style="padding-top: 10px"></p>
+</div>
+<div role="tabpanel">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+        <li role="presentation"><a id="a_schema" href="#schema" aria-controls="schema" role="tab" data-toggle="tab">Schema</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content tab-content-padded">
+        <div role="tabpanel" class="tab-pane active" id="messages">
+            <div class="panel panel-default" style="margin: 0px">
+                <table class="table table-striped table-responsive">
+                    <thead>
+                        <tr><th class="left" style="width: 60px">#</th><th class="left">Message</th><th class="left" style="width: 140px">Time</th></tr>
+                    </thead>
+                    <tbody id="wskTopicsTableBody"><tbody>  
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="schema"></div>
+    </div>
+</div>
+<script>
+    $('#a_schema').on('shown.bs.tab', function (e) {
+        initCodeMirror('schema');
+        setCodeMirrorValue('schema', schema, true);
+    });
+</script>
+

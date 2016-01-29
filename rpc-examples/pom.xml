@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>rpc-root</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-examples</artifactId>
+    <packaging>jar</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Demo app for brutusin:rcp</description>
+    <url>https://github.com/brutusin/rpc-examples</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc-examples/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc-examples</url>
+    </ciManagement>
+    
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+        </repository>
+    </repositories>
+
+    <scm>
+        <url>https://github.com/brutusin/rpc-examples</url>
+        <connection>scm:git:https://github.com/brutusin/rpc-examples.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc-examples.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-api</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,34 @@
+#org.brutusin:rpc-repo [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/)
+
+Functional testing module for `org.brutusin:rcp`.  
+
+##Usage
+This utility is accessed under the following path of the web application using `org.brutusin:rcp`:
+```
+http://{$host}:{$port}/{$app}/rpc/repo/
+```
+
+[![Example](img/example.jpg)](http://demo.rpc.brutusin.org)
+
+##Live demo
+
+http://demo.rpc.brutusin.org
+
+##Main stack
+This module could not be possible without:
+* [Bootstrap](http://getbootstrap.com/)
+* [JQuery](http://jquery.com/)
+* [org.brutusin:json-forms](https://github.com/brutusin/json-forms)
+
+## Support, bugs and requests
+https://github.com/brutusin/rpc-repo/issues
+
+## Authors
+
+- Ignacio del Valle Alles (<https://github.com/idelvall/>)
+
+Contributions are always welcome and greatly appreciated!
+
+##License
+Apache License, Version 2.0
+http://www.apache.org/licenses/LICENSE-2.0

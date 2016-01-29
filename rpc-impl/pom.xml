@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>rpc-root</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-impl</artifactId>
+    <packaging>jar</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Brutusin-RPC implementation module</description>
+    <url>https://github.com/brutusin/rpc-impl</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc-impl/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc-impl</url>
+    </ciManagement>
+    
+    <scm>
+        <url>https://github.com/brutusin/rpc-impl</url>
+        <connection>scm:git:https://github.com/brutusin/rpc-impl.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc-impl.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>   
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-api</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.jodah</groupId>
+            <artifactId>typetools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>rpc-root</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-repo</artifactId>
+    <packaging>jar</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Functional testing module</description>
+    <url>https://github.com/brutusin/rpc-repo</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc-repo/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc-repo</url>
+    </ciManagement>
+    
+    <scm>
+        <url>https://github.com/brutusin/rpc-repo</url>
+        <connection>scm:git:https://github.com/brutusin/rpc-repo.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc-repo.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-api</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

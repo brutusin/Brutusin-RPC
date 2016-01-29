@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>rpc-root</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-demo-standalone</artifactId>
+    <packaging>jar</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Demo app for brutusin:rcp</description>
+    <url>https://github.com/brutusin/rpc-demo-standalone</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc-demo-standalone/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc-demo-standalone</url>
+    </ciManagement>
+    
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+        </repository>
+    </repositories>
+
+    <scm>
+        <url>https://github.com/brutusin/rpc-demo-standalone</url>
+        <connection>scm:git:https://github.com/brutusin/rpc-demo-standalone.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc-demo-standalone.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-examples</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-tomcat</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-impl</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-repo</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>json-provider</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>embeddedTomcatSample</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <assembleDirectory>target</assembleDirectory>
+                    <programs>
+                        <program>
+                            <mainClass>org.brutusin.rpc.Main</mainClass>
+                            <name>webapp</name>
+                        </program>
+                    </programs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

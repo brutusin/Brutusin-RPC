@@ -1,0 +1,227 @@
+<script>
+    var inputSchema;
+    var outputSchema;
+    var execFunction;
+    var bf;
+    renderService = function () {
+        var responseDiv = document.getElementById("responseDiv");
+        responseDiv.className = "hidden";
+        var container = document.getElementById('formDiv');
+        container.innerHTML = "";
+        document.getElementById("srvId").innerHTML = service.id;
+        var inputDiv = document.getElementById("inputDiv");
+        inputDiv.className = "hidden";
+        var desc;
+        if (service.description) {
+            desc = markdown.toHTML(service.description);
+        } else {
+            desc = "";
+        }
+        var servTypeSpan = document.getElementById("servTypeSpan");
+        var safetySpan = document.getElementById("safetySpan");
+        var idempotenceSpan = document.getElementById("idempotenceSpan");
+        var dynamicSpan = document.getElementById("dynamicSpan");
+        var uploadSpan = document.getElementById("uploadSpan");
+        var responseTypeSpan = document.getElementById("responseTypeSpan");
+        var schemaServiceName;
+
+        if (isServiceHttp) {
+            servTypeSpan.innerHTML = "HTTP";
+            servTypeSpan.className = "label label-default";
+            if (service.safe) {
+                safetySpan.innerHTML = "Safe";
+                safetySpan.className = "label label-success";
+            } else {
+                safetySpan.innerHTML = "Unsafe";
+                safetySpan.className = "label label-warning";
+            }
+            if (service.idempotent) {
+                idempotenceSpan.innerHTML = "Idempotent";
+                idempotenceSpan.className = "label label-success";
+            } else {
+                idempotenceSpan.innerHTML = "Non-idempotent";
+                idempotenceSpan.className = "label label-warning";
+            }
+            if (service.upload) {
+                uploadSpan.innerHTML = "Upload";
+                uploadSpan.className = "label label-danger"
+            } else {
+                uploadSpan.innerHTML = "";
+                uploadSpan.className = "";
+            }
+            if (service.dynamicInputSchema) {
+                dynamicSpan.innerHTML = "Dynamic";
+                dynamicSpan.className = "label label-info"
+            } else {
+                dynamicSpan.innerHTML = "";
+                dynamicSpan.className = ""
+            }
+            if (service.binaryResponse) {
+                responseTypeSpan.innerHTML = "Binary";
+                responseTypeSpan.className = "label label-primary"
+            } else {
+                responseTypeSpan.innerHTML = "JSON";
+                responseTypeSpan.className = "label label-default"
+            }
+
+            execFunction = http.ajax;
+            schemaServiceName = "rpc.http.schema";
+        } else {
+            servTypeSpan.innerHTML = "Websocket";
+            servTypeSpan.className = "label label-primary";
+            safetySpan.innerHTML = "";
+            idempotenceSpan.innerHTML = "";
+            uploadSpan.innerHTML = "";
+            responseTypeSpan.innerHTML = "";
+            if (service.dynamicInputSchema) {
+                dynamicSpan.innerHTML = "Dynamic";
+                dynamicSpan.className = "label label-info"
+            } else {
+                dynamicSpan.innerHTML = "";
+                dynamicSpan.className = ""
+            }
+            execFunction = wsk.exec;
+            schemaServiceName = "rpc.wskt.schema";
+        }
+        document.getElementById("srvDesc").innerHTML = desc;
+
+        execFunction({service: schemaServiceName,
+            load: function (response) {
+                inputSchema = response.result;
+                if (inputSchema) {
+                    if (inputSchema.type !== "null") {
+                        inputDiv.className = "panel panel-info";
+                    }
+
+                    setCodeMirrorValue("schemaIn", inputSchema);
+                    var container = document.getElementById('formDiv');
+                    container.innerHTML = "";
+                    bf = BrutusinForms.create(response.result);
+                    if (isServiceHttp) {
+                        bf.schemaResolver = BrutusinForms.createHttpResolver(service.id);
+                    } else {
+                        bf.schemaResolver = BrutusinForms.createWebsocketResolver(service.id);
+                    }
+                    bf.render(container);
+                }
+
+            },
+            input: {id: service.id, mode: "I"}
+        });
+        execFunction({service: schemaServiceName,
+            load: function (response) {
+                outputSchema = response.result;
+                if (outputSchema) {
+                    setCodeMirrorValue("schemaOut", outputSchema);
+                }
+            },
+            input: {id: service.id, mode: "O"}
+        });
+
+        $('a[href="#execute"]').tab('show');
+    };
+
+    function execute() {
+        if (bf && bf.validate()) {
+            var input = bf.getData();
+            var btn = document.getElementById("btExecute");
+            var params = {service: service.id, input: input};
+            if (!service.binaryResponse) {
+                BrutusinForms.bootstrap.showLoading(btn);
+                params.load = function (result) {
+                    BrutusinForms.bootstrap.hideLoading(btn);
+                    var responseDiv = document.getElementById("responseDiv");
+                    if (!result.error) {
+                        responseDiv.className = "panel panel-success";
+                    } else if (result.error.code === -32001) {
+                        responseDiv.className = "panel panel-warning";
+                    } else {
+                        responseDiv.className = "panel panel-danger";
+                    }
+                    var id = "resultDiv";
+                    if (!codeMirrors[id]) {
+                        codeMirrors[id] = CodeMirror(document.getElementById(id), {
+                            mode: "javascript",
+                            lineNumbers: true,
+                            viewportMargin: Infinity,
+                            readOnly: true
+                        });
+                    }
+                    codeMirrors[id].setValue(JSON.stringify(result, null, 2));
+                }
+            }
+            execFunction(params);
+        }
+    }
+    function selectInputSchemaTab() {
+        var tokens = document.location.hash.split("/");
+        document.location.hash = tokens[0].substring(1) + "/" + tokens[1] + "/in";
+        alert(document.location.hash);
+    }
+    function selectOutputSchemaTab() {
+        var tokens = document.location.hash.split("/");
+        document.location.hash = tokens[0].substring(1) + "/" + tokens[1] + "/out";
+    }
+    function selectExecuteTab() {
+        var tokens = document.location.hash.split("/");
+        document.location.hash = tokens[0].substring(1) + "/" + tokens[1];
+    }
+</script>
+<div class="bs-callout bs-callout-default">
+    <h4><span id="srvId"></span></h4>
+    <span id="servTypeSpan"></span> <span id="safetySpan"></span> <span id="idempotenceSpan"></span> <span id="dynamicSpan"></span> <span id="uploadSpan"></span> <span id="responseTypeSpan"></span>
+    <p id="srvDesc" style="padding-top: 10px"></p>
+</div>
+<div role="tabpanel">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#execute" aria-controls="execute" role="tab" data-toggle="tab">Execute</a></li>
+        <li role="presentation"><a href="#in" aria-controls="in" role="tab" data-toggle="tab">Input schema</a></li>
+        <li role="presentation"><a href="#out" aria-controls="out" role="tab" data-toggle="tab">Output schema</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content tab-content-padded">
+        <div role="tabpanel" class="tab-pane active" id="execute">
+            <div id="inputDiv" class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Input</h4>
+                </div>
+                <div id="formDiv" style="margin: 16px"></div>
+            </div>
+            <button id="btExecute" data-loading-text="Loading..." class="btn btn-sm btn-default" onclick="execute()">Execute</button> 
+            <div id="responseDiv" style="margin-top: 16px; margin-bottom: 0px">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Response</h4>
+                </div>
+                <div id="resultDiv"></div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="in">
+            <div class="panel panel-info" style="margin-bottom: 0px">
+                <div class="panel-heading" >
+                    <h4 class="panel-title">Input schema</h4>
+                </div>
+                <div id="schemaInPanel"></div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="out">
+            <div class="panel panel-info" style="margin-bottom: 0px">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Output schema</h4>
+                </div>
+                <div id="schemaOutPanel"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('a[href="#in"]').on('shown.bs.tab', function (e) {
+        initCodeMirror('schemaInPanel');
+        setCodeMirrorValue('schemaInPanel', inputSchema, true);
+    });
+    $('a[href="#out"]').on('shown.bs.tab', function (e) {
+        initCodeMirror('schemaOutPanel');
+        setCodeMirrorValue('schemaOutPanel', outputSchema, true);
+    });
+</script>
+

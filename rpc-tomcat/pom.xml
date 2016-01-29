@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>rpc-root</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-tomcat</artifactId>
+    <packaging>jar</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Service provider of ServerRuntime based on Apache Tomcat 8</description>
+    <url>https://github.com/brutusin/rpc-tomcat</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc-tomcat/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc-tomcat</url>
+    </ciManagement>
+    
+    <scm>
+        <url>https://github.com/brutusin/rpc-tomcat</url>
+        <connection>scm:git:https://github.com/brutusin/rpc-tomcat.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc-tomcat.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <properties>
+        <tomcat.version>8.0.28</tomcat.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.brutusin</groupId>
+            <artifactId>rpc-impl</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-logging-juli</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper-el</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jsp-api</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-websocket</artifactId>
+            <version>${tomcat.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+</project>

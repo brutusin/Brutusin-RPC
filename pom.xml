@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.brutusin</groupId>
+        <artifactId>brutusin</artifactId>
+        <version>1.0.5</version>
+    </parent>
+    <groupId>org.brutusin</groupId>
+    <artifactId>rpc-root</artifactId>
+    <packaging>pom</packaging>   
+    <version>1.2.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Brutusin-RPC parent module</description>
+    <url>https://github.com/brutusin/rpc</url>
+    
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/brutusin/rpc/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/brutusin/rpc</url>
+    </ciManagement>
+    
+    <scm>
+        <url>https://github.com/brutusin/rpc</url>
+        <connection>scm:git:https://github.com/brutusin/rpc.git</connection>
+        <developerConnection>scm:git:https://github.com/brutusin/rpc.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.brutusin</groupId>
+                <artifactId>commons</artifactId>
+                <version>1.4.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.brutusin</groupId>
+                <artifactId>json</artifactId>
+                <version>1.2.0</version>
+            </dependency>  
+            <dependency>
+                <groupId>org.brutusin</groupId>
+                <artifactId>json-provider</artifactId>
+                <version>2.2.1</version>
+            </dependency> 
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>4.1.4.RELEASE</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency> 
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jodah</groupId>
+                <artifactId>typetools</artifactId>
+                <version>0.4.4</version>
+            </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-web-api</artifactId>
+                <version>7.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <modules>
+        <module>rpc-api</module>
+        <module>rpc-impl</module>
+        <module>rpc-repo</module>
+        <module>rpc-tomcat</module>
+        <module>rpc-examples</module>
+        <module>rpc-demo-standalone</module>
+        <module>rpc-demo-war</module>
+    </modules>
+    
+</project>
