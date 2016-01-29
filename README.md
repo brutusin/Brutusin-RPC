@@ -8,7 +8,7 @@
 
 ## Full Documentation
 
-See the [Wiki](https://github.com/brutusin/rpc/wiki) for full documentation, examples, operational details and other information.
+See the [Wiki](https://github.com/brutusin/Brutusin-RPC/wiki) for full documentation, examples, operational details and other information.
 
 ## Quick start. Code and test!
 
