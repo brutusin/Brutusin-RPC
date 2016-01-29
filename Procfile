@@ -1,1 +1,1 @@
-web: sh target/bin/webapp
+web: sh rpc-demo-standalone/target/bin/webapp
