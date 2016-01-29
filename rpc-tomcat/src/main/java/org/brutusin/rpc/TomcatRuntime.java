@@ -45,7 +45,7 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static StandardContext addTestApp(final Tomcat tomcat, final String... openUrl) throws ServletException {
         StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File("").getAbsolutePath());
-        File additionWebInfClasses = new File("target/classes");
+        File additionWebInfClasses = new File("");
         WebResourceRoot resources = new StandardRoot(ctx);
         resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClasses.getAbsolutePath(), "/"));
         ctx.addApplicationListener(RpcInitListener.class.getName());
