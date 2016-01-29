@@ -4,11 +4,11 @@
         <meta name=viewport content='width=650'>
         <title>brutusin:rpc</title>
 
-        <link rel="stylesheet" href='lib/bootstrap/css/bootstrap.min.css'/>
+        <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'/>
         <link rel="stylesheet" href='lib/bootstrap/css/bootstrap-callouts.css'/>
-        <link rel="stylesheet" href='lib/bootstrap-select/css/bootstrap-select.min.css'/>
-        <link rel="stylesheet" href='lib/json-forms/css/brutusin-json-forms.min.css' />
-        <link rel="stylesheet" href='lib/codemirror/css/codemirror.css' />
+        <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css'/>
+        <link rel="stylesheet" href='https://cdn.jsdelivr.net/brutusin.json-forms/1.2.2/css/brutusin-json-forms.min.css' />
+        <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.11.0/codemirror.min.css' />
         <style>
             html * {
                 outline: 0 !important;
@@ -48,15 +48,15 @@
             }
 
         </style>
-        <script src='lib/jquery/js/jquery.min.js'></script>
-        <script src='lib/bootstrap/js/bootstrap.min.js'></script>
-        <script src='lib/bootstrap-select/js/bootstrap-select.min.js'></script>
-        <script src='lib/bootstrap-select/js/i18n/defaults-en_US.min.js'></script>
+        <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
+        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/bootstrap-select.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/i18n/defaults-en_US.min.js'></script>
         <script src='lib/markdown/js/markdown.min.js'></script>
-        <script src='lib/json-forms/js/brutusin-json-forms.min.js'></script>
-        <script src='lib/json-forms/js/brutusin-json-forms-bootstrap.min.js'></script>
-        <script src='lib/codemirror/js/codemirror.js'></script>
-        <script src='lib/codemirror/js/codemirror-javascript.js'></script>
+        <script src='https://cdn.jsdelivr.net/brutusin.json-forms/1.2.2/js/brutusin-json-forms.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/brutusin.json-forms/1.2.2/js/brutusin-json-forms-bootstrap.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.11.0/codemirror.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.11.0/mode/javascript/javascript.min.js'></script>
         <script src="../brutusin-rpc.js"></script>
         <script src='brutusin-json-forms-rpc.js'></script>  
 
