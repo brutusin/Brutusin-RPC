@@ -216,7 +216,7 @@ if (typeof brutusin === "undefined") {
             var form = document.createElement("form");
             form.action = endpoint;
 
-            form.httpMethod = httpMethod;
+            form.method = httpMethod;
             addHidden("jsonrpc", JSON.stringify(req));
             if (files) {
                 form.enctype = "multipart/form-data";
