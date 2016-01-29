@@ -9,6 +9,7 @@
         <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css'/>
         <link rel="stylesheet" href='https://cdn.jsdelivr.net/brutusin.json-forms/1.2.2/css/brutusin-json-forms.min.css' />
         <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.11.0/codemirror.min.css' />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.4.1/octicons.min.css">
         <style>
             html * {
                 outline: 0 !important;
@@ -45,6 +46,13 @@
             }
             th, td{
                 text-align: center;
+            }
+            #github{
+                color:white;
+                text-decoration: none;
+            }
+            #github:hover{
+                color:black;
             }
 
         </style>
@@ -87,7 +95,7 @@
                 }, service: "rpc.topics"});
 
             function route() {
-                if(!httpServices||!wsServices||!topics){
+                if (!httpServices || !wsServices || !topics) {
                     return;
                 }
                 if (!window.onhashchange) {
@@ -231,7 +239,12 @@
         <div class="container" style="margin-top:10px">
             <img style="position: absolute; z-index: 2;cursor:pointer" src="img/brutusin-logo_small.png" onclick="showList()" />
             <div style="padding-left: 80px; padding-top: 7px; margin-top:8px; background-color: #ccc; border-radius: 4px; height: 34px">
-                <label class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label>
+                <table style="width: 100%">
+                    <tr>
+                        <td style="text-align: left"><label class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label></td>
+                        <td style="text-align: right; padding-right: 12px"><a id="github" title="Brutusin-RPC project site" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
+                    </tr>
+                </table>
             </div>
         </div>     
         <div class="container" style="margin-bottom: 20px" >
