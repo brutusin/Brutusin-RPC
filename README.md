@@ -40,7 +40,7 @@ This project is an evolution of https://github.com/brutusin/jsonsrv. Documentati
 http://demo.rpc.brutusin.org
 
 ## Support, bugs and requests
-https://github.com/brutusin/rpc/issues
+https://github.com/brutusin/Brutusin-RPC/issues
 
 ## Authors
 
