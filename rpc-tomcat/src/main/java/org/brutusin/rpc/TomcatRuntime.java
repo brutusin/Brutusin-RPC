@@ -29,8 +29,10 @@ import javax.servlet.ServletException;
 import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.core.DefaultInstanceManager;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.webresources.DirResourceSet;
+import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
@@ -43,14 +45,35 @@ import org.brutusin.rpc.websocket.Topic;
  */
 public class TomcatRuntime extends ServerRuntime {
 
-    private static StandardContext addTestApp(final Tomcat tomcat, final String... openUrl) throws ServletException {
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File("").getAbsolutePath());
-        File additionWebInfClasses = new File("");
-        WebResourceRoot resources = new StandardRoot(ctx);
-        resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClasses.getAbsolutePath(), "/"));
+    private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
+
+    private static StandardContext addTestApp(final Tomcat tomcat, final String... openUrl) throws ServletException, IOException {
+        LOGGER.warning(RpcInitListener.class.getClassLoader().toString());
+        LOGGER.warning(Thread.currentThread().getContextClassLoader().getParent().toString());
+        
+        String docBase = Files.createTempDirectory("default-doc-base").toString();
+
+        File webAppFolder = new File("src/main/webapp");
+        if (webAppFolder.exists()) {
+            docBase = webAppFolder.getAbsolutePath();
+        }
+//        String resourceBase = docBase;
+//        LOGGER.info("Current folder:'" + new File("").getAbsolutePath() + "'");
+//        File additionClassesFolder = new File("target/classes");
+//        if (additionClassesFolder.exists()) {
+//            resourceBase = additionClassesFolder.getAbsolutePath();
+//        }
+
+        LOGGER.info("Setting application docbase as '" + docBase + "'");
+//        LOGGER.info("Setting application resourceBase as '" + resourceBase + "'");
+
+        StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
+        // WebResourceRoot resources = new StandardRoot(ctx);
+        // resources.addPreResources(new EmptyResourceSet(resources));
+        //ctx.setResources(resources);
+        // resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", resourceBase, "/"));
         ctx.addApplicationListener(RpcInitListener.class.getName());
 
-        ctx.setResources(resources);
         if (openUrl != null) {
             ctx.addApplicationLifecycleListener(new ServletContextListener() {
 
@@ -80,6 +103,7 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static Tomcat createTomcat(int port) throws IOException {
         System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
+        LOGGER.info("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE=" + System.getProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE"));
         Tomcat tomcat = new Tomcat();
         Path tempPath = Files.createTempDirectory("brutusin-rcp-tests");
         tomcat.setBaseDir(tempPath.toString());

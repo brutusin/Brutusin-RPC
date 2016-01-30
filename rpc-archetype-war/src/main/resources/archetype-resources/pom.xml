@@ -1,45 +1,35 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.brutusin</groupId>
-        <artifactId>rpc-root</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
-    </parent>
-    <groupId>org.brutusin</groupId>
-    <artifactId>rpc-demo-war</artifactId>
-    <packaging>war</packaging>   
-    <version>1.2.1-SNAPSHOT</version>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Brutusin-RPC demo war</description>
-   
+    <packaging>war</packaging>
+    
     <dependencies>
         <dependency>
             <groupId>org.brutusin</groupId>
-            <artifactId>rpc-examples</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.brutusin</groupId>
             <artifactId>rpc-impl</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>${org-brutusin-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-repo</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>${org-brutusin-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-tomcat</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>${org-brutusin-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>json-provider</artifactId>
+            <version>${json-provider-version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -67,13 +57,13 @@
                     </execution>
                 </executions>
             </plugin>
-        <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.6</version>
-            <configuration>
-                <packagingExcludes>WEB-INF/lib/*tomcat*.jar</packagingExcludes>
-            </configuration>
-        </plugin>
-    </plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/*tomcat*.jar</packagingExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

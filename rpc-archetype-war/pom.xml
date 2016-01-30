@@ -7,35 +7,27 @@
         <version>1.2.1-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
-    <artifactId>rpc-api</artifactId>
+    <artifactId>rpc-archetype-war</artifactId>
     <packaging>jar</packaging>   
     <version>1.2.1-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    
-    <description>Brutusin-RPC developer API</description>
-   
-    <dependencies>
-        <dependency>
-            <groupId>org.brutusin</groupId>
-            <artifactId>commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.brutusin</groupId>
-            <artifactId>json</artifactId>
-        </dependency>   
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency> 
-    </dependencies>
+    <description>Maven archetype for creation of Brutusin-RPC war projects</description>
+       
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/*</include>
+                    <include>**/archetype-metadata.xml</include>
                 </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/archetype-metadata.xml</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>

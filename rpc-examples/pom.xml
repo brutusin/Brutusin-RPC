@@ -11,32 +11,8 @@
     <packaging>jar</packaging>   
     <version>1.2.1-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Demo app for brutusin:rcp</description>
-    <url>https://github.com/brutusin/rpc-examples</url>
-    
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/brutusin/rpc-examples/issues</url>
-    </issueManagement>
-    
-    <ciManagement>
-        <system>travis-ci</system>
-        <url>https://travis-ci.org/brutusin/rpc-examples</url>
-    </ciManagement>
-    
-    <repositories>
-        <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/repositories/releases</url>
-        </repository>
-    </repositories>
-
-    <scm>
-        <url>https://github.com/brutusin/rpc-examples</url>
-        <connection>scm:git:https://github.com/brutusin/rpc-examples.git</connection>
-        <developerConnection>scm:git:https://github.com/brutusin/rpc-examples.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+    <description>Examples of Brutusin-RPC component implementations</description>
+   
     
     <dependencies>
         <dependency>

@@ -11,26 +11,8 @@
     <packaging>jar</packaging>   
     <version>1.2.1-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Functional testing module</description>
-    <url>https://github.com/brutusin/rpc-repo</url>
-    
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/brutusin/rpc-repo/issues</url>
-    </issueManagement>
-    
-    <ciManagement>
-        <system>travis-ci</system>
-        <url>https://travis-ci.org/brutusin/rpc-repo</url>
-    </ciManagement>
-    
-    <scm>
-        <url>https://github.com/brutusin/rpc-repo</url>
-        <connection>scm:git:https://github.com/brutusin/rpc-repo.git</connection>
-        <developerConnection>scm:git:https://github.com/brutusin/rpc-repo.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-    
+    <description>Functional testing module for Brutusin-RPC</description>
+        
     <dependencies>
         <dependency>
             <groupId>org.brutusin</groupId>
