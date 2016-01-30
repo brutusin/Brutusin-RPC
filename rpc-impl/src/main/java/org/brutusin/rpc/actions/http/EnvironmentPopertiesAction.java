@@ -25,7 +25,7 @@ import org.brutusin.rpc.http.SafeAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns the [`org.brutusin:rcp`](https://github.com/brutusin/rpc) environment variables used in the current deployment.* [See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/http/VersionAction.java)]*")
+@Description("Returns the [`org.brutusin:rcp`](https://github.com/brutusin/rpc) environment variables used in the current deployment.* [See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/http/VersionAction.java)]*")
 public class EnvironmentPopertiesAction extends SafeAction<Void, Map<String, String>> {
     
     @Override

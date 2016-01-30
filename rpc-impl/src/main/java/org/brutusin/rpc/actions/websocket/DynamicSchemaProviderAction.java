@@ -26,7 +26,7 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the [**dynamic schema**](https://github.com/brutusin/Brutusin-RPC/blob/master/README.md#dynamic-schemas) of other 'websocket' services. *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/DynamicSchemaProviderAction.java)]*")
+@Description("This descriptor service returns the [**dynamic schema**](https://github.com/brutusin/Brutusin-RPC/blob/master/README.md#dynamic-schemas) of other 'websocket' services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/DynamicSchemaProviderAction.java)]*")
 public class DynamicSchemaProviderAction extends WebsocketAction<DynamicSchemaProviderInput, Map<String, JsonSchema>> {
 
     @Override

@@ -23,7 +23,7 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns the current **version** of [`org.brutusin:rcp`](https://github.com/brutusin/rpc). *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/VersionAction.java)]*")
+@Description("Returns the current **version** of [`org.brutusin:rcp`](https://github.com/brutusin/rpc). *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/VersionAction.java)]*")
 public class VersionAction extends WebsocketAction<Void, String> {
 
     @Override

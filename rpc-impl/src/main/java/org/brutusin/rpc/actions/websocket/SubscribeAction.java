@@ -25,7 +25,7 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("**Subscribes** current websocket session to the specified topic. *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/SubscribeAction.java)]*")
+@Description("**Subscribes** current websocket session to the specified topic. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/SubscribeAction.java)]*")
 public class SubscribeAction extends WebsocketAction<TopicIdInput, Void>{
 
     @Override

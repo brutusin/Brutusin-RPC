@@ -28,7 +28,7 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the **list** of the deployed `websocket` services. *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/ServiceListAction.java)]*")
+@Description("This descriptor service returns the **list** of the deployed `websocket` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/ServiceListAction.java)]*")
 public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
 
     private ServiceItem[] serviceItems;

@@ -30,7 +30,7 @@ import org.brutusin.rpc.http.StreamResult;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the **list** of the deployed `HTTP` services. *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/http/HttpServiceListAction.java)]*")
+@Description("This descriptor service returns the **list** of the deployed `HTTP` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/http/HttpServiceListAction.java)]*")
 public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
     
     private HttpServiceItem[] serviceItems;

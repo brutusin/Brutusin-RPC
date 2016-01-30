@@ -27,7 +27,7 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the **list** of the availabe **topics**. *[See action source code at [github](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/TopicListAction.java)]*")
+@Description("This descriptor service returns the **list** of the availabe **topics**. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/TopicListAction.java)]*")
 public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
 
     private ResourceItem[] topicItems;
