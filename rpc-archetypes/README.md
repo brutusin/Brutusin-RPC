@@ -1,4 +1,4 @@
-#org.brutusin:rpc-archetypes[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/)
+# `org.brutusin:rpc-archetypes` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/)
 
 Parent module of Brutusin-RPC maven archetypes.
 
