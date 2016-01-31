@@ -1,6 +1,6 @@
 #`org.brutusin:rpc-tomcat` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat/)
 
-Service provider of [ServerRuntime](https://github.com/brutusin/rpc/blob/master/src/main/java/org/brutusin/rpc/spi/ServerRuntime.java) based on Apache Tomcat 8.
+Service provider of [ServerRuntime]https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-api/src/main/java/org/brutusin/rpc/spi/ServerRuntime.java) based on Apache Tomcat 8.
 
 ## Usage
 ```xml
@@ -12,7 +12,7 @@ Service provider of [ServerRuntime](https://github.com/brutusin/rpc/blob/master/
 </dependency>
 ```
 ## Support, bugs and requests
-https://github.com/brutusin/rpc-dev/issues
+https://github.com/brutusin/Brutusin-RPC/issues
 
 ## Authors
 
