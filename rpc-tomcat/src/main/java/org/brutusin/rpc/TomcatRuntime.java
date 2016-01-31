@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
@@ -35,6 +34,7 @@ import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
+import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
@@ -48,26 +48,36 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
 
-    private static StandardContext addTestApp(final Tomcat tomcat, String... openUrls) throws ServletException, IOException {
+    private static StandardContext addTestApp(final Tomcat tomcat, String... openUrls) throws Exception {
+        File root;
+        String runningJarPath = TomcatRuntime.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
+        int lastIndexOf = runningJarPath.lastIndexOf("/target/");
+        if (lastIndexOf < 0) {
+            root = new File("");
+        } else {
+            root = new File(runningJarPath.substring(0, lastIndexOf));
+        }
+        LOGGER.info("Application resolved root folder: " + root.getAbsolutePath());
 
-        String docBase = Files.createTempDirectory("default-doc-base").toString();
+        String docBase;
         boolean isWar;
-        File webAppFolder = new File("src/main/webapp");
+        File webAppFolder = new File(root, "src/main/webapp");
         if (webAppFolder.exists()) {
             docBase = webAppFolder.getAbsolutePath();
             isWar = true;
-        } else{
+        } else {
             isWar = false;
+            docBase = Files.createTempDirectory("default-doc-base").toString();
         }
         LOGGER.info("Setting application docbase as '" + docBase + "'");
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
         LOGGER.info("Disabling TLD scanning");
-        StandardJarScanFilter jarScanFilter = (StandardJarScanFilter)ctx.getJarScanner().getJarScanFilter();
+        StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
         jarScanFilter.setTldSkip("*");
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
         if (isWar) {
-            File additionClassesFolder = new File("target/classes");
+            File additionClassesFolder = new File(root, "target/classes");
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
             LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
             openUrls = new String[]{"http://localhost:" + tomcat.getPort()};

@@ -79,17 +79,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
     <modules>
         <module>rpc-api</module>
         <module>rpc-impl</module>
         <module>rpc-repo</module>
         <module>rpc-tomcat</module>
-        <module>rpc-examples</module>
-        <module>rpc-demo-jar</module>
-        <module>rpc-demo-war</module>
-        <module>rpc-archetype-jar</module>
-        <module>rpc-archetype-war</module>
+        <module>rpc-demos</module>
+        <module>rpc-archetypes</module>
     </modules>
     
 </project>
