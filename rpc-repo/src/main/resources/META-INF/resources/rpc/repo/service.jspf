@@ -87,22 +87,28 @@
 
         execFunction({service: schemaServiceName,
             load: function (response) {
-                inputSchema = response.result;
-                if (inputSchema) {
-                    if (inputSchema.type !== "null") {
-                        inputDiv.className = "panel panel-info";
+                if (response.error) {
+                    if (response.error.code === -32003) { // Disconnected
+                        location.reload();
                     }
+                } else {
+                    inputSchema = response.result;
+                    if (inputSchema) {
+                        if (inputSchema.type !== "null") {
+                            inputDiv.className = "panel panel-info";
+                        }
 
-                    setCodeMirrorValue("schemaIn", inputSchema);
-                    var container = document.getElementById('formDiv');
-                    container.innerHTML = "";
-                    bf = BrutusinForms.create(response.result);
-                    if (isServiceHttp) {
-                        bf.schemaResolver = BrutusinForms.createHttpResolver(service.id);
-                    } else {
-                        bf.schemaResolver = BrutusinForms.createWebsocketResolver(service.id);
+                        setCodeMirrorValue("schemaIn", inputSchema);
+                        var container = document.getElementById('formDiv');
+                        container.innerHTML = "";
+                        bf = BrutusinForms.create(response.result);
+                        if (isServiceHttp) {
+                            bf.schemaResolver = BrutusinForms.createHttpResolver(service.id);
+                        } else {
+                            bf.schemaResolver = BrutusinForms.createWebsocketResolver(service.id);
+                        }
+                        bf.render(container);
                     }
-                    bf.render(container);
                 }
 
             },
@@ -110,9 +116,15 @@
         });
         execFunction({service: schemaServiceName,
             load: function (response) {
-                outputSchema = response.result;
-                if (outputSchema) {
-                    setCodeMirrorValue("schemaOut", outputSchema);
+                if (response.error) {
+                    if (response.error.code === -32003) { // Disconnected
+                        location.reload();
+                    }
+                } else {
+                    outputSchema = response.result;
+                    if (outputSchema) {
+                        setCodeMirrorValue("schemaOut", outputSchema);
+                    }
                 }
             },
             input: {id: service.id, mode: "O"}
