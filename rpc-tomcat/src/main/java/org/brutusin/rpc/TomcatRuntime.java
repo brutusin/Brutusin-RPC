@@ -29,11 +29,12 @@ import javax.servlet.ServletException;
 import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
-import org.apache.catalina.core.DefaultInstanceManager;
+import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
@@ -47,41 +48,45 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
 
-    private static StandardContext addTestApp(final Tomcat tomcat, final String... openUrl) throws ServletException, IOException {
-        LOGGER.warning(RpcInitListener.class.getClassLoader().toString());
-        LOGGER.warning(Thread.currentThread().getContextClassLoader().getParent().toString());
-        
-        String docBase = Files.createTempDirectory("default-doc-base").toString();
+    private static StandardContext addTestApp(final Tomcat tomcat, String... openUrls) throws ServletException, IOException {
 
+        String docBase = Files.createTempDirectory("default-doc-base").toString();
+        boolean isWar;
         File webAppFolder = new File("src/main/webapp");
         if (webAppFolder.exists()) {
             docBase = webAppFolder.getAbsolutePath();
+            isWar = true;
+        } else{
+            isWar = false;
         }
-//        String resourceBase = docBase;
-//        LOGGER.info("Current folder:'" + new File("").getAbsolutePath() + "'");
-//        File additionClassesFolder = new File("target/classes");
-//        if (additionClassesFolder.exists()) {
-//            resourceBase = additionClassesFolder.getAbsolutePath();
-//        }
-
         LOGGER.info("Setting application docbase as '" + docBase + "'");
-//        LOGGER.info("Setting application resourceBase as '" + resourceBase + "'");
-
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
-        // WebResourceRoot resources = new StandardRoot(ctx);
-        // resources.addPreResources(new EmptyResourceSet(resources));
-        //ctx.setResources(resources);
-        // resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes", resourceBase, "/"));
+        LOGGER.info("Disabling TLD scanning");
+        StandardJarScanFilter jarScanFilter = (StandardJarScanFilter)ctx.getJarScanner().getJarScanFilter();
+        jarScanFilter.setTldSkip("*");
+        WebResourceRoot resources = new StandardRoot(ctx);
+        WebResourceSet resourceSet;
+        if (isWar) {
+            File additionClassesFolder = new File("target/classes");
+            resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
+            LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
+            openUrls = new String[]{"http://localhost:" + tomcat.getPort()};
+        } else {
+            resourceSet = new EmptyResourceSet(resources);
+        }
+        resources.addPreResources(resourceSet);
+        ctx.setResources(resources);
         ctx.addApplicationListener(RpcInitListener.class.getName());
 
-        if (openUrl != null) {
+        if (openUrls != null) {
+            final String[] urls = openUrls;
             ctx.addApplicationLifecycleListener(new ServletContextListener() {
 
                 public void contextInitialized(ServletContextEvent sce) {
                     if (Desktop.isDesktopSupported()) {
                         try {
-                            for (int i = 0; i < openUrl.length; i++) {
-                                Desktop.getDesktop().browse(new URI(openUrl[i]));
+                            for (int i = 0; i < urls.length; i++) {
+                                Desktop.getDesktop().browse(new URI(urls[i]));
                             }
                         } catch (Exception ex) {
                             Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
@@ -103,7 +108,6 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static Tomcat createTomcat(int port) throws IOException {
         System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
-        LOGGER.info("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE=" + System.getProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE"));
         Tomcat tomcat = new Tomcat();
         Path tempPath = Files.createTempDirectory("brutusin-rcp-tests");
         tomcat.setBaseDir(tempPath.toString());
