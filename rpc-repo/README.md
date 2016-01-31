@@ -3,7 +3,7 @@
 Builtin functional testing module for Brutusin-RPC.  
 
 ##Usage
-This utility is accessed under the following path of the web application using `org.brutusin:rcp`:
+This utility is accessed under the following path:
 ```
 http://{$host}:{$port}/{$app}/rpc/repo/
 ```
