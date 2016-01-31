@@ -2,7 +2,7 @@
 
 Demo application of a jar-based Brutusin-RPC executable application (Tomcat runtimes). 
 
-demo.rpc.brutusin.org
+http://demo.rpc.brutusin.org
 
 >Hosted at [herokuapp.com](herokuapp.com). First request may take a while until instance is started up.
 
