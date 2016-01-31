@@ -1,4 +1,4 @@
-#org.brutusin:rpc [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/rpc.svg?branch=master)](https://travis-ci.org/brutusin/rpc) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-api/)
+#org.brutusin:rpc [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/rpc.svg?branch=master)](https://travis-ci.org/brutusin/rpc) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-api/)
 
 `org.brutusin:rpc` is a JEE web framework for creating thin server architectures in [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application), and offering:
 
