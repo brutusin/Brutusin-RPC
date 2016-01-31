@@ -1,4 +1,4 @@
-# [`org.brutusin:rpc-demo`](http://demo.rpc.brutusin.org) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo/)
+# [`org.brutusin:rpc-demo-jar`](http://demo.rpc.brutusin.org) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo-jar/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo-jar/)
 
 Demo application of a jar-based Brutusin-RPC executable application (Tomcat runtimes). 
 
