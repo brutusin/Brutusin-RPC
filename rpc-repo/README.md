@@ -1,6 +1,6 @@
-#org.brutusin:rpc-repo [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/)
+# `org.brutusin:rpc-repo` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-repo/)
 
-Functional testing module for `org.brutusin:rcp`.  
+Builtin functional testing module for Brutusin-RPC.  
 
 ##Usage
 This utility is accessed under the following path of the web application using `org.brutusin:rcp`:
@@ -21,7 +21,7 @@ This module could not be possible without:
 * [org.brutusin:json-forms](https://github.com/brutusin/json-forms)
 
 ## Support, bugs and requests
-https://github.com/brutusin/rpc-repo/issues
+https://github.com/brutusin/Brutusin-RPC/issues
 
 ## Authors
 
