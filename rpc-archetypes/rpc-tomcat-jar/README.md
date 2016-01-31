@@ -1,4 +1,4 @@
-#`rpc-tomcat-jar` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/)
+#`rpc-tomcat-jar` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-jar/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-jar/)
 
 Maven archetype for creating a Brutusin-RCP jar project with embedded Tomcat Runtimes.
 
