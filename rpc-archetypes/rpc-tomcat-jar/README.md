@@ -3,7 +3,7 @@
 Maven archetype for creating a Brutusin-RCP jar project with embedded Tomcat Runtimes.
 
 ## Usage
-```sh
+```properties
 mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-jar -DarchetypeVersion=${version} -DgroupId=${your.groupId} -DartifactId=${your.artifactId} -Dversion=${your.version}
 ```
 
