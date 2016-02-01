@@ -34,13 +34,24 @@ public abstract class Topic<F, M> extends RpcComponent {
 
     private final Set<WritableSession> sessions = Collections.synchronizedSet(new HashSet<WritableSession>());
 
+    /**
+     * Returns the whole collection of active topic subscribers
+     *
+     * @return
+     */
     public final Set<WritableSession> getSubscribers() {
         return sessions;
     }
 
+    /**
+     * Returns the subset of subscribers that satisfy the filtering criteria
+     *
+     * @param filter
+     * @return
+     */
     public abstract Set<WritableSession> getSubscribers(F filter);
 
-    public final void fire(F filter, M message){
+    public final void fire(F filter, M message) {
         if (message == null) {
             return;
         }
@@ -81,9 +92,22 @@ public abstract class Topic<F, M> extends RpcComponent {
         onUnsubscribe(session);
     }
 
+    /**
+     * These two methods are auxiliary methods that subclasses can implement to
+     * be keep track by themselves of the actual subscribers of the topic, and
+     * create data structures better suited for a efficient topic filtering than
+     * iterating over the whole collection of subscribers.
+     *
+     * See {@link #onUnsubscribe(org.brutusin.rpc.websocket.WritableSession)}
+     * @param session
+     */
     protected void onSubscribe(WritableSession session) {
     }
 
+    /**
+     * See {@link #onSubscribe(org.brutusin.rpc.websocket.WritableSession)}
+     * @param session 
+     */
     protected void onUnsubscribe(WritableSession session) {
     }
 
