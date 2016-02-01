@@ -34,7 +34,6 @@ import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
-import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
@@ -61,7 +60,8 @@ public class TomcatRuntime extends ServerRuntime {
 
         String docBase;
         boolean isWar;
-        File webAppFolder = new File(root, "src/main/webapp");
+        File webAppFolder = new File(root.getAbsolutePath(), "src/main/webapp");
+        System.out.println(webAppFolder.getAbsolutePath());
         if (webAppFolder.exists()) {
             docBase = webAppFolder.getAbsolutePath();
             isWar = true;
@@ -77,7 +77,7 @@ public class TomcatRuntime extends ServerRuntime {
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
         if (isWar) {
-            File additionClassesFolder = new File(root, "target/classes");
+            File additionClassesFolder = new File(root.getAbsolutePath(), "target/classes");
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
             LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
             openUrls = new String[]{"http://localhost:" + tomcat.getPort()};
