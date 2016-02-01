@@ -61,7 +61,6 @@ public class TomcatRuntime extends ServerRuntime {
         String docBase;
         boolean isWar;
         File webAppFolder = new File(root.getAbsolutePath(), "src/main/webapp");
-        System.out.println(webAppFolder.getAbsolutePath());
         if (webAppFolder.exists()) {
             docBase = webAppFolder.getAbsolutePath();
             isWar = true;
