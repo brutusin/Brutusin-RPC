@@ -1,6 +1,8 @@
 # `org.brutusin:rpc-archetypes` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-archetypes/)
 
-Parent module of Brutusin-RPC [Maven archetypes](https://maven.apache.org/guides/introduction/introduction-to-archetypes.html), or project templates, for creating new projects from scratch.
+Brutusin-RPC is accessible through the Maven Central Repository, and offers several [Maven archetypes](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-archetypes) for creating new project project structures with minimal effort.
+
+This is the parent module for the Brutusin-RPC Maven archetypes.
 
 ## Support, bugs and requests
 https://github.com/brutusin/Brutusin-RPC/issues
