@@ -15,7 +15,6 @@
  */
 package org.brutusin.rpc.websocket;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,12 +40,16 @@ public abstract class Topic<F, M> extends RpcComponent {
 
     public abstract Set<WritableSession> getSubscribers(F filter);
 
-    public final void fire(F filter, M message) throws Exception {
+    public final void fire(F filter, M message){
         if (message == null) {
             return;
         }
         JsonSchema messageSchema = JsonCodec.getInstance().getSchema(getMessageType());
-        messageSchema.validate(JsonCodec.getInstance().parse(JsonCodec.getInstance().transform(message)));
+        try {
+            messageSchema.validate(JsonCodec.getInstance().parse(JsonCodec.getInstance().transform(message)));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         MessageResponse mr = new MessageResponse();
         mr.setTopic(getId());
         mr.setMessage(message);
