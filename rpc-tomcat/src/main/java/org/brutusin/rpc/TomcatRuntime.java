@@ -19,6 +19,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -47,25 +48,33 @@ public class TomcatRuntime extends ServerRuntime {
 
     private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
 
-    private static StandardContext addTestApp(final Tomcat tomcat, String... openUrls) throws Exception {
-        File root;
-        String runningJarPath = TomcatRuntime.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
-        int lastIndexOf = runningJarPath.lastIndexOf("/target/");
-        if (lastIndexOf < 0) {
-            root = new File("");
-        } else {
-            root = new File(runningJarPath.substring(0, lastIndexOf));
+    private static File getRootFolder() {
+        try {
+            File root;
+            String runningJarPath = TomcatRuntime.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
+            int lastIndexOf = runningJarPath.lastIndexOf("/target/");
+            if (lastIndexOf < 0) {
+                root = new File("");
+            } else {
+                root = new File(runningJarPath.substring(0, lastIndexOf));
+            }
+            LOGGER.info("Application resolved root folder: " + root.getAbsolutePath());
+            return root;
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(ex);
         }
-        LOGGER.info("Application resolved root folder: " + root.getAbsolutePath());
+    }
 
+    private static boolean isWebApp(File rootFolder) {
+        return new File(rootFolder.getAbsolutePath(), "src/main/webapp").exists();
+    }
+
+    private static StandardContext addTestApp(final Tomcat tomcat, File rootFolder, String... openUrls) throws Exception {
         String docBase;
-        boolean isWar;
-        File webAppFolder = new File(root.getAbsolutePath(), "src/main/webapp");
-        if (webAppFolder.exists()) {
-            docBase = webAppFolder.getAbsolutePath();
-            isWar = true;
+        boolean isWar = isWebApp(rootFolder);
+        if (isWar) {
+            docBase = new File(rootFolder.getAbsolutePath(), "src/main/webapp").getAbsolutePath();
         } else {
-            isWar = false;
             docBase = Files.createTempDirectory("default-doc-base").toString();
         }
         LOGGER.info("Setting application docbase as '" + docBase + "'");
@@ -76,10 +85,9 @@ public class TomcatRuntime extends ServerRuntime {
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
         if (isWar) {
-            File additionClassesFolder = new File(root.getAbsolutePath(), "target/classes");
+            File additionClassesFolder = new File(rootFolder.getAbsolutePath(), "target/classes");
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
             LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
-            openUrls = new String[]{"http://localhost:" + tomcat.getPort()};
         } else {
             resourceSet = new EmptyResourceSet(resources);
         }
@@ -145,7 +153,12 @@ public class TomcatRuntime extends ServerRuntime {
         try {
             RpcContextImpl.testMode = false;
             Tomcat tomcat = createTomcat(port);
-            addTestApp(tomcat, "http://localhost:" + port + "/rpc/repo/");
+            File rootFolder = getRootFolder();
+            if (isWebApp(rootFolder)) {
+                addTestApp(tomcat, rootFolder, "http://localhost:" + port);
+            } else {
+                addTestApp(tomcat, rootFolder, "http://localhost:" + port + "/rpc/repo/");
+            }
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {
@@ -167,7 +180,7 @@ public class TomcatRuntime extends ServerRuntime {
             }
             RpcContext.getInstance().register(id, action);
 
-            addTestApp(tomcat, url);
+            addTestApp(tomcat, getRootFolder(), url);
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {
@@ -184,7 +197,7 @@ public class TomcatRuntime extends ServerRuntime {
             PublishAction publishAction = new PublishAction(topic);
             RpcContext.getInstance().register("publish-service", publishAction);
             RpcContext.getInstance().register(topicId, topic);
-            addTestApp(tomcat, "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
+            addTestApp(tomcat, getRootFolder(), "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {
