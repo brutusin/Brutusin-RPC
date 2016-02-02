@@ -41,7 +41,8 @@ import org.brutusin.rpc.spi.ServerRuntime;
 import org.brutusin.rpc.websocket.Topic;
 
 /**
- *
+ * Tomcat ServerRuntime service provider.
+ * 
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class TomcatRuntime extends ServerRuntime {
@@ -79,6 +80,7 @@ public class TomcatRuntime extends ServerRuntime {
         }
         LOGGER.info("Setting application docbase as '" + docBase + "'");
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
+        ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
         LOGGER.info("Disabling TLD scanning");
         StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
         jarScanFilter.setTldSkip("*");
