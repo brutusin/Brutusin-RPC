@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-root</artifactId>
-        <version>1.2.6</version>
+        <version>1.2.7-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-repo</artifactId>
     <packaging>jar</packaging>   
-    <version>1.2.6</version>
+    <version>1.2.7-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Functional testing module for Brutusin-RPC</description>
         
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-api</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.7-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
