@@ -89,8 +89,8 @@ public class TomcatRuntime extends ServerRuntime {
         }
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
-        if (isWar) {
-            File additionClassesFolder = new File(rootFolder.getAbsolutePath(), "target/classes");
+        File additionClassesFolder = new File(rootFolder.getAbsolutePath(), "target/classes");
+        if (additionClassesFolder.exists()) {
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
             LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
         } else {
