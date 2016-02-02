@@ -34,6 +34,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.tomcat.util.scan.Constants;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
@@ -42,7 +43,7 @@ import org.brutusin.rpc.websocket.Topic;
 
 /**
  * Tomcat ServerRuntime service provider.
- * 
+ *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class TomcatRuntime extends ServerRuntime {
@@ -81,9 +82,11 @@ public class TomcatRuntime extends ServerRuntime {
         LOGGER.info("Setting application docbase as '" + docBase + "'");
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
-        LOGGER.info("Disabling TLD scanning");
-        StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
-        jarScanFilter.setTldSkip("*");
+         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SKIP_JARS_PROPERTY) == null) {
+            LOGGER.info("Disabling TLD scanning");
+            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
+            jarScanFilter.setTldSkip("*");
+        }
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
         if (isWar) {
