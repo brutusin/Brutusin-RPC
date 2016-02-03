@@ -29,7 +29,7 @@ public class HelloAction extends WebsocketAction<String, String> {
     }
 }
 ```
-and automatically your browser will be openend with a functional testing client for the newly created service:
+and automatically your browser will be open with a functional testing client for the newly created service:
 
 ![Service testing client](https://github.com/brutusin/Brutusin-RPC/wiki/img/hello-action-test.png)
 
