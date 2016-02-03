@@ -72,7 +72,7 @@
             var maxMessagesPerTopic = 50;
             var BrutusinForms = brutusin["json-forms"];
             var http = brutusin["rpc"].initHttpEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/http"%>");
-            var wsk = brutusin["rpc"].initWebsocketEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/wskt"%>");
+            var wskt = brutusin["rpc"].initWebsocketEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/wskt"%>");
             var codeMirrors = new Object();
             var httpServices, wsServices, topics;
             var isServiceHttp;
@@ -83,12 +83,12 @@
                     renderHTTPServices();
                     route();
                 }, service: "rpc.http.services"});
-            wsk.exec({load: function (response) {
+            wskt.exec({load: function (response) {
                     wsServices = response.result;
                     renderWskServices();
                     route();
                 }, service: "rpc.wskt.services"});
-            wsk.exec({load: function (response) {
+            wskt.exec({load: function (response) {
                     topics = response.result;
                     renderTopics();
                     route();

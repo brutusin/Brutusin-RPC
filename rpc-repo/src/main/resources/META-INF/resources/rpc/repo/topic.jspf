@@ -10,7 +10,7 @@
         }
         document.getElementById("topicDesc").innerHTML = desc;
         document.getElementById("topicId").innerHTML = topic.id;
-        wsk.exec({service: "rpc.topics.schema",
+        wskt.exec({service: "rpc.topics.schema",
             load: function (response) {
                 schema = response.result;
                 setCodeMirrorValue("schema", schema);

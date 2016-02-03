@@ -122,7 +122,7 @@
             activity[topic.id] = 0;
             messageLists[topic.id] = messageList;
             var activityId = "activity" + i;
-            wsk.subscribe(topic.id, function (message) {
+            wskt.subscribe(topic.id, function (message) {
                 if (messageList.length === maxMessagesPerTopic) {
                     messageList.shift();
                 }

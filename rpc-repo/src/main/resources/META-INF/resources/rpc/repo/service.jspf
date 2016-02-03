@@ -80,7 +80,7 @@
                 dynamicSpan.innerHTML = "";
                 dynamicSpan.className = ""
             }
-            execFunction = wsk.exec;
+            execFunction = wskt.exec;
             schemaServiceName = "rpc.wskt.schema";
         }
         document.getElementById("srvDesc").innerHTML = desc;
