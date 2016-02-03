@@ -178,7 +178,6 @@ if (typeof brutusin === "undefined") {
             }
 
         };
-        proxy.services = services;
         return proxy;
 
         /**
@@ -444,8 +443,8 @@ if (typeof brutusin === "undefined") {
                 input: {id: topic}
             });
         };
-        proxy.unsubscribe = function (topic, callback) {
-            topicCallbacks[topic] = callback;
+        proxy.unsubscribe = function (topic) {
+            delete topicCallbacks[topic];
             proxy.exec({
                 service: "rpc.topics.unsubscribe",
                 input: {id: topic}
