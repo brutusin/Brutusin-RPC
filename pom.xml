@@ -79,6 +79,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
     <modules>
         <module>rpc-api</module>
         <module>rpc-impl</module>
