@@ -43,7 +43,7 @@ https://github.com/brutusin/Brutusin-RPC/issues
 
 ## Authors
 
-- Ignacio del Valle Alles (@idelvall)
+- Ignacio del Valle Alles ([@idelvall](https://github.com/idelvall))
 
 Contributions are always welcome and greatly appreciated! Just fork, and send me a pull request.
 
