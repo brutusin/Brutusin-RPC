@@ -35,9 +35,6 @@ and automatically your browser will be open with a functional testing client for
 
 ![Service testing client](https://github.com/brutusin/Brutusin-RPC/wiki/img/hello-action-test.png)
 
-## Status
-This project is an evolution of https://github.com/brutusin/jsonsrv. Documentation in progress
-
 ## Live demo
 http://demo.rpc.brutusin.org
 
