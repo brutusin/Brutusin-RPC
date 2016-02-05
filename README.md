@@ -45,7 +45,7 @@ https://github.com/brutusin/Brutusin-RPC/issues
 
 - Ignacio del Valle Alles (<https://github.com/idelvall/>)
 
-Contributions are always welcome and greatly appreciated!
+Contributions are always welcome and greatly appreciated! Just fork, and send me a pull request.
 
 ##License
 Apache License, Version 2.0
