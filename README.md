@@ -1,10 +1,12 @@
 #Brutusin-RPC [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/)
 
-JEE web microframework for creating server-side components for [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application) offering:
+JEE web microframework for creating JSON-RPC APIs for [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application) offering:
 
-1. JSON-RPC 2.0 over HTTP
-2. JSON-RPC 2.0 over websockets
-3. Messaging (publish/subscribe) over websockets
+- JSON-RPC 2.0 over HTTP
+- JSON-RPC 2.0 over websockets
+- Messaging (publish/subscribe) over websockets
+- Javascript client API
+- Functional testing module
 
 ## Full Documentation
 
