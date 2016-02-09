@@ -8,7 +8,7 @@ JEE web microframework for creating maintainable JSON-RPC APIs for [Single-page 
 - JSON-RPC 2.0 over websockets
 - Messaging (publish/subscribe) over websockets
 - Javascript client API
-- Functional testing module
+- Builtin descriptive services and functional testing module
 
 ## Full Documentation
 
