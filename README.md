@@ -2,7 +2,7 @@
 
 JEE web microframework for creating maintainable JSON-RPC APIs for [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application) with minimal effort.
 
-## Features:
+## Features
 
 - JSON-RPC 2.0 over HTTP
 - JSON-RPC 2.0 over websockets
