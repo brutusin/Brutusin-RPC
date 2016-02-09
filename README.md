@@ -1,6 +1,6 @@
 #Brutusin-RPC [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/)
 
-JEE web microframework for creating maintainable JSON-RPC APIs for [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application) with minimal effort.
+JEE web microframework for creating maintainable JSON-RPC APIs for single-page applications with minimal effort.
 
 ## Features
 
