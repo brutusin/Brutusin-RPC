@@ -21,9 +21,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpSession;
 import org.brutusin.json.spi.JsonCodec;
-import org.brutusin.rpc.RpcContext;
-import org.brutusin.rpc.RpcContextImpl;
+import org.brutusin.rpc.SpringContextImpl;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -37,10 +38,11 @@ public class SessionImpl<M> implements WritableSession<M> {
     private final Thread t;
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
+    private final HttpSession httpSession;
 
     public SessionImpl(javax.websocket.Session session) {
         this.session = session;
-        Runnable runnable  = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 try {
@@ -66,7 +68,10 @@ public class SessionImpl<M> implements WritableSession<M> {
                 }
             }
         };
-        t = RpcContextImpl.getInstance().getThreadFactory().newThread(runnable);
+        this.httpSession = (HttpSession) session.getUserProperties().get("httpSession");
+
+        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(httpSession.getServletContext());
+        t = rpcApplicationContext.getThreadFactory().newThread(runnable);
         t.setDaemon(true);
     }
 
@@ -77,6 +82,11 @@ public class SessionImpl<M> implements WritableSession<M> {
     public String getId() {
         return session.getId();
     }
+
+    public HttpSession getHttpSession() {
+        return httpSession;
+    }
+    
 
     public Principal getUserPrincipal() {
         return session.getUserPrincipal();

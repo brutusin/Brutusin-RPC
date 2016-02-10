@@ -15,13 +15,13 @@
  */
 package org.brutusin.rpc.http;
 
-import java.security.Principal;
+import org.brutusin.rpc.RpcActionContext;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public abstract class HttpActionContext {
+public abstract class HttpActionContext implements RpcActionContext{
 
     private static final ThreadLocal<HttpActionContext> CONTEXTS = new ThreadLocal();
 
@@ -40,9 +40,5 @@ public abstract class HttpActionContext {
     public abstract Object getRequest();
 
     public abstract Object getResponse();
-
-    public abstract Principal getUserPrincipal();
-
-    public abstract boolean isUserInRole(String role);
 
 }

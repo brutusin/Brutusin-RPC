@@ -17,11 +17,11 @@ package org.brutusin.rpc.actions.websocket;
 
 import java.util.Map;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.actions.ResourceItem;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -34,10 +34,10 @@ public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
 
     @Override
     public void init() throws Exception {
-        Map<String, Topic> topics = RpcContext.getInstance().getTopics();
+        Map<String, Topic> topics = WebsocketActionContext.getInstance().getTopics();
         this.topicItems = new ResourceItem[topics.size()];
         int i = 0;
-        for (Map.Entry<String,Topic> entrySet : topics.entrySet()) {
+        for (Map.Entry<String, Topic> entrySet : topics.entrySet()) {
             String id = entrySet.getKey();
             Topic topic = entrySet.getValue();
             ResourceItem ti = new ResourceItem();

@@ -16,8 +16,8 @@
 package org.brutusin.rpc.actions.websocket;
 
 import java.util.Collection;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.actions.ResourceIdInput;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -27,6 +27,6 @@ public class TopicIdInput extends ResourceIdInput {
 
     @Override
     protected Collection<String> getResourceIds() {
-        return RpcContext.getInstance().getTopics().keySet();
+        return WebsocketActionContext.getInstance().getTopics().keySet();
     }
 }

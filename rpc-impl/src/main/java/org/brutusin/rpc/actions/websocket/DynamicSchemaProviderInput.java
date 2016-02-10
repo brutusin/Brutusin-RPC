@@ -16,7 +16,7 @@
 package org.brutusin.rpc.actions.websocket;
 
 import java.util.Collection;
-import org.brutusin.rpc.RpcContext;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -26,6 +26,6 @@ public class DynamicSchemaProviderInput extends org.brutusin.rpc.actions.Dynamic
 
     @Override
     protected Collection<String> getResourceIds() {
-        return RpcContext.getInstance().getWebSocketServices().keySet();
+        return WebsocketActionContext.getInstance().getWebSocketServices().keySet();
     }
 }

@@ -16,10 +16,10 @@
 package org.brutusin.rpc.actions.websocket;
 
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.websocket.InvalidSubscriptionException;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -33,7 +33,7 @@ public class SubscribeAction extends WebsocketAction<TopicIdInput, Void>{
         if (input.getId() == null) {
             throw new IllegalArgumentException("Topic id is required");
         }
-        Object obj = RpcContext.getInstance().getApplicationContext().getBean(input.getId());
+        Object obj = WebsocketActionContext.getInstance().getSpringContext().getBean(input.getId());
         if (obj == null || !(obj instanceof Topic)) {
             throw new IllegalArgumentException("Invalid topic id");
         }

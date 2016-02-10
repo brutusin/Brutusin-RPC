@@ -22,22 +22,23 @@ import javax.websocket.Endpoint;
 import javax.websocket.Session;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.RpcResponse;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
+import org.brutusin.rpc.SpringContextImpl;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.InvalidRequestException;
+import org.brutusin.rpc.http.HttpAction;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class WebsocketEndpoint extends Endpoint {
-
-    private final Map<String, WebsocketAction> services = RpcContext.getInstance().getWebSocketServices();
 
     /**
      *
@@ -46,19 +47,15 @@ public class WebsocketEndpoint extends Endpoint {
      */
     @Override
     public void onOpen(Session session, EndpointConfig config) {
+
         final SessionImpl sessionImpl = new SessionImpl(session);
         sessionImpl.init();
         session.getUserProperties().put(SessionImpl.class.getName(), sessionImpl);
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                WebsocketActionContext.setInstance(new WebsocketActionContext() {
-                    @Override
-                    public org.brutusin.rpc.websocket.Session getSession() {
-                        return sessionImpl;
-                    }
-                });
+                WebsocketActionContext.setInstance(createWebsocketActionContext(sessionImpl));
                 try {
-                    String response = process(message);
+                    String response = process(message, sessionImpl);
                     if (response != null) {
                         sessionImpl.sendToPeerRaw(response);
                     }
@@ -72,23 +69,57 @@ public class WebsocketEndpoint extends Endpoint {
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         final SessionImpl sessionImpl = (SessionImpl) session.getUserProperties().get(SessionImpl.class.getName());
-        WebsocketActionContext.setInstance(new WebsocketActionContext() {
-            @Override
-            public org.brutusin.rpc.websocket.Session getSession() {
-                return sessionImpl;
-            }
-        });
+        WebsocketActionContext.setInstance(createWebsocketActionContext(sessionImpl));
+        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
         try {
-            for (Topic topic : RpcContext.getInstance().getTopics().values()) {
+            for (Topic topic : rpcApplicationContext.getTopics().values()) {
                 try {
                     topic.unsubscribe();
                 } catch (InvalidSubscriptionException ise) {
+                    // Ignored already unsubscribed
                 }
             }
         } finally {
             WebsocketActionContext.clear();
             sessionImpl.close();
         }
+    }
+    
+    private WebsocketActionContext createWebsocketActionContext(final SessionImpl sessionImpl) {
+        return new WebsocketActionContext() {
+            @Override
+            public org.brutusin.rpc.websocket.Session getSession() {
+                return sessionImpl;
+            }
+
+            public SpringContextImpl getSpringContextImpl() {
+                return (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
+            }
+
+            @Override
+            public ApplicationContext getSpringContext() {
+                return getSpringContextImpl();
+            }
+
+            @Override
+            public Map<String, HttpAction> getHttpServices() {
+                return getSpringContextImpl().getHttpServices();
+            }
+
+            @Override
+            public Map<String, WebsocketAction> getWebSocketServices() {
+                return getSpringContextImpl().getWebSocketServices();
+            }
+
+            @Override
+            public Map<String, Topic> getTopics() {
+                return getSpringContextImpl().getTopics();
+            }
+
+            public boolean isUserInRole(String role) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
     }
 
     @Override
@@ -101,13 +132,13 @@ public class WebsocketEndpoint extends Endpoint {
      * @param message
      * @return
      */
-    private String process(String message) {
+    private String process(String message, SessionImpl sessionImpl) {
         RpcRequest req = null;
         Object result = null;
         Throwable throwable = null;
         try {
             req = JsonCodec.getInstance().parse(message, RpcRequest.class);
-            result = execute(req);
+            result = execute(req, sessionImpl);
         } catch (Throwable th) {
             throwable = th;
         }
@@ -128,11 +159,13 @@ public class WebsocketEndpoint extends Endpoint {
      * @param request
      * @return
      */
-    private Object execute(RpcRequest request) throws Exception {
+    private Object execute(RpcRequest request, SessionImpl sessionImpl) throws Exception {
         if (!"2.0".equals(request.getJsonrpc())) {
             throw new InvalidRequestException("Only jsonrpc 2.0 supported");
         }
         String serviceId = request.getMethod();
+        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
+        Map<String, WebsocketAction> services = rpcApplicationContext.getWebSocketServices();
         if (serviceId == null || !services.containsKey(serviceId)) {
             throw new ServiceNotFoundException();
         }

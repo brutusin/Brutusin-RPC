@@ -32,6 +32,7 @@ public final class RpcConfig {
     private static final String ACCESS_CONTROL_ORIGIN_HOST = EnvProperties.get("org.brutusin.rpc.cors-host", null);
     private static final Boolean INCLUDE_BUITIN_SERVICES = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.include-builtin-services", "true"));
     private static final Boolean INCLUDE_ENV_SERVICE = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.include-env-service", "true"));
+    private static final Boolean TEST_MODE = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.test-mode", "false"));
 
     static {
         String defUriEncoding;

@@ -17,12 +17,11 @@ package org.brutusin.rpc.actions.websocket;
 
 import org.brutusin.rpc.actions.ServiceItem;
 import java.util.Map;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.json.DynamicSchemaProvider;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.RpcUtils;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -35,7 +34,7 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
 
     @Override
     public void init() throws Exception {
-        Map<String, WebsocketAction> services = RpcContext.getInstance().getWebSocketServices();
+        Map<String, WebsocketAction> services = WebsocketActionContext.getInstance().getWebSocketServices();
         this.serviceItems = new ServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, WebsocketAction> entrySet : services.entrySet()) {

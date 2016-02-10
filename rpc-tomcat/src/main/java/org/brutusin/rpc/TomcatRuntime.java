@@ -31,6 +31,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.realm.MemoryRealm;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
@@ -40,6 +42,7 @@ import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
 import org.brutusin.rpc.websocket.Topic;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Tomcat ServerRuntime service provider.
@@ -71,7 +74,30 @@ public class TomcatRuntime extends ServerRuntime {
         return new File(rootFolder.getAbsolutePath(), "src/main/webapp").exists();
     }
 
-    private static StandardContext addTestApp(final Tomcat tomcat, File rootFolder, String... openUrls) throws Exception {
+    private static void addAutoOpen(StandardContext ctx, String... openUrls) {
+        if (openUrls != null) {
+            final String[] urls = openUrls;
+            ctx.addApplicationLifecycleListener(new ServletContextListener() {
+                public void contextInitialized(ServletContextEvent sce) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            for (int i = 0; i < urls.length; i++) {
+                                Desktop.getDesktop().browse(new URI(urls[i]));
+                            }
+                        } catch (Exception ex) {
+                            Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+
+                public void contextDestroyed(ServletContextEvent sce) {
+
+                }
+            });
+        }
+    }
+
+    private static StandardContext addTestApp(final Tomcat tomcat, File rootFolder) throws Exception {
         String docBase;
         boolean isWar = isWebApp(rootFolder);
         if (isWar) {
@@ -82,7 +108,7 @@ public class TomcatRuntime extends ServerRuntime {
         LOGGER.info("Setting application docbase as '" + docBase + "'");
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
-         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SKIP_JARS_PROPERTY) == null) {
+        if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SKIP_JARS_PROPERTY) == null) {
             LOGGER.info("Disabling TLD scanning");
             StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
             jarScanFilter.setTldSkip("*");
@@ -98,50 +124,23 @@ public class TomcatRuntime extends ServerRuntime {
         }
         resources.addPreResources(resourceSet);
         ctx.setResources(resources);
-        ctx.addApplicationListener(RpcInitListener.class.getName());
 
-        if (openUrls != null) {
-            final String[] urls = openUrls;
-            ctx.addApplicationLifecycleListener(new ServletContextListener() {
-
-                public void contextInitialized(ServletContextEvent sce) {
-                    if (Desktop.isDesktopSupported()) {
-                        try {
-                            for (int i = 0; i < urls.length; i++) {
-                                Desktop.getDesktop().browse(new URI(urls[i]));
-                            }
-                        } catch (Exception ex) {
-                            Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-
-                public void contextDestroyed(ServletContextEvent sce) {
-                    try {
-                        tomcat.stop();
-                    } catch (LifecycleException ex) {
-                        Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            });
-        }
         return ctx;
     }
 
-    private static Tomcat createTomcat(int port) throws IOException {
+    protected Tomcat createTomcat(int port) throws IOException {
         System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
         Tomcat tomcat = new Tomcat();
         Path tempPath = Files.createTempDirectory("brutusin-rcp-tests");
         tomcat.setBaseDir(tempPath.toString());
         tomcat.setPort(port);
+
+        MemoryRealm realm = new MemoryRealm();
+        realm.setPathname("C:\\Users\\DGPORTATIL01\\Desktop\\users.xml");
+
+        tomcat.getEngine().setRealm(null);
+
         return tomcat;
-    }
-
-    private static class Tomcat extends org.apache.catalina.startup.Tomcat {
-
-        public int getPort() {
-            return port;
-        }
     }
 
     @Override
@@ -156,13 +155,13 @@ public class TomcatRuntime extends ServerRuntime {
     @Override
     public void exec(int port) {
         try {
-            RpcContextImpl.testMode = false;
             Tomcat tomcat = createTomcat(port);
             File rootFolder = getRootFolder();
+            StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             if (isWebApp(rootFolder)) {
-                addTestApp(tomcat, rootFolder, "http://localhost:" + port);
+                addAutoOpen(stdCtx, "http://localhost:" + port);
             } else {
-                addTestApp(tomcat, rootFolder, "http://localhost:" + port + "/rpc/repo/");
+                addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/repo/");
             }
             tomcat.start();
             tomcat.getServer().await();
@@ -172,20 +171,28 @@ public class TomcatRuntime extends ServerRuntime {
     }
 
     @Override
-    public void test(int port, RpcAction action) {
+    public void test(final int port, final RpcAction action) {
         try {
-            RpcContextImpl.testMode = true;
+            System.setProperty("org.brutusin.rpc.test-mode", "true");
             Tomcat tomcat = createTomcat(port);
-            String id = action.getClass().getName();
+            final String id = action.getClass().getName();
             String url;
             if (action instanceof HttpAction) {
-                url = "http://localhost:" + tomcat.getPort() + "/rpc/repo/#http-services/" + id;
+                url = "http://localhost:" + port + "/rpc/repo/#http-services/" + id;
             } else {
-                url = "http://localhost:" + tomcat.getPort() + "/rpc/repo/#wskt-services/" + id;
+                url = "http://localhost:" + port + "/rpc/repo/#wskt-services/" + id;
             }
-            RpcContext.getInstance().register(id, action);
+            StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
+            stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
+                public void contextInitialized(ServletContextEvent sce) {
+                    SpringContextImpl springContextImpl = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+                    springContextImpl.register(id, action);
+                }
+                public void contextDestroyed(ServletContextEvent sce) {
 
-            addTestApp(tomcat, getRootFolder(), url);
+                }
+            });
+            addAutoOpen(stdCtx, url);
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {
@@ -194,15 +201,24 @@ public class TomcatRuntime extends ServerRuntime {
     }
 
     @Override
-    public void test(int port, final Topic topic) {
+    public void test(final int port, final Topic topic) {
         try {
-            RpcContextImpl.testMode = true;
+            System.setProperty("org.brutusin.rpc.test-mode", "true");
             Tomcat tomcat = createTomcat(port);
-            String topicId = topic.getClass().getName();
-            PublishAction publishAction = new PublishAction(topic);
-            RpcContext.getInstance().register("publish-service", publishAction);
-            RpcContext.getInstance().register(topicId, topic);
-            addTestApp(tomcat, getRootFolder(), "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
+            final String topicId = topic.getClass().getName();
+            final PublishAction publishAction = new PublishAction(topic);
+            StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
+            stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
+                public void contextInitialized(ServletContextEvent sce) {
+                    SpringContextImpl springContextImpl = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+                    springContextImpl.register("publish-service", publishAction);
+                    springContextImpl.register(topicId, topic);
+                }
+                public void contextDestroyed(ServletContextEvent sce) {
+
+                }
+            });
+            addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {

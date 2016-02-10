@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +46,6 @@ import org.brutusin.commons.utils.CryptoUtils;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.exception.MaxLengthExceededException;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.RpcConfig;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.InvalidHttpMethodException;
@@ -54,7 +54,12 @@ import org.brutusin.rpc.exception.RpcErrorCode;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonSchema;
+import org.brutusin.rpc.SpringContextImpl;
 import org.brutusin.rpc.RpcUtils;
+import org.brutusin.rpc.websocket.Topic;
+import org.brutusin.rpc.websocket.WebsocketAction;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -71,12 +76,14 @@ public class RpcServlet extends HttpServlet {
 
     public static final String PARAM_PAYLOAD = "jsonrpc";
 
-    private final Map<String, HttpAction> services = RpcContext.getInstance().getHttpServices();
-
     private int uploadCounter;
 
+    private Map<String, HttpAction> services;
+
     @Override
-    public final void init() throws ServletException {
+    public void init(ServletConfig config) throws ServletException {
+        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(config.getServletContext());
+        services = rpcApplicationContext.getHttpServices();
         try {
             if (RpcConfig.getUploadFolder().exists()) {
                 Miscellaneous.cleanDirectory(RpcConfig.getUploadFolder());
@@ -584,6 +591,31 @@ public class RpcServlet extends HttpServlet {
             public final boolean isUserInRole(String role) {
                 return req.isUserInRole(role);
             }
+
+            public SpringContextImpl getSpringContextImpl() {
+                return (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(req.getServletContext());
+            }
+
+            @Override
+            public ApplicationContext getSpringContext() {
+                return getSpringContextImpl();
+            }
+
+            @Override
+            public Map<String, HttpAction> getHttpServices() {
+                return getSpringContextImpl().getHttpServices();
+            }
+
+            @Override
+            public Map<String, WebsocketAction> getWebSocketServices() {
+                return getSpringContextImpl().getWebSocketServices();
+            }
+
+            @Override
+            public Map<String, Topic> getTopics() {
+                return getSpringContextImpl().getTopics();
+            }
+
         };
         HttpActionContext.setInstance(ac);
     }

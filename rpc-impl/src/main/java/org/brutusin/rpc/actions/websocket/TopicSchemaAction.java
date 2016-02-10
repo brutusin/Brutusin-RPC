@@ -19,9 +19,9 @@ import java.util.Map;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -32,7 +32,7 @@ public class TopicSchemaAction extends WebsocketAction<TopicIdInput, JsonSchema>
 
     @Override
     public JsonSchema execute(TopicIdInput input) throws Exception {
-        Map<String, Topic> topics = RpcContext.getInstance().getTopics();
+        Map<String, Topic> topics = WebsocketActionContext.getInstance().getTopics();
         Topic topic = topics.get(input.getId());
         if (topic == null) {
             throw new IllegalArgumentException("Topic not found");

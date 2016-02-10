@@ -18,9 +18,9 @@ package org.brutusin.rpc.actions.websocket;
 import java.util.Map;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcContext;
 import org.brutusin.rpc.actions.DynamicSchemaProviderActionHelper;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionContext;
 
 /**
  *
@@ -31,6 +31,6 @@ public class DynamicSchemaProviderAction extends WebsocketAction<DynamicSchemaPr
 
     @Override
     public Map<String, JsonSchema> execute(DynamicSchemaProviderInput input) throws Exception {
-        return DynamicSchemaProviderActionHelper.execute(input, RpcContext.getInstance().getWebSocketServices());
+        return DynamicSchemaProviderActionHelper.execute(input, WebsocketActionContext.getInstance().getWebSocketServices());
     }
 }
