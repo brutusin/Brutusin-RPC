@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public interface RpcActionContext {
+public interface RpcActionSupport {
 
     public ApplicationContext getSpringContext();
 

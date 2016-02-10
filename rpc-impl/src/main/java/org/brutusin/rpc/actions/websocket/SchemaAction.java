@@ -19,7 +19,7 @@ import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.actions.SchemaActionHelper;
 import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionContext;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
@@ -30,7 +30,7 @@ public class SchemaAction extends WebsocketAction<ServiceSchemaActionInput, Json
 
     @Override
     public JsonSchema execute(ServiceSchemaActionInput input) throws Exception {
-        return SchemaActionHelper.execute(input,WebsocketActionContext.getInstance().getWebSocketServices());
+        return SchemaActionHelper.execute(input,WebsocketActionSupport.getInstance().getWebSocketServices());
     }
 
 }

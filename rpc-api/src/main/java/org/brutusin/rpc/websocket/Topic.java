@@ -75,7 +75,7 @@ public abstract class Topic<F, M> extends RpcComponent {
     }
 
     public final void subscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) WebsocketActionContext.getInstance().getSession();
+        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is already subscribed to this topic");
         }
@@ -84,7 +84,7 @@ public abstract class Topic<F, M> extends RpcComponent {
     }
 
     public final void unsubscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) WebsocketActionContext.getInstance().getSession();
+        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (!sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is not subscribed to this topic");
         }

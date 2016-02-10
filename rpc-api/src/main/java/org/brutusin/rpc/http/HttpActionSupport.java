@@ -15,26 +15,18 @@
  */
 package org.brutusin.rpc.http;
 
-import org.brutusin.rpc.RpcActionContext;
+import org.brutusin.rpc.RpcActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public abstract class HttpActionContext implements RpcActionContext{
+public abstract class HttpActionSupport implements RpcActionSupport{
 
-    private static final ThreadLocal<HttpActionContext> CONTEXTS = new ThreadLocal();
+    protected static final ThreadLocal<HttpActionSupport> CONTEXTS = new ThreadLocal();
 
-    public static HttpActionContext getInstance() {
+    public static HttpActionSupport getInstance() {
         return CONTEXTS.get();
-    }
-
-    static void setInstance(HttpActionContext context) {
-        CONTEXTS.set(context);
-    }
-
-    static void clear() {
-        CONTEXTS.remove();
     }
 
     public abstract Object getRequest();

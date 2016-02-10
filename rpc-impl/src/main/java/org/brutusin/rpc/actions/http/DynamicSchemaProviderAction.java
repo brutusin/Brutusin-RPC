@@ -20,7 +20,7 @@ import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.actions.DynamicSchemaProviderActionHelper;
-import org.brutusin.rpc.http.HttpActionContext;
+import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.SafeAction;
 
 /**
@@ -32,6 +32,6 @@ public class DynamicSchemaProviderAction extends SafeAction<DynamicSchemaProvide
 
     @Override
     public Cacheable<Map<String, JsonSchema>> execute(DynamicSchemaProviderInput input) throws Exception {
-        return Cacheable.conditionally(DynamicSchemaProviderActionHelper.execute(input, HttpActionContext.getInstance().getHttpServices()));
+        return Cacheable.conditionally(DynamicSchemaProviderActionHelper.execute(input, HttpActionSupport.getInstance().getHttpServices()));
     }
 }

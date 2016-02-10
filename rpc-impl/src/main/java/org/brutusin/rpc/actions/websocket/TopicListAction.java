@@ -21,7 +21,7 @@ import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.actions.ResourceItem;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionContext;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
@@ -34,7 +34,7 @@ public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
 
     @Override
     public void init() throws Exception {
-        Map<String, Topic> topics = WebsocketActionContext.getInstance().getTopics();
+        Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
         this.topicItems = new ResourceItem[topics.size()];
         int i = 0;
         for (Map.Entry<String, Topic> entrySet : topics.entrySet()) {

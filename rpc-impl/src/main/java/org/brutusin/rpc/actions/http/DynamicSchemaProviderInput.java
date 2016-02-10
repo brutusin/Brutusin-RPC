@@ -16,7 +16,7 @@
 package org.brutusin.rpc.actions.http;
 
 import java.util.Collection;
-import org.brutusin.rpc.http.HttpActionContext;
+import org.brutusin.rpc.http.HttpActionSupport;
 
 /**
  *
@@ -26,7 +26,7 @@ public class DynamicSchemaProviderInput extends org.brutusin.rpc.actions.Dynamic
 
     @Override
     protected Collection<String> getResourceIds() {
-        return HttpActionContext.getInstance().getHttpServices().keySet();
+        return HttpActionSupport.getInstance().getHttpServices().keySet();
     }
 
 }

@@ -16,26 +16,18 @@
 package org.brutusin.rpc.websocket;
 
 import java.security.Principal;
-import org.brutusin.rpc.RpcActionContext;
+import org.brutusin.rpc.RpcActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public abstract class WebsocketActionContext implements RpcActionContext{
+public abstract class WebsocketActionSupport implements RpcActionSupport{
 
-    private static final ThreadLocal<WebsocketActionContext> CONTEXTS = new ThreadLocal();
+    protected static final ThreadLocal<WebsocketActionSupport> CONTEXTS = new ThreadLocal();
 
-    public static WebsocketActionContext getInstance() {
+    public static WebsocketActionSupport getInstance() {
         return CONTEXTS.get();
-    }
-
-    static void setInstance(WebsocketActionContext context) {
-        CONTEXTS.set(context);
-    }
-
-    static void clear() {
-        CONTEXTS.remove();
     }
 
     public abstract Session getSession();

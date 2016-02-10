@@ -403,7 +403,7 @@ public class RpcServlet extends HttpServlet {
         Throwable throwable = null;
         RpcRequest rpcRequest = null;
         try {
-            prepareActionContext(req, resp);
+            HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(req, resp));
             rpcRequest = getRequest(req);
             result = execute(req, rpcRequest);
             if (result != null && result instanceof Cacheable) {
@@ -431,7 +431,7 @@ public class RpcServlet extends HttpServlet {
                 serviceJsonResponse(reqETag, req, resp, rpcResp, cachingInfo);
             }
         } finally {
-            HttpActionContext.clear();
+            HttpActionSupportImpl.clear();
             deleteTempUploadDirectory(req);
         }
     }
@@ -563,61 +563,6 @@ public class RpcServlet extends HttpServlet {
                 addContentLocation(req, resp);
             }
         }
-    }
-
-    /**
-     *
-     * @param req
-     * @param resp
-     */
-    private void prepareActionContext(final HttpServletRequest req, final HttpServletResponse resp) {
-        HttpActionContext ac = new HttpActionContext() {
-            @Override
-            public HttpServletRequest getRequest() {
-                return req;
-            }
-
-            @Override
-            public HttpServletResponse getResponse() {
-                return resp;
-            }
-
-            @Override
-            public final Principal getUserPrincipal() {
-                return req.getUserPrincipal();
-            }
-
-            @Override
-            public final boolean isUserInRole(String role) {
-                return req.isUserInRole(role);
-            }
-
-            public SpringContextImpl getSpringContextImpl() {
-                return (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(req.getServletContext());
-            }
-
-            @Override
-            public ApplicationContext getSpringContext() {
-                return getSpringContextImpl();
-            }
-
-            @Override
-            public Map<String, HttpAction> getHttpServices() {
-                return getSpringContextImpl().getHttpServices();
-            }
-
-            @Override
-            public Map<String, WebsocketAction> getWebSocketServices() {
-                return getSpringContextImpl().getWebSocketServices();
-            }
-
-            @Override
-            public Map<String, Topic> getTopics() {
-                return getSpringContextImpl().getTopics();
-            }
-
-        };
-        HttpActionContext.setInstance(ac);
     }
 
     /**

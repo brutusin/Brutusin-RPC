@@ -22,7 +22,7 @@ import org.brutusin.rpc.Description;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.HttpAction;
-import org.brutusin.rpc.http.HttpActionContext;
+import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.SafeAction;
 import org.brutusin.rpc.http.StreamResult;
 
@@ -37,7 +37,7 @@ public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
     
     @Override
     public void init() throws Exception {
-        Map<String, HttpAction> services = HttpActionContext.getInstance().getHttpServices();
+        Map<String, HttpAction> services = HttpActionSupport.getInstance().getHttpServices();
         this.serviceItems = new HttpServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, HttpAction> entrySet : services.entrySet()) {

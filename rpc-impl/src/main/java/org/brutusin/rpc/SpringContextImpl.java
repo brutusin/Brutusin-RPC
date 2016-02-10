@@ -24,8 +24,11 @@ import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
 import org.brutusin.rpc.actions.http.HttpServiceListAction;
 import org.brutusin.rpc.actions.http.VersionAction;
 import org.brutusin.rpc.http.HttpAction;
+import org.brutusin.rpc.http.HttpActionSupport;
+import org.brutusin.rpc.http.HttpActionSupportImpl;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionSupportImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -46,12 +49,12 @@ public class SpringContextImpl extends ClassPathXmlApplicationContext implements
 
     public SpringContextImpl(ServletContext sc) {
         this(sc, true);
-        setClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     public SpringContextImpl(ServletContext sc, boolean loadAppDescriptor) {
-        super(getXmlNames(loadAppDescriptor));
+        super(getXmlNames(loadAppDescriptor), false);
         this.sc = sc;
+        setClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     private static String[] getXmlNames(boolean loadAppDescriptor) {
@@ -74,7 +77,9 @@ public class SpringContextImpl extends ClassPathXmlApplicationContext implements
         this.httpServices = loadComponents(HttpAction.class);
         this.webSocketServices = loadComponents(WebsocketAction.class);
         this.webSocketTopics = loadComponents(Topic.class);
-        initComponents(RpcComponent.class);
+        initHttpActions();
+        initWsktActions();
+        initTopics();
     }
 
     @Override
@@ -146,18 +151,49 @@ public class SpringContextImpl extends ClassPathXmlApplicationContext implements
         return beans;
     }
 
-    private <E extends RpcComponent> Map<String, E> initComponents(Class<E> clazz) {
-        Map<String, E> beans = getBeansOfType(clazz);
-        for (Map.Entry<String, E> entry : beans.entrySet()) {
+    private void initHttpActions() {
+        Map<String, HttpAction> beans = getBeansOfType(HttpAction.class);
+        for (Map.Entry<String, HttpAction> entry : beans.entrySet()) {
             String id = entry.getKey();
-            E component = entry.getValue();
+            HttpAction action = entry.getValue();
             try {
-                component.init(id);
+                HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(this));
+                action.init(id);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                HttpActionSupportImpl.clear();
+            }
+        }
+    }
+
+    private void initWsktActions() {
+        Map<String, WebsocketAction> beans = getBeansOfType(WebsocketAction.class);
+        for (Map.Entry<String, WebsocketAction> entry : beans.entrySet()) {
+            String id = entry.getKey();
+            WebsocketAction action = entry.getValue();
+            try {
+                WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(this));
+                action.init(id);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                WebsocketActionSupportImpl.clear();
+            }
+        }
+    }
+
+    private void initTopics() {
+        Map<String, Topic> beans = getBeansOfType(Topic.class);
+        for (Map.Entry<String, Topic> entry : beans.entrySet()) {
+            String id = entry.getKey();
+            Topic topic = entry.getValue();
+            try {
+                topic.init(id);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         }
-        return beans;
     }
 
     public Map<String, HttpAction> getHttpServices() {

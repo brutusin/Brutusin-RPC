@@ -20,7 +20,7 @@ import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.actions.DynamicSchemaProviderActionHelper;
 import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionContext;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
@@ -31,6 +31,6 @@ public class DynamicSchemaProviderAction extends WebsocketAction<DynamicSchemaPr
 
     @Override
     public Map<String, JsonSchema> execute(DynamicSchemaProviderInput input) throws Exception {
-        return DynamicSchemaProviderActionHelper.execute(input, WebsocketActionContext.getInstance().getWebSocketServices());
+        return DynamicSchemaProviderActionHelper.execute(input, WebsocketActionSupport.getInstance().getWebSocketServices());
     }
 }

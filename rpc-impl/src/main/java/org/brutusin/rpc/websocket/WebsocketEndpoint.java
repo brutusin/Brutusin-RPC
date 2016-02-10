@@ -53,14 +53,14 @@ public class WebsocketEndpoint extends Endpoint {
         session.getUserProperties().put(SessionImpl.class.getName(), sessionImpl);
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                WebsocketActionContext.setInstance(createWebsocketActionContext(sessionImpl));
+                WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
                 try {
                     String response = process(message, sessionImpl);
                     if (response != null) {
                         sessionImpl.sendToPeerRaw(response);
                     }
                 } finally {
-                    WebsocketActionContext.clear();
+                    WebsocketActionSupportImpl.clear();
                 }
             }
         });
@@ -69,7 +69,7 @@ public class WebsocketEndpoint extends Endpoint {
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         final SessionImpl sessionImpl = (SessionImpl) session.getUserProperties().get(SessionImpl.class.getName());
-        WebsocketActionContext.setInstance(createWebsocketActionContext(sessionImpl));
+        WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
         SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
         try {
             for (Topic topic : rpcApplicationContext.getTopics().values()) {
@@ -80,46 +80,9 @@ public class WebsocketEndpoint extends Endpoint {
                 }
             }
         } finally {
-            WebsocketActionContext.clear();
+            WebsocketActionSupportImpl.clear();
             sessionImpl.close();
         }
-    }
-    
-    private WebsocketActionContext createWebsocketActionContext(final SessionImpl sessionImpl) {
-        return new WebsocketActionContext() {
-            @Override
-            public org.brutusin.rpc.websocket.Session getSession() {
-                return sessionImpl;
-            }
-
-            public SpringContextImpl getSpringContextImpl() {
-                return (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
-            }
-
-            @Override
-            public ApplicationContext getSpringContext() {
-                return getSpringContextImpl();
-            }
-
-            @Override
-            public Map<String, HttpAction> getHttpServices() {
-                return getSpringContextImpl().getHttpServices();
-            }
-
-            @Override
-            public Map<String, WebsocketAction> getWebSocketServices() {
-                return getSpringContextImpl().getWebSocketServices();
-            }
-
-            @Override
-            public Map<String, Topic> getTopics() {
-                return getSpringContextImpl().getTopics();
-            }
-
-            public boolean isUserInRole(String role) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        };
     }
 
     @Override
@@ -164,7 +127,7 @@ public class WebsocketEndpoint extends Endpoint {
             throw new InvalidRequestException("Only jsonrpc 2.0 supported");
         }
         String serviceId = request.getMethod();
-        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
+        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getServletContext());
         Map<String, WebsocketAction> services = rpcApplicationContext.getWebSocketServices();
         if (serviceId == null || !services.containsKey(serviceId)) {
             throw new ServiceNotFoundException();

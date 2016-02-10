@@ -67,13 +67,17 @@ public class RpcWebInitializer implements WebApplicationInitializer {
         regInfo.addMapping(RpcConfig.getPath() + "/http");
     }
 
-    private void initWebsocketRpcRuntime(ServletContext ctx) {
+    private void initWebsocketRpcRuntime(final ServletContext ctx) {
         ServerContainer sc = (ServerContainer) ctx.getAttribute("javax.websocket.server.ServerContainer");
         ServerEndpointConfig.Configurator cfg = new ServerEndpointConfig.Configurator() {
             @Override
             public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
                 HttpSession httpSession = (HttpSession) request.getHttpSession();
-                config.getUserProperties().put("httpSession", httpSession);
+                if (httpSession != null) {
+                    config.getUserProperties().put("httpSession", httpSession);
+                }
+                config.getUserProperties().put("servletContext", ctx);
+                
             }
         };
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getPath() + "/wskt").configurator(cfg).build();
