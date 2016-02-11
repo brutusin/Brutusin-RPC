@@ -21,11 +21,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 import org.brutusin.json.spi.JsonCodec;
-import org.brutusin.rpc.SpringContextImpl;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.brutusin.rpc.RpcSpringContext;
 
 /**
  *
@@ -39,10 +36,9 @@ public class SessionImpl<M> implements WritableSession<M> {
     private final Thread t;
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
-    private final HttpSession httpSession;
-    private final ServletContext servletContext;
+    private final RpcSpringContext rpcCtx;
 
-    public SessionImpl(javax.websocket.Session session) {
+    public SessionImpl(javax.websocket.Session session, RpcSpringContext rpcCtx) {
         this.session = session;
         Runnable runnable = new Runnable() {
             @Override
@@ -70,11 +66,8 @@ public class SessionImpl<M> implements WritableSession<M> {
                 }
             }
         };
-        this.httpSession = (HttpSession) session.getUserProperties().get("httpSession");
-        this.servletContext = (ServletContext) session.getUserProperties().get("servletContext");
-
-        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(servletContext);
-        t = rpcApplicationContext.getThreadFactory().newThread(runnable);
+        this.rpcCtx = rpcCtx;
+        t = rpcCtx.getThreadFactory().newThread(runnable);
         t.setDaemon(true);
     }
 
@@ -86,14 +79,6 @@ public class SessionImpl<M> implements WritableSession<M> {
         return session.getId();
     }
 
-    public HttpSession getHttpSession() {
-        return httpSession;
-    }
-
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
-    
     public Principal getUserPrincipal() {
         return session.getUserPrincipal();
     }
@@ -108,6 +93,10 @@ public class SessionImpl<M> implements WritableSession<M> {
 
     public void sendToPeerRaw(String message) {
         send(message);
+    }
+
+    public RpcSpringContext getRpcCtx() {
+        return rpcCtx;
     }
 
     private void send(String message) {

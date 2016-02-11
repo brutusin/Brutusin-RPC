@@ -19,41 +19,36 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
 import org.brutusin.rpc.actions.http.HttpServiceListAction;
 import org.brutusin.rpc.actions.http.VersionAction;
 import org.brutusin.rpc.http.HttpAction;
-import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.HttpActionSupportImpl;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupportImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class SpringContextImpl extends ClassPathXmlApplicationContext implements WebApplicationContext {
+public class RpcSpringContext extends ClassPathXmlApplicationContext {
 
-    private static final Logger LOGGER = Logger.getLogger(SpringContextImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RpcSpringContext.class.getName());
 
-    private final ServletContext sc;
     private Map<String, HttpAction> httpServices;
     private Map<String, WebsocketAction> webSocketServices;
     private Map<String, Topic> webSocketTopics;
     private ThreadFactory threadFactory;
 
-    public SpringContextImpl(ServletContext sc) {
-        this(sc, true);
+    public RpcSpringContext() {
+        this(true);
     }
 
-    public SpringContextImpl(ServletContext sc, boolean loadAppDescriptor) {
+    public RpcSpringContext(boolean loadAppDescriptor) {
         super(getXmlNames(loadAppDescriptor), false);
-        this.sc = sc;
         setClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
@@ -63,10 +58,6 @@ public class SpringContextImpl extends ClassPathXmlApplicationContext implements
         } else {
             return new String[]{SpringNames.CFG_CORE_FILE};
         }
-    }
-
-    public ServletContext getServletContext() {
-        return sc;
     }
 
     @Override

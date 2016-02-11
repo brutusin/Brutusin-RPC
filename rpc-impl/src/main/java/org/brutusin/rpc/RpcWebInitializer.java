@@ -22,7 +22,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletSecurityElement;
-import javax.servlet.http.HttpSession;
 import javax.websocket.DeploymentException;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
@@ -33,7 +32,8 @@ import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.http.RpcServlet;
 import org.brutusin.rpc.websocket.WebsocketEndpoint;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -41,25 +41,29 @@ import org.springframework.web.context.ContextLoaderListener;
  */
 public class RpcWebInitializer implements WebApplicationInitializer {
 
-    public void onStartup(ServletContext ctx) throws ServletException {
-        final SpringContextImpl appCtx = new SpringContextImpl(ctx);
+    public void onStartup(final ServletContext ctx) throws ServletException {
+        final RpcSpringContext rpcCtx = new RpcSpringContext();
+        JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
         ctx.addListener(new ServletContextListener() {
             public void contextInitialized(ServletContextEvent sce) {
+                WebApplicationContext rootCtx = WebApplicationContextUtils.getWebApplicationContext(ctx);
+                if (rootCtx != null) {
+                    rpcCtx.setParent(rootCtx);
+                }
+                rpcCtx.refresh();
+                initHttpRpcRuntime(ctx, rpcCtx);
+                initWebsocketRpcRuntime(ctx, rpcCtx);
             }
 
             public void contextDestroyed(ServletContextEvent sce) {
-                appCtx.destroy();
+                rpcCtx.destroy();
             }
         });
-        JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
-        appCtx.refresh();
-        ctx.addListener(new ContextLoaderListener(appCtx));
-        initHttpRpcRuntime(ctx);
-        initWebsocketRpcRuntime(ctx);
+
     }
 
-    private void initHttpRpcRuntime(ServletContext ctx) {
-        RpcServlet servlet = new RpcServlet();
+    private void initHttpRpcRuntime(ServletContext ctx, RpcSpringContext rpcCtx) {
+        RpcServlet servlet = new RpcServlet(rpcCtx);
         ServletRegistration.Dynamic regInfo = ctx.addServlet("rpc.http", servlet);
         ServletSecurityElement sec = new ServletSecurityElement(new HttpConstraintElement());
         regInfo.setServletSecurity(sec);
@@ -67,17 +71,13 @@ public class RpcWebInitializer implements WebApplicationInitializer {
         regInfo.addMapping(RpcConfig.getPath() + "/http");
     }
 
-    private void initWebsocketRpcRuntime(final ServletContext ctx) {
+    private void initWebsocketRpcRuntime(final ServletContext ctx, final RpcSpringContext rpcCtx) {
         ServerContainer sc = (ServerContainer) ctx.getAttribute("javax.websocket.server.ServerContainer");
         ServerEndpointConfig.Configurator cfg = new ServerEndpointConfig.Configurator() {
             @Override
             public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
-                HttpSession httpSession = (HttpSession) request.getHttpSession();
-                if (httpSession != null) {
-                    config.getUserProperties().put("httpSession", httpSession);
-                }
-                config.getUserProperties().put("servletContext", ctx);
-                
+                config.getUserProperties().put(WebsocketEndpoint.SERVLET_CONTEXT_KEY, ctx);
+                config.getUserProperties().put(WebsocketEndpoint.RPC_SPRING_CTX, rpcCtx);
             }
         };
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getPath() + "/wskt").configurator(cfg).build();

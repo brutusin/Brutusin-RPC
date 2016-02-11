@@ -16,6 +16,8 @@
 package org.brutusin.rpc.websocket;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
@@ -27,11 +29,9 @@ import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
-import org.brutusin.rpc.SpringContextImpl;
+import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.InvalidRequestException;
-import org.brutusin.rpc.http.HttpAction;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -39,6 +39,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class WebsocketEndpoint extends Endpoint {
+
+    public static String SERVLET_CONTEXT_KEY = "SERVLET_CONTEXT_KEY";
+    public static String RPC_SPRING_CTX = "RPC_SPRING_CTX";
+    public static String SESSION_IMPL_KEY = "SESSION_IMPL_KEY";
+
+    private Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
     /**
      *
@@ -48,9 +54,11 @@ public class WebsocketEndpoint extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig config) {
 
-        final SessionImpl sessionImpl = new SessionImpl(session);
+        final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
+        final SessionImpl sessionImpl = new SessionImpl(session, rpcCtx);
         sessionImpl.init();
-        session.getUserProperties().put(SessionImpl.class.getName(), sessionImpl);
+        wrapperMap.put(session.getId(), sessionImpl);
+        
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
                 WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
@@ -68,11 +76,13 @@ public class WebsocketEndpoint extends Endpoint {
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        final SessionImpl sessionImpl = (SessionImpl) session.getUserProperties().get(SessionImpl.class.getName());
-        WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
-        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getHttpSession().getServletContext());
+        final SessionImpl sessionImpl = wrapperMap.remove(session.getId());
+        if (sessionImpl == null) {
+            throw new AssertionError();
+        }
         try {
-            for (Topic topic : rpcApplicationContext.getTopics().values()) {
+            WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
+            for (Topic topic : sessionImpl.getRpcCtx().getTopics().values()) {
                 try {
                     topic.unsubscribe();
                 } catch (InvalidSubscriptionException ise) {
@@ -101,7 +111,7 @@ public class WebsocketEndpoint extends Endpoint {
         Throwable throwable = null;
         try {
             req = JsonCodec.getInstance().parse(message, RpcRequest.class);
-            result = execute(req, sessionImpl);
+            result = execute(req, sessionImpl.getRpcCtx());
         } catch (Throwable th) {
             throwable = th;
         }
@@ -122,13 +132,12 @@ public class WebsocketEndpoint extends Endpoint {
      * @param request
      * @return
      */
-    private Object execute(RpcRequest request, SessionImpl sessionImpl) throws Exception {
+    private Object execute(RpcRequest request, RpcSpringContext rpcCtx) throws Exception {
         if (!"2.0".equals(request.getJsonrpc())) {
             throw new InvalidRequestException("Only jsonrpc 2.0 supported");
         }
         String serviceId = request.getMethod();
-        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sessionImpl.getServletContext());
-        Map<String, WebsocketAction> services = rpcApplicationContext.getWebSocketServices();
+        Map<String, WebsocketAction> services = rpcCtx.getWebSocketServices();
         if (serviceId == null || !services.containsKey(serviceId)) {
             throw new ServiceNotFoundException();
         }

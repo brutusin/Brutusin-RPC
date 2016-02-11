@@ -17,14 +17,12 @@ package org.brutusin.rpc.http;
 
 import java.security.Principal;
 import java.util.Map;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.brutusin.rpc.SpringContextImpl;
+import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -32,7 +30,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class HttpActionSupportImpl extends HttpActionSupport {
 
-    private final SpringContextImpl springCtx;
+    private final RpcSpringContext rpcCtx;
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
 
@@ -44,16 +42,12 @@ public class HttpActionSupportImpl extends HttpActionSupport {
         CONTEXTS.remove();
     }
 
-    public HttpActionSupportImpl(SpringContextImpl springCtx) {
-        this(springCtx, null, null);
+    public HttpActionSupportImpl(RpcSpringContext rpcCtx) {
+        this(rpcCtx, null, null);
     }
 
-    public HttpActionSupportImpl(HttpServletRequest req, HttpServletResponse resp) {
-        this((SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(req.getServletContext()), req, resp);
-    }
-
-    private HttpActionSupportImpl(SpringContextImpl springCtx, HttpServletRequest req, HttpServletResponse resp) {
-        this.springCtx = springCtx;
+    public HttpActionSupportImpl(RpcSpringContext rpcCtx, HttpServletRequest req, HttpServletResponse resp) {
+        this.rpcCtx = rpcCtx;
         this.req = req;
         this.resp = resp;
     }
@@ -84,27 +78,23 @@ public class HttpActionSupportImpl extends HttpActionSupport {
         return req.isUserInRole(role);
     }
 
-    public SpringContextImpl getSpringContextImpl() {
-        return springCtx;
-    }
-
     @Override
     public ApplicationContext getSpringContext() {
-        return getSpringContextImpl();
+        return rpcCtx;
     }
 
     @Override
     public Map<String, HttpAction> getHttpServices() {
-        return getSpringContextImpl().getHttpServices();
+        return rpcCtx.getHttpServices();
     }
 
     @Override
     public Map<String, WebsocketAction> getWebSocketServices() {
-        return getSpringContextImpl().getWebSocketServices();
+        return rpcCtx.getWebSocketServices();
     }
 
     @Override
     public Map<String, Topic> getTopics() {
-        return getSpringContextImpl().getTopics();
+        return rpcCtx.getTopics();
     }
 }

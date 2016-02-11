@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,12 +53,8 @@ import org.brutusin.rpc.exception.RpcErrorCode;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonSchema;
-import org.brutusin.rpc.SpringContextImpl;
+import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
-import org.brutusin.rpc.websocket.Topic;
-import org.brutusin.rpc.websocket.WebsocketAction;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -80,10 +75,15 @@ public class RpcServlet extends HttpServlet {
 
     private Map<String, HttpAction> services;
 
+    private final RpcSpringContext rpcCtx;
+
+    public RpcServlet(RpcSpringContext rpcCtx) {
+        this.rpcCtx = rpcCtx;
+    }
+
     @Override
     public void init(ServletConfig config) throws ServletException {
-        SpringContextImpl rpcApplicationContext = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(config.getServletContext());
-        services = rpcApplicationContext.getHttpServices();
+        services = rpcCtx.getHttpServices();
         try {
             if (RpcConfig.getUploadFolder().exists()) {
                 Miscellaneous.cleanDirectory(RpcConfig.getUploadFolder());
@@ -403,7 +403,7 @@ public class RpcServlet extends HttpServlet {
         Throwable throwable = null;
         RpcRequest rpcRequest = null;
         try {
-            HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(req, resp));
+            HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(rpcCtx, req, resp));
             rpcRequest = getRequest(req);
             result = execute(req, rpcRequest);
             if (result != null && result instanceof Cacheable) {

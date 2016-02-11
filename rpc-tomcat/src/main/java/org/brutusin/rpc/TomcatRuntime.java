@@ -185,7 +185,7 @@ public class TomcatRuntime extends ServerRuntime {
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 public void contextInitialized(ServletContextEvent sce) {
-                    SpringContextImpl springContextImpl = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+                    RpcSpringContext springContextImpl = (RpcSpringContext) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
                     springContextImpl.register(id, action);
                 }
                 public void contextDestroyed(ServletContextEvent sce) {
@@ -210,7 +210,7 @@ public class TomcatRuntime extends ServerRuntime {
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 public void contextInitialized(ServletContextEvent sce) {
-                    SpringContextImpl springContextImpl = (SpringContextImpl) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+                    RpcSpringContext springContextImpl = (RpcSpringContext) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
                     springContextImpl.register("publish-service", publishAction);
                     springContextImpl.register(topicId, topic);
                 }
