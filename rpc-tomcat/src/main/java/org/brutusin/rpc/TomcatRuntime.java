@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.catalina.Globals;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.core.StandardContext;
@@ -42,7 +41,6 @@ import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
 import org.brutusin.rpc.websocket.Topic;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Tomcat ServerRuntime service provider.
@@ -173,7 +171,7 @@ public class TomcatRuntime extends ServerRuntime {
     @Override
     public void test(final int port, final RpcAction action) {
         try {
-            System.setProperty("org.brutusin.rpc.test-mode", "true");
+            RpcConfig.getInstance().setTestMode(true);
             Tomcat tomcat = createTomcat(port);
             final String id = action.getClass().getName();
             String url;
@@ -185,9 +183,10 @@ public class TomcatRuntime extends ServerRuntime {
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 public void contextInitialized(ServletContextEvent sce) {
-                    RpcSpringContext springContextImpl = (RpcSpringContext) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
-                    springContextImpl.register(id, action);
+                    RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
+                    rpcCtx.register(id, action);
                 }
+
                 public void contextDestroyed(ServletContextEvent sce) {
 
                 }
@@ -203,19 +202,19 @@ public class TomcatRuntime extends ServerRuntime {
     @Override
     public void test(final int port, final Topic topic) {
         try {
-            System.setProperty("org.brutusin.rpc.test-mode", "true");
+            RpcConfig.getInstance().setTestMode(true);
             Tomcat tomcat = createTomcat(port);
             final String topicId = topic.getClass().getName();
             final PublishAction publishAction = new PublishAction(topic);
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 public void contextInitialized(ServletContextEvent sce) {
-                    RpcSpringContext springContextImpl = (RpcSpringContext) WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
-                    springContextImpl.register("publish-service", publishAction);
-                    springContextImpl.register(topicId, topic);
+                    RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
+                    rpcCtx.register("publish-service", publishAction);
+                    rpcCtx.register(topicId, topic);
                 }
-                public void contextDestroyed(ServletContextEvent sce) {
 
+                public void contextDestroyed(ServletContextEvent sce) {
                 }
             });
             addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);

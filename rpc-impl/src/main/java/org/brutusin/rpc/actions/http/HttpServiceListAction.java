@@ -32,13 +32,11 @@ import org.brutusin.rpc.http.StreamResult;
  */
 @Description("This descriptor service returns the **list** of the deployed `HTTP` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/http/HttpServiceListAction.java)]*")
 public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
-    
-    private HttpServiceItem[] serviceItems;
-    
+
     @Override
-    public void init() throws Exception {
+    public Cacheable<HttpServiceItem[]> execute(Void input) throws Exception {
         Map<String, HttpAction> services = HttpActionSupport.getInstance().getHttpServices();
-        this.serviceItems = new HttpServiceItem[services.size()];
+        HttpServiceItem[] serviceItems = new HttpServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, HttpAction> entrySet : services.entrySet()) {
             String id = entrySet.getKey();
@@ -52,12 +50,8 @@ public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
             si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
             si.setBinaryResponse(StreamResult.class.isAssignableFrom(RpcUtils.getClass(service.getOutputType())));
             si.setUpload(JsonCodec.getInstance().getSchema(inputClass).toString().contains("\"format\":\"inputstream\""));
-            this.serviceItems[i++] = si;
+            serviceItems[i++] = si;
         }
-    }
-    
-    @Override
-    public Cacheable<HttpServiceItem[]> execute(Void input) throws Exception {
-        return Cacheable.conditionally(this.serviceItems);
+        return Cacheable.conditionally(serviceItems);
     }
 }

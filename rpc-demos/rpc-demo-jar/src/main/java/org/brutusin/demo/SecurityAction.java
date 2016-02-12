@@ -13,37 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.rpc;
+package org.brutusin.demo;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import org.brutusin.rpc.Server;
+import org.brutusin.rpc.http.Cacheable;
+import org.brutusin.rpc.http.HttpActionSupport;
+import org.brutusin.rpc.http.SafeAction;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public final class EnvProperties {
+public class SecurityAction extends SafeAction<Void, String> {
 
-    private static final Map<String, String> PROPS = new TreeMap();
-
-    private EnvProperties() {
-    }
-
-    public static String get(String propName, String defValue) {
-        String value = PROPS.get(propName);
-        if (value != null) {
-            return value;
+    @Override
+    public Cacheable<String> execute(Void input) throws Exception {
+        String name;
+        if (HttpActionSupport.getInstance().getUserPrincipal() == null) {
+            name = null;
+        } else {
+            name = HttpActionSupport.getInstance().getUserPrincipal().getName();
         }
-        value = System.getenv(propName);
-        if (value == null) {
-            value = defValue;
-        }
-        PROPS.put(propName, value);
-        return value;
+        return Cacheable.never(name);
+    }
+    
+    public static void main(String[] args) {
+        Server.test(new SecurityAction());
     }
 
-    public static Map<String, String> getProperties() {
-        return Collections.unmodifiableMap(PROPS);
-    }
 }

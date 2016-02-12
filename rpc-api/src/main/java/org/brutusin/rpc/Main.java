@@ -25,11 +25,10 @@ public final class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        String port = EnvProperties.get("PORT", String.valueOf(Server.DEFAULT_PORT));
+        String port = System.getenv("PORT");
         if (port == null) {
-            Server.exec();
-        } else {
-            Server.exec(Integer.valueOf(port));
+            port =String.valueOf(Server.DEFAULT_PORT);
         }
+         Server.exec(Integer.valueOf(port));
     }
 }

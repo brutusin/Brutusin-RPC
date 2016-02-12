@@ -71,8 +71,8 @@
         <script language='javascript'>
             var maxMessagesPerTopic = 50;
             var BrutusinForms = brutusin["json-forms"];
-            var http = brutusin["rpc"].initHttpEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/http"%>");
-            var wskt = brutusin["rpc"].initWebsocketEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/wskt"%>");
+            var http = brutusin["rpc"].initHttpEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getInstance().getPath()+"/http"%>");
+            var wskt = brutusin["rpc"].initWebsocketEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getInstance().getPath()+"/wskt"%>");
             var codeMirrors = new Object();
             var httpServices, wsServices, topics;
             var isServiceHttp;

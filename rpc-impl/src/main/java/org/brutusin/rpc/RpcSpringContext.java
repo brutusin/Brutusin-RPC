@@ -98,7 +98,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     }
 
     private void registerBuiltServices() {
-        if (RpcConfig.isIncludeBuiltinServices()) {
+        if (RpcConfig.getInstance().isIncludeBuiltinServices()) {
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_VERSION, new VersionAction());
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SERVICE_LIST, new HttpServiceListAction());
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SCHEMA, new org.brutusin.rpc.actions.http.SchemaAction());
@@ -115,7 +115,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             getBeanFactory().registerSingleton(SpringNames.TPC_UNSUBSCRIBE, new org.brutusin.rpc.actions.websocket.UnsubscribeAction());
         }
 
-        if (RpcConfig.isIncludeEnvironmentViewerService()) {
+        if (RpcConfig.getInstance().isIncludeEnvService()) {
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_ENV, new EnvironmentPopertiesAction());
         }
     }

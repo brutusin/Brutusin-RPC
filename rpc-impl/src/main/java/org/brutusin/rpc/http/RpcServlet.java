@@ -60,7 +60,7 @@ import org.brutusin.rpc.RpcUtils;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class RpcServlet extends HttpServlet {
+public final class RpcServlet extends HttpServlet {
 
     public static final String JSON_CONTENT_TYPE = "application/json";
 
@@ -85,10 +85,10 @@ public class RpcServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         services = rpcCtx.getHttpServices();
         try {
-            if (RpcConfig.getUploadFolder().exists()) {
-                Miscellaneous.cleanDirectory(RpcConfig.getUploadFolder());
+            if (RpcConfig.getInstance().getUploadFolder().exists()) {
+                Miscellaneous.cleanDirectory(RpcConfig.getInstance().getUploadFolder());
             } else {
-                Miscellaneous.createDirectory(RpcConfig.getUploadFolder());
+                Miscellaneous.createDirectory(RpcConfig.getInstance().getUploadFolder());
             }
         } catch (Exception ex) {
             Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -111,6 +111,10 @@ public class RpcServlet extends HttpServlet {
             return false;
         }
         return contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart");
+    }
+
+    public RpcSpringContext getRpcCtx() {
+        return rpcCtx;
     }
 
     /**
@@ -195,7 +199,7 @@ public class RpcServlet extends HttpServlet {
         if (isMultipartContent(req)) {
             return array[0];
         } else {
-            return new String(array[0].getBytes(RpcConfig.getServerUriEncoding()), "UTF-8");
+            return new String(array[0].getBytes(RpcConfig.getInstance().getServerUriEncoding()), "UTF-8");
         }
     }
 
@@ -225,8 +229,8 @@ public class RpcServlet extends HttpServlet {
      * @return @throws IOException
      */
     private File createTempUploadDirectory() throws IOException {
-        synchronized (RpcConfig.getUploadFolder()) {
-            File ret = new File(RpcConfig.getUploadFolder(), String.valueOf(uploadCounter++));
+        synchronized (RpcConfig.getInstance().getUploadFolder()) {
+            File ret = new File(RpcConfig.getInstance().getUploadFolder(), String.valueOf(uploadCounter++));
             Miscellaneous.createDirectory(ret);
             return ret;
         }
@@ -269,20 +273,20 @@ public class RpcServlet extends HttpServlet {
             tempDirectory = null;
         }
         FileItemStream item = (FileItemStream) req.getAttribute(REQ_ATT_MULTIPART_CURRENT_ITEM);
-        long availableLength = RpcConfig.getMaxRequestSize();
+        long availableLength = RpcConfig.getInstance().getMaxRequestSize();
         while (item != null) {
             count++;
-            long maxLength = Math.min(availableLength, RpcConfig.getMaxFileSize());
+            long maxLength = Math.min(availableLength, RpcConfig.getInstance().getMaxFileSize());
             if (count < streamsNumber || isResponseStreamed) { // if response is streamed all inputstreams have to be readed first
                 File file = new File(tempDirectory, item.getFieldName());
                 FileOutputStream fos = new FileOutputStream(file);
                 try {
                     Miscellaneous.pipeSynchronously(new LimitedLengthInputStream(item.openStream(), maxLength), fos);
                 } catch (MaxLengthExceededException ex) {
-                    if (maxLength == RpcConfig.getMaxFileSize()) {
-                        throw new MaxLengthExceededException("Upload part '" + item.getFieldName() + "' exceeds maximum length (" + RpcConfig.getMaxFileSize() + " bytes)", RpcConfig.getMaxFileSize());
+                    if (maxLength == RpcConfig.getInstance().getMaxFileSize()) {
+                        throw new MaxLengthExceededException("Upload part '" + item.getFieldName() + "' exceeds maximum length (" + RpcConfig.getInstance().getMaxFileSize() + " bytes)", RpcConfig.getInstance().getMaxFileSize());
                     } else {
-                        throw new MaxLengthExceededException("Request exceeds maximum length (" + RpcConfig.getMaxRequestSize() + " bytes)", RpcConfig.getMaxRequestSize());
+                        throw new MaxLengthExceededException("Request exceeds maximum length (" + RpcConfig.getInstance().getMaxRequestSize() + " bytes)", RpcConfig.getInstance().getMaxRequestSize());
                     }
                 }
                 map.put(item.getFieldName(), new MetaDataInputStream(new FileInputStream(file), item.getName(), item.getContentType(), file.length(), null));
@@ -344,8 +348,8 @@ public class RpcServlet extends HttpServlet {
      */
     private void addFixedHeaders(HttpServletResponse resp) throws IOException {
         resp.addHeader("X-Powered-By", "brutusin-rpc");
-        if (RpcConfig.getAccessControlOriginHost() != null) {
-            resp.addHeader("Access-Control-Allow-Origin", RpcConfig.getAccessControlOriginHost());
+        if (RpcConfig.getInstance().getAccessControOriginHost() != null) {
+            resp.addHeader("Access-Control-Allow-Origin", RpcConfig.getInstance().getAccessControOriginHost());
             resp.addHeader("Access-Control-Allow-Methods", "HEAD, GET, POST, PUT, OPTIONS");
             resp.addHeader("Access-Control-Expose-Headers", "Content-Disposition, Content-Type, Content-Length");
         }

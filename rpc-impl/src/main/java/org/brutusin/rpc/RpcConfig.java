@@ -16,6 +16,7 @@
 package org.brutusin.rpc;
 
 import java.io.File;
+import java.util.Map;
 import org.brutusin.rpc.spi.ServerRuntime;
 
 /**
@@ -24,60 +25,141 @@ import org.brutusin.rpc.spi.ServerRuntime;
  */
 public final class RpcConfig {
 
-    private static final String PATH = EnvProperties.get("org.brutusin.rpc.http-path", "/rpc");
-    private static final String SERVER_URI_ENCODING;
-    private static final File UPLOAD_FOLDER = new File(EnvProperties.get("org.brutusin.rpc.upload.folder", new File(System.getProperty("java.io.tmpdir"), "brutusin-rcp-uploads").getAbsolutePath()));
-    private static final Long MAX_FILE_SIZE = Long.valueOf(EnvProperties.get("org.brutusin.rpc.upload.max-file-size", String.valueOf(Long.MAX_VALUE)));
-    private static final Long MAX_REQUEST_SIZE = Long.valueOf(EnvProperties.get("org.brutusin.rpc.upload.max-request-size", String.valueOf(Long.MAX_VALUE)));
-    private static final String ACCESS_CONTROL_ORIGIN_HOST = EnvProperties.get("org.brutusin.rpc.cors-host", null);
-    private static final Boolean INCLUDE_BUITIN_SERVICES = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.include-builtin-services", "true"));
-    private static final Boolean INCLUDE_ENV_SERVICE = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.include-env-service", "true"));
-    private static final Boolean TEST_MODE = Boolean.valueOf(EnvProperties.get("org.brutusin.rpc.test-mode", "false"));
+    public static final String ENV_PROP_PATH = "org.brutusin.rpc.http-path";
+    public static final String ENV_PROP_SERVER_URI_ENC = "org.brutusin.rpc.server-uri-encoding";
+    public static final String ENV_PROP_UPLOAD_FOLDER = "org.brutusin.rpc.upload.folder";
+    public static final String ENV_PROP_MAX_FILE_SIZE = "org.brutusin.rpc.upload.max-file-size";
+    public static final String ENV_PROP_MAX_REQUEST_SIZE = "org.brutusin.rpc.upload.max-request-size";
+    public static final String ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST = "org.brutusin.rpc.cors-host";
+    public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "org.brutusin.rpc.include-builtin-services";
+    public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "org.brutusin.rpc.include-env-service";
+    public static final String ENV_PROP_TEST_MODE = "org.brutusin.rpc.test-mode";
 
-    static {
-        String defUriEncoding;
-        if (ServerRuntime.getInstance() == null) {
-            // External web container
-            defUriEncoding = "ISO-8859-1";
-        } else {
-            // Embedded server
-            defUriEncoding = ServerRuntime.getInstance().getURIEncoding();
-        }
-        SERVER_URI_ENCODING = EnvProperties.get("org.brutusin.rpc.server-uri-encoding", defUriEncoding);
-    }
+    public static final String SYSTEM_ENV_TO_PROP_PREFIX = "org.brutusin.rpc.*";
+
+    private static final RpcConfig INSTANCE = new RpcConfig();
+
+    private String path;
+    private String serverUriEncoding;
+    private File uploadFolder;
+    private Long maxFileSize;
+    private Long maxRequestSize;
+    private String accessControOriginHost;
+    private boolean includeBuiltinServices;
+    private boolean includeEnvService;
+    private boolean testMode;
 
     private RpcConfig() {
+        trasformEnvToSystemProperties();
+        this.path = getEnv(ENV_PROP_PATH, "/rpc");
+        String defUriEncoding;
+        if (ServerRuntime.getInstance() == null) {
+            defUriEncoding = "ISO-8859-1"; // External web container ASCII imposed by specification
+        } else {
+            defUriEncoding = ServerRuntime.getInstance().getURIEncoding(); // External web container
+        }
+        this.serverUriEncoding = getEnv(ENV_PROP_SERVER_URI_ENC, defUriEncoding);
+        this.uploadFolder = new File(getEnv(ENV_PROP_UPLOAD_FOLDER, new File(System.getProperty("java.io.tmpdir"), "brutusin-rcp-uploads").getAbsolutePath()));
+        this.maxFileSize = Long.valueOf(getEnv(ENV_PROP_MAX_FILE_SIZE, String.valueOf(Long.MAX_VALUE)));
+        this.maxRequestSize = Long.valueOf(getEnv(ENV_PROP_MAX_REQUEST_SIZE, String.valueOf(Long.MAX_VALUE)));
+        this.accessControOriginHost = getEnv(ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST, null);
+        this.includeBuiltinServices = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_BUITIN_SERVICES, "true"));
+        this.includeEnvService = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_ENV_SERVICE, "true"));
+        this.testMode = Boolean.valueOf(getEnv(ENV_PROP_TEST_MODE, "false"));
     }
 
-    public static String getPath() {
-        return PATH;
+    public static RpcConfig getInstance() {
+        return INSTANCE;
     }
 
-    public static File getUploadFolder() {
-        return UPLOAD_FOLDER;
+    private static String getEnv(String prop, String defValue) {
+        String value = System.getenv(prop);
+        if (value == null) {
+            value = defValue;
+        }
+        return value;
     }
 
-    public static Long getMaxFileSize() {
-        return MAX_FILE_SIZE;
+    private static void trasformEnvToSystemProperties() {
+        Map<String, String> env = System.getenv();
+        for (Map.Entry<String, String> entrySet : env.entrySet()) {
+            String key = entrySet.getKey();
+            String value = entrySet.getValue();
+            if (key.startsWith(SYSTEM_ENV_TO_PROP_PREFIX)) {
+                System.setProperty(key.substring(SYSTEM_ENV_TO_PROP_PREFIX.length()), value);
+            }
+        }
     }
 
-    public static Long getMaxRequestSize() {
-        return MAX_REQUEST_SIZE;
+    public String getPath() {
+        return path;
     }
 
-    public static String getAccessControlOriginHost() {
-        return ACCESS_CONTROL_ORIGIN_HOST;
+    public String getServerUriEncoding() {
+        return serverUriEncoding;
     }
 
-    public static Boolean isIncludeEnvironmentViewerService() {
-        return INCLUDE_ENV_SERVICE;
+    public File getUploadFolder() {
+        return uploadFolder;
     }
 
-    public static Boolean isIncludeBuiltinServices() {
-        return INCLUDE_BUITIN_SERVICES;
+    public Long getMaxFileSize() {
+        return maxFileSize;
     }
 
-    public static String getServerUriEncoding() {
-        return SERVER_URI_ENCODING;
+    public Long getMaxRequestSize() {
+        return maxRequestSize;
+    }
+
+    public String getAccessControOriginHost() {
+        return accessControOriginHost;
+    }
+
+    public boolean isIncludeBuiltinServices() {
+        return includeBuiltinServices;
+    }
+
+    public boolean isIncludeEnvService() {
+        return includeEnvService;
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setServerUriEncoding(String serverUriEncoding) {
+        this.serverUriEncoding = serverUriEncoding;
+    }
+
+    public void setUploadFolder(File uploadFolder) {
+        this.uploadFolder = uploadFolder;
+    }
+
+    public void setMaxFileSize(Long maxFileSize) {
+        this.maxFileSize = maxFileSize;
+    }
+
+    public void setMaxRequestSize(Long maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
+    }
+
+    public void setAccessControOriginHost(String accessControOriginHost) {
+        this.accessControOriginHost = accessControOriginHost;
+    }
+
+    public void setIncludeBuiltinServices(boolean includeBuiltinServices) {
+        this.includeBuiltinServices = includeBuiltinServices;
+    }
+
+    public void setIncludeEnvService(boolean includeEnvService) {
+        this.includeEnvService = includeEnvService;
+    }
+
+    public void setTestMode(boolean testMode) {
+        this.testMode = testMode;
     }
 }

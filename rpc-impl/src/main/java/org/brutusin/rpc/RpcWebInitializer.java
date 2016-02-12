@@ -17,6 +17,8 @@ package org.brutusin.rpc;
 
 import javax.servlet.HttpConstraintElement;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextAttributeEvent;
+import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
@@ -41,16 +43,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class RpcWebInitializer implements WebApplicationInitializer {
 
+    public static final String SERVLET_NAME = "brutusin-rpc";
+
     public void onStartup(final ServletContext ctx) throws ServletException {
-        final RpcSpringContext rpcCtx = new RpcSpringContext();
+        final RpcSpringContext rpcCtx = new RpcSpringContext(!RpcConfig.getInstance().isTestMode());
+        rpcCtx.refresh();
+        ctx.setAttribute(SERVLET_NAME, rpcCtx);
         JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
         ctx.addListener(new ServletContextListener() {
             public void contextInitialized(ServletContextEvent sce) {
-                WebApplicationContext rootCtx = WebApplicationContextUtils.getWebApplicationContext(ctx);
-                if (rootCtx != null) {
-                    rpcCtx.setParent(rootCtx);
-                }
-                rpcCtx.refresh();
                 initHttpRpcRuntime(ctx, rpcCtx);
                 initWebsocketRpcRuntime(ctx, rpcCtx);
             }
@@ -59,16 +60,41 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 rpcCtx.destroy();
             }
         });
+        ctx.addListener(new ServletContextAttributeListener() {
+            public void attributeAdded(ServletContextAttributeEvent event) {
+                if (event.getName().equals(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)) {
+                    updateRootContext();
+                }
+            }
 
+            public void attributeRemoved(ServletContextAttributeEvent event) {
+                if (event.getName().equals(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)) {
+                    updateRootContext();
+                }
+            }
+
+            public void attributeReplaced(ServletContextAttributeEvent event) {
+                if (event.getName().equals(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)) {
+                    updateRootContext();
+                }
+            }
+
+            private void updateRootContext() {
+                WebApplicationContext rootCtx = WebApplicationContextUtils.getWebApplicationContext(ctx);
+                if (rootCtx != null) {
+                    rpcCtx.setParent(rootCtx);
+                }
+            }
+        });
     }
 
     private void initHttpRpcRuntime(ServletContext ctx, RpcSpringContext rpcCtx) {
         RpcServlet servlet = new RpcServlet(rpcCtx);
-        ServletRegistration.Dynamic regInfo = ctx.addServlet("rpc.http", servlet);
+        ServletRegistration.Dynamic regInfo = ctx.addServlet(SERVLET_NAME, servlet);
         ServletSecurityElement sec = new ServletSecurityElement(new HttpConstraintElement());
         regInfo.setServletSecurity(sec);
         regInfo.setLoadOnStartup(1);
-        regInfo.addMapping(RpcConfig.getPath() + "/http");
+        regInfo.addMapping(RpcConfig.getInstance().getPath() + "/http");
     }
 
     private void initWebsocketRpcRuntime(final ServletContext ctx, final RpcSpringContext rpcCtx) {
@@ -80,7 +106,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 config.getUserProperties().put(WebsocketEndpoint.RPC_SPRING_CTX, rpcCtx);
             }
         };
-        ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getPath() + "/wskt").configurator(cfg).build();
+        ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getInstance().getPath() + "/wskt").configurator(cfg).build();
         try {
             sc.addEndpoint(sec);
         } catch (DeploymentException ex) {

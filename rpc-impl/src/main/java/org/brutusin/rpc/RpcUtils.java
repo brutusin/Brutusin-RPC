@@ -18,11 +18,9 @@ package org.brutusin.rpc;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import javax.servlet.ServletContext;
 import org.brutusin.commons.utils.Miscellaneous;
-import org.brutusin.rpc.actions.http.SchemaAction;
 import org.brutusin.rpc.actions.http.VersionAction;
-import org.brutusin.rpc.websocket.Topic;
-import org.springframework.core.ResolvableType;
 
 /**
  *
@@ -72,6 +70,15 @@ public class RpcUtils {
             return getClass(pt.getRawType());
         }
         return Object.class;
+    }
+    
+    /**
+     * 
+     * @param sc
+     * @return 
+     */
+    public static RpcSpringContext getSpringContext(ServletContext sc){
+        return (RpcSpringContext)sc.getAttribute(RpcWebInitializer.SERVLET_NAME);
     }
     
 }
