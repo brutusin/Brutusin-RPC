@@ -104,6 +104,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
             public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
                 config.getUserProperties().put(WebsocketEndpoint.SERVLET_CONTEXT_KEY, ctx);
                 config.getUserProperties().put(WebsocketEndpoint.RPC_SPRING_CTX, rpcCtx);
+                config.getUserProperties().put(WebsocketEndpoint.HTTP_SESSION_KEY, request.getHttpSession());
             }
         };
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getInstance().getPath() + "/wskt").configurator(cfg).build();

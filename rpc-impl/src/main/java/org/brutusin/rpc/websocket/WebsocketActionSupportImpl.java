@@ -54,9 +54,8 @@ public class WebsocketActionSupportImpl extends WebsocketActionSupport {
 
     @Override
     public boolean isUserInRole(String role) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return session.isUserInRole(role);
     }
-
 
     @Override
     public ApplicationContext getSpringContext() {

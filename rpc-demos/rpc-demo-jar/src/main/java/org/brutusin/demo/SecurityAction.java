@@ -34,9 +34,10 @@ public class SecurityAction extends SafeAction<Void, String> {
         } else {
             name = HttpActionSupport.getInstance().getUserPrincipal().getName();
         }
+
         return Cacheable.never(name + " " + HttpActionSupport.getInstance().isUserInRole("USER"));
     }
-    
+
     public static void main(String[] args) {
         Server.test(new SecurityAction());
     }

@@ -33,9 +33,9 @@ public class SecurityWsAction extends WebsocketAction<Void, String> {
         } else {
             name = WebsocketActionSupport.getInstance().getUserPrincipal().getName();
         }
-        return name;
+        return name + " " + WebsocketActionSupport.getInstance().isUserInRole("USER");
     }
-    
+
     public static void main(String[] args) {
         Server.test(new SecurityWsAction());
     }

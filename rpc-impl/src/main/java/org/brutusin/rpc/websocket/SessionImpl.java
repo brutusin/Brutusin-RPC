@@ -17,19 +17,26 @@ package org.brutusin.rpc.websocket;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpSession;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.RpcSpringContext;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  * @param <M>
  */
-public class SessionImpl<M> implements WritableSession<M> {
+public final class SessionImpl<M> implements WritableSession<M> {
 
     private static final Logger LOGGER = Logger.getLogger(SessionImpl.class.getName());
     private final int queueMaxSize = 10;
@@ -37,8 +44,10 @@ public class SessionImpl<M> implements WritableSession<M> {
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
     private final RpcSpringContext rpcCtx;
+    private final HttpSession httpSession;
+    private final Set<String> roles = new HashSet<String>();
 
-    public SessionImpl(javax.websocket.Session session, RpcSpringContext rpcCtx) {
+    public SessionImpl(javax.websocket.Session session, RpcSpringContext rpcCtx, HttpSession httpSession) {
         this.session = session;
         Runnable runnable = new Runnable() {
             @Override
@@ -69,26 +78,52 @@ public class SessionImpl<M> implements WritableSession<M> {
         this.rpcCtx = rpcCtx;
         t = rpcCtx.getThreadFactory().newThread(runnable);
         t.setDaemon(true);
+        this.httpSession = httpSession;
+        SecurityContext securityContext = (SecurityContext)this.httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        if(securityContext!=null){
+            Collection<? extends GrantedAuthority> authorities = securityContext.getAuthentication().getAuthorities();
+            for (GrantedAuthority authority : authorities) {
+                String auth = authority.getAuthority();
+                if(auth.startsWith("ROLE_")){
+                    auth = auth.substring(5);
+                }
+                roles.add(auth);
+            }
+        }
     }
 
+    @Override
+    public boolean isUserInRole(String role) {
+        return roles.contains(role);
+    }
+
+    @Override
     public boolean isSecure() {
         return session.isSecure();
     }
 
+    @Override
     public String getId() {
         return session.getId();
     }
 
+    @Override
     public Principal getUserPrincipal() {
         return session.getUserPrincipal();
     }
 
+    @Override
     public Map<String, Object> getUserProperties() {
         return session.getUserProperties();
     }
 
+    @Override
     public void sendToPeer(M m) {
         send(JsonCodec.getInstance().transform(m));
+    }
+
+    public HttpSession getHttpSession() {
+        return httpSession;
     }
 
     public void sendToPeerRaw(String message) {

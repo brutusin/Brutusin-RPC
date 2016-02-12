@@ -79,8 +79,8 @@ public abstract class Topic<F, M> extends RpcComponent {
         if (sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is already subscribed to this topic");
         }
+        beforeSubscribe(session);
         sessions.add(session);
-        onSubscribe(session);
     }
 
     public final void unsubscribe() throws InvalidSubscriptionException {
@@ -89,7 +89,7 @@ public abstract class Topic<F, M> extends RpcComponent {
             throw new InvalidSubscriptionException("Current session is not subscribed to this topic");
         }
         sessions.remove(session);
-        onUnsubscribe(session);
+        afterUnsubscribe(session);
     }
 
     /**
@@ -98,17 +98,17 @@ public abstract class Topic<F, M> extends RpcComponent {
      * create data structures better suited for a efficient topic filtering than
      * iterating over the whole collection of subscribers.
      *
-     * See {@link #onUnsubscribe(org.brutusin.rpc.websocket.WritableSession)}
+     * See {@link #afterUnsubscribe(org.brutusin.rpc.websocket.WritableSession)}
      * @param session
      */
-    protected void onSubscribe(WritableSession session) {
+    protected void beforeSubscribe(WritableSession session) {
     }
 
     /**
-     * See {@link #onSubscribe(org.brutusin.rpc.websocket.WritableSession)}
+     * See {@link #beforeSubscribe(org.brutusin.rpc.websocket.WritableSession)}
      * @param session 
      */
-    protected void onUnsubscribe(WritableSession session) {
+    protected void afterUnsubscribe(WritableSession session) {
     }
 
     public Type geFilterType() {

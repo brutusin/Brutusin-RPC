@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.Session;
@@ -42,6 +43,7 @@ public class WebsocketEndpoint extends Endpoint {
     public static String SERVLET_CONTEXT_KEY = "SERVLET_CONTEXT_KEY";
     public static String RPC_SPRING_CTX = "RPC_SPRING_CTX";
     public static String SESSION_IMPL_KEY = "SESSION_IMPL_KEY";
+    public static String HTTP_SESSION_KEY = "HTTP_SESSION";
 
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
@@ -52,12 +54,12 @@ public class WebsocketEndpoint extends Endpoint {
      */
     @Override
     public void onOpen(Session session, EndpointConfig config) {
-
         final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
-        final SessionImpl sessionImpl = new SessionImpl(session, rpcCtx);
+        final HttpSession httpSession = (HttpSession) session.getUserProperties().get(HTTP_SESSION_KEY);
+        final SessionImpl sessionImpl = new SessionImpl(session, rpcCtx, httpSession);
         sessionImpl.init();
         wrapperMap.put(session.getId(), sessionImpl);
-        
+
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
                 WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));

@@ -23,13 +23,15 @@ import java.util.Map;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public interface Session {
-    
-    public boolean isSecure() ;
+
+    public boolean isSecure();
 
     public String getId();
 
     public Map<String, Object> getUserProperties();
 
     public Principal getUserPrincipal();
-    
+
+    public boolean isUserInRole(String role);
+
 }
