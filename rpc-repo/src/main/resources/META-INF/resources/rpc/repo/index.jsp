@@ -1,4 +1,9 @@
-<%@page session="false" contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE html>
+<%@page session="false" contentType="text/html" pageEncoding="UTF-8"%><%
+String hash = request.getParameter("hash");
+if(hash != null){
+    response.sendRedirect(request.getRequestURI()+"#"+hash);
+} else {
+%><!DOCTYPE html>
 <html>
     <head>
         <meta name=viewport content='width=650'>
@@ -275,5 +280,5 @@
             createHelpTooltips();
         </script>
     </body>
-</html>
+</html><%}%>
 

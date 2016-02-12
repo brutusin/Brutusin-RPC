@@ -176,9 +176,9 @@ public class TomcatRuntime extends ServerRuntime {
             final String id = action.getClass().getName();
             String url;
             if (action instanceof HttpAction) {
-                url = "http://localhost:" + port + "/rpc/repo/#http-services/" + id;
+                url = "http://localhost:" + port + "/rpc/repo/?hash=http-services/" + id;
             } else {
-                url = "http://localhost:" + port + "/rpc/repo/#wskt-services/" + id;
+                url = "http://localhost:" + port + "/rpc/repo/?hash=wskt-services/" + id;
             }
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
