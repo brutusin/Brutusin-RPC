@@ -30,12 +30,10 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
 @Description("This descriptor service returns the **list** of the deployed `websocket` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/ServiceListAction.java)]*")
 public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
 
-    private ServiceItem[] serviceItems;
-
     @Override
-    public void init() throws Exception {
+    public ServiceItem[] execute(Void input) throws Exception {
         Map<String, WebsocketAction> services = WebsocketActionSupport.getInstance().getWebSocketServices();
-        this.serviceItems = new ServiceItem[services.size()];
+        ServiceItem[] serviceItems = new ServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, WebsocketAction> entrySet : services.entrySet()) {
             String id = entrySet.getKey();
@@ -45,12 +43,8 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
             si.setDescription(RpcUtils.getDescription(service));
             Class<?> inputClass = RpcUtils.getClass(service.getInputType());
             si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
-            this.serviceItems[i++] = si;
+            serviceItems[i++] = si;
         }
-    }
-
-    @Override
-    public ServiceItem[] execute(Void input) throws Exception {
-        return this.serviceItems;
+        return serviceItems;
     }
 }

@@ -32,7 +32,6 @@ import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.InvalidRequestException;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -44,7 +43,7 @@ public class WebsocketEndpoint extends Endpoint {
     public static String RPC_SPRING_CTX = "RPC_SPRING_CTX";
     public static String SESSION_IMPL_KEY = "SESSION_IMPL_KEY";
 
-    private Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
+    private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
     /**
      *

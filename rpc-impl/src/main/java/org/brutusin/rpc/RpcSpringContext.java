@@ -147,14 +147,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         for (Map.Entry<String, HttpAction> entry : beans.entrySet()) {
             String id = entry.getKey();
             HttpAction action = entry.getValue();
-            try {
-                HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(this));
-                action.init(id);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            } finally {
-                HttpActionSupportImpl.clear();
-            }
+            init(action, id);
         }
     }
 
@@ -163,14 +156,29 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         for (Map.Entry<String, WebsocketAction> entry : beans.entrySet()) {
             String id = entry.getKey();
             WebsocketAction action = entry.getValue();
-            try {
-                WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(this));
-                action.init(id);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            } finally {
-                WebsocketActionSupportImpl.clear();
-            }
+            init(action, id);
+        }
+    }
+
+    private void init(HttpAction action, String id) {
+        try {
+            HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(this));
+            action.init(id);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            HttpActionSupportImpl.clear();
+        }
+    }
+
+    private void init(WebsocketAction action, String id) {
+        try {
+            WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(this));
+            action.init(id);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            WebsocketActionSupportImpl.clear();
         }
     }
 
@@ -203,23 +211,27 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         return threadFactory;
     }
 
-    public void register(String id, RpcAction action) {
+    public void register(String id, HttpAction action) {
         try {
-            if (action instanceof HttpAction) {
-                if (httpServices.get(id) != null) {
-                    throw new IllegalArgumentException("Service with id='" + id + "' is already registered");
-                }
-                action.init(id);
-                getBeanFactory().registerSingleton(id, action);
-                httpServices.put(id, (HttpAction) action);
-            } else {
-                if (webSocketServices.get(id) != null) {
-                    throw new IllegalArgumentException("Service with id='" + id + "' is already registered");
-                }
-                action.init(id);
-                getBeanFactory().registerSingleton(id, action);
-                webSocketServices.put(id, (WebsocketAction) action);
+            if (httpServices.get(id) != null) {
+                throw new IllegalArgumentException("Service with id='" + id + "' is already registered");
             }
+            init(action, id);
+            getBeanFactory().registerSingleton(id, action);
+            httpServices.put(id, action);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void register(String id, WebsocketAction action) {
+        try {
+            if (webSocketServices.get(id) != null) {
+                throw new IllegalArgumentException("Service with id='" + id + "' is already registered");
+            }
+            init(action, id);
+            getBeanFactory().registerSingleton(id, action);
+            webSocketServices.put(id, action);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

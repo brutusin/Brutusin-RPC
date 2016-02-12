@@ -16,29 +16,28 @@
 package org.brutusin.demo;
 
 import org.brutusin.rpc.Server;
-import org.brutusin.rpc.http.Cacheable;
-import org.brutusin.rpc.http.HttpActionSupport;
-import org.brutusin.rpc.http.SafeAction;
+import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class SecurityAction extends SafeAction<Void, String> {
+public class SecurityWsAction extends WebsocketAction<Void, String> {
 
     @Override
-    public Cacheable<String> execute(Void input) throws Exception {
+    public String execute(Void input) throws Exception {
         String name;
-        if (HttpActionSupport.getInstance().getUserPrincipal() == null) {
+        if (WebsocketActionSupport.getInstance().getUserPrincipal() == null) {
             name = null;
         } else {
-            name = HttpActionSupport.getInstance().getUserPrincipal().getName();
+            name = WebsocketActionSupport.getInstance().getUserPrincipal().getName();
         }
-        return Cacheable.never(name + " " + HttpActionSupport.getInstance().isUserInRole("USER"));
+        return name;
     }
     
     public static void main(String[] args) {
-        Server.test(new SecurityAction());
+        Server.test(new SecurityWsAction());
     }
 
 }

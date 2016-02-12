@@ -41,6 +41,7 @@ import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
 import org.brutusin.rpc.websocket.Topic;
+import org.brutusin.rpc.websocket.WebsocketAction;
 
 /**
  * Tomcat ServerRuntime service provider.
@@ -184,9 +185,12 @@ public class TomcatRuntime extends ServerRuntime {
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 public void contextInitialized(ServletContextEvent sce) {
                     RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
-                    rpcCtx.register(id, action);
+                    if (action instanceof HttpAction) {
+                        rpcCtx.register(id, (HttpAction) action);
+                    } else {
+                        rpcCtx.register(id, (WebsocketAction) action);
+                    }
                 }
-
                 public void contextDestroyed(ServletContextEvent sce) {
 
                 }
