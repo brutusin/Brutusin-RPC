@@ -15,6 +15,7 @@
  */
 package org.brutusin.rpc.websocket;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.InvalidRequestException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.security.core.context.SecurityContext;
 
 /**
  *
@@ -54,6 +57,14 @@ public class WebsocketEndpoint extends Endpoint {
      */
     @Override
     public void onOpen(Session session, EndpointConfig config) {
+        if (!allowAccess(session)) {
+            try {
+                session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "Authentication required"));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            return;
+        }
         final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
         final HttpSession httpSession = (HttpSession) session.getUserProperties().get(HTTP_SESSION_KEY);
         final SessionImpl sessionImpl = new SessionImpl(session, rpcCtx, httpSession);
@@ -99,6 +110,31 @@ public class WebsocketEndpoint extends Endpoint {
     @Override
     public void onError(Session session, Throwable thr) {
         thr.printStackTrace();
+    }
+
+    protected boolean allowAccess(Session session) {
+        final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
+        if (rpcCtx.getParent() != null) {
+            try {
+                if (rpcCtx.getParent().getBean("springSecurityFilterChain") != null) { // Security active
+                    final HttpSession httpSession = (HttpSession) session.getUserProperties().get(HTTP_SESSION_KEY);
+                    Object obj = httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+                    if (obj != null) {
+                        SecurityContext sc = (SecurityContext) obj;
+                        if (sc.getAuthentication() == null) {
+                            return false;
+                        } else {
+                            return sc.getAuthentication().isAuthenticated();
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            } catch (NoSuchBeanDefinitionException ex) {
+                return true;
+            }
+        }
+        return true;
     }
 
     /**

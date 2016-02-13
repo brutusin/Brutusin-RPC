@@ -79,12 +79,13 @@ public final class SessionImpl<M> implements WritableSession<M> {
         t = rpcCtx.getThreadFactory().newThread(runnable);
         t.setDaemon(true);
         this.httpSession = httpSession;
-        SecurityContext securityContext = (SecurityContext)this.httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-        if(securityContext!=null){
+        Object obj = this.httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
+        if (obj != null) {
+            SecurityContext securityContext = (SecurityContext) obj;
             Collection<? extends GrantedAuthority> authorities = securityContext.getAuthentication().getAuthorities();
             for (GrantedAuthority authority : authorities) {
                 String auth = authority.getAuthority();
-                if(auth.startsWith("ROLE_")){
+                if (auth.startsWith("ROLE_")) {
                     auth = auth.substring(5);
                 }
                 roles.add(auth);

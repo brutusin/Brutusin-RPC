@@ -48,6 +48,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

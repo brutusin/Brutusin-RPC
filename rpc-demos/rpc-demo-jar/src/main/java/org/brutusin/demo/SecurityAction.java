@@ -19,6 +19,7 @@ import org.brutusin.rpc.Server;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.SafeAction;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -34,7 +35,7 @@ public class SecurityAction extends SafeAction<Void, String> {
         } else {
             name = HttpActionSupport.getInstance().getUserPrincipal().getName();
         }
-
+        ApplicationContext ctx = HttpActionSupport.getInstance().getSpringContext().getParent();
         return Cacheable.never(name + " " + HttpActionSupport.getInstance().isUserInRole("USER"));
     }
 
