@@ -40,7 +40,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -113,9 +112,11 @@ public class RpcWebInitializer implements WebApplicationInitializer {
         cfg = new ServerEndpointConfig.Configurator() {
             @Override
             public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
-                Map<String, List<String>> headers = request.getHeaders();
                 config.getUserProperties().put(WebsocketEndpoint.SERVLET_CONTEXT_KEY, ctx);
                 config.getUserProperties().put(WebsocketEndpoint.RPC_SPRING_CTX, rpcCtx);
+                if (SecurityContextHolder.getContext() != null) {
+                    config.getUserProperties().put(WebsocketEndpoint.SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+                }
                 if (request.getHttpSession() != null) {
                     config.getUserProperties().put(WebsocketEndpoint.HTTP_SESSION_KEY, request.getHttpSession());
                 }
@@ -123,11 +124,11 @@ public class RpcWebInitializer implements WebApplicationInitializer {
 
             @Override
             public boolean checkOrigin(String originHeaderValue) {
-                if(originHeaderValue==null){
+                if (originHeaderValue == null) {
                     return true;
                 }
                 String accessControlOriginHost = RpcConfig.getInstance().getAccessControlOriginHost();
-                // Same origin verification
+                // Host vs Origin comparation
                 if (accessControlOriginHost == null) {
                     HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
                     String hostHeaderValue = req.getHeader("Host");
@@ -135,12 +136,13 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                         return false;
                     }
                     return RpcUtils.doOriginsMatch(originHeaderValue, hostHeaderValue);
+                    // White list comparation
                 } else {
-                    return RpcUtils.doOriginsMatch(originHeaderValue,accessControlOriginHost);
+                    return RpcUtils.doOriginsMatch(originHeaderValue, accessControlOriginHost);
                 }
             }
         };
-        
+
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getInstance().getPath() + "/wskt").configurator(cfg).build();
         try {
             sc.addEndpoint(sec);

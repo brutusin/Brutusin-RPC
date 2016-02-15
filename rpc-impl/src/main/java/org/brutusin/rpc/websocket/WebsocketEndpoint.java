@@ -47,6 +47,7 @@ public class WebsocketEndpoint extends Endpoint {
     public static String RPC_SPRING_CTX = "RPC_SPRING_CTX";
     public static String SESSION_IMPL_KEY = "SESSION_IMPL_KEY";
     public static String HTTP_SESSION_KEY = "HTTP_SESSION";
+    public static String SECURITY_CONTEXT_KEY = "SECURITY_CONTEXT_KEY";
 
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
@@ -117,17 +118,11 @@ public class WebsocketEndpoint extends Endpoint {
         if (rpcCtx.getParent() != null) {
             try {
                 if (rpcCtx.getParent().getBean("springSecurityFilterChain") != null) { // Security active
-                    final HttpSession httpSession = (HttpSession) session.getUserProperties().get(HTTP_SESSION_KEY);
-                    Object obj = httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-                    if (obj != null) {
-                        SecurityContext sc = (SecurityContext) obj;
-                        if (sc.getAuthentication() == null) {
-                            return false;
-                        } else {
-                            return sc.getAuthentication().isAuthenticated();
-                        }
-                    } else {
+                    final SecurityContext sc = (SecurityContext) session.getUserProperties().get(SECURITY_CONTEXT_KEY);
+                    if (sc.getAuthentication() == null) {
                         return false;
+                    } else {
+                        return sc.getAuthentication().isAuthenticated();
                     }
                 }
             } catch (NoSuchBeanDefinitionException ex) {
