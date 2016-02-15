@@ -348,10 +348,13 @@ public final class RpcServlet extends HttpServlet {
      */
     private void addFixedHeaders(HttpServletResponse resp) throws IOException {
         resp.addHeader("X-Powered-By", "brutusin-rpc");
-        if (RpcConfig.getInstance().getAccessControOriginHost() != null) {
-            resp.addHeader("Access-Control-Allow-Origin", RpcConfig.getInstance().getAccessControOriginHost());
+        if (RpcConfig.getInstance().getAccessControlOriginHost() != null) {
+            resp.addHeader("Access-Control-Allow-Origin", RpcConfig.getInstance().getAccessControlOriginHost());
             resp.addHeader("Access-Control-Allow-Methods", "HEAD, GET, POST, PUT, OPTIONS");
             resp.addHeader("Access-Control-Expose-Headers", "Content-Disposition, Content-Type, Content-Length");
+            if (!RpcConfig.getInstance().getAccessControlOriginHost().equals("*")) {
+                resp.addHeader("Vary", "Origin");
+            }
         }
     }
 

@@ -15,6 +15,8 @@
  */
 package org.brutusin.rpc;
 
+import java.util.List;
+import java.util.Map;
 import javax.servlet.HttpConstraintElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
@@ -24,6 +26,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletSecurityElement;
+import javax.servlet.http.HttpServletRequest;
 import javax.websocket.DeploymentException;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
@@ -33,8 +36,14 @@ import org.brutusin.commons.io.MetaDataInputStream;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.http.RpcServlet;
 import org.brutusin.rpc.websocket.WebsocketEndpoint;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -50,6 +59,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
         rpcCtx.refresh();
         ctx.setAttribute(SERVLET_NAME, rpcCtx);
         JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
+        ctx.addListener(new RequestContextListener());
         ctx.addListener(new ServletContextListener() {
             public void contextInitialized(ServletContextEvent sce) {
                 initHttpRpcRuntime(ctx, rpcCtx);
@@ -99,16 +109,38 @@ public class RpcWebInitializer implements WebApplicationInitializer {
 
     private void initWebsocketRpcRuntime(final ServletContext ctx, final RpcSpringContext rpcCtx) {
         ServerContainer sc = (ServerContainer) ctx.getAttribute("javax.websocket.server.ServerContainer");
-        ServerEndpointConfig.Configurator cfg = new ServerEndpointConfig.Configurator() {
+        ServerEndpointConfig.Configurator cfg;
+        cfg = new ServerEndpointConfig.Configurator() {
             @Override
             public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
+                Map<String, List<String>> headers = request.getHeaders();
                 config.getUserProperties().put(WebsocketEndpoint.SERVLET_CONTEXT_KEY, ctx);
                 config.getUserProperties().put(WebsocketEndpoint.RPC_SPRING_CTX, rpcCtx);
                 if (request.getHttpSession() != null) {
                     config.getUserProperties().put(WebsocketEndpoint.HTTP_SESSION_KEY, request.getHttpSession());
                 }
             }
+
+            @Override
+            public boolean checkOrigin(String originHeaderValue) {
+                if(originHeaderValue==null){
+                    return true;
+                }
+                String accessControlOriginHost = RpcConfig.getInstance().getAccessControlOriginHost();
+                // Same origin verification
+                if (accessControlOriginHost == null) {
+                    HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                    String hostHeaderValue = req.getHeader("Host");
+                    if (hostHeaderValue == null) {
+                        return false;
+                    }
+                    return RpcUtils.doOriginsMatch(originHeaderValue, hostHeaderValue);
+                } else {
+                    return RpcUtils.doOriginsMatch(originHeaderValue,accessControlOriginHost);
+                }
+            }
         };
+        
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getInstance().getPath() + "/wskt").configurator(cfg).build();
         try {
             sc.addEndpoint(sec);

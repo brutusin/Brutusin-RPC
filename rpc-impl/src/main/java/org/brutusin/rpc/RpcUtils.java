@@ -18,6 +18,10 @@ package org.brutusin.rpc;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.actions.http.VersionAction;
@@ -55,7 +59,6 @@ public class RpcUtils {
         return getAnnotatedDescription(obj.getClass());
     }
 
-
     /**
      *
      * @param type
@@ -71,14 +74,52 @@ public class RpcUtils {
         }
         return Object.class;
     }
-    
+
     /**
-     * 
+     *
      * @param sc
-     * @return 
+     * @return
      */
-    public static RpcSpringContext getSpringContext(ServletContext sc){
-        return (RpcSpringContext)sc.getAttribute(RpcWebInitializer.SERVLET_NAME);
+    public static RpcSpringContext getSpringContext(ServletContext sc) {
+        return (RpcSpringContext) sc.getAttribute(RpcWebInitializer.SERVLET_NAME);
     }
-    
+
+    public static boolean doOriginsMatch(String origin1, String origin2) {
+        try {
+            if (origin1 == null || origin2 == null) {
+                return false;
+            }
+            if (origin1.equals("*") || origin2.equals("*")) {
+                return true;
+            }
+            URI uri1 = getURI(origin1);
+            URI uri2 = getURI(origin2);
+            if (!uri1.getHost().equals(uri2.getHost())) {
+                return false;
+            }
+            return getPort(uri1) == getPort(uri2);
+        } catch (URISyntaxException ex) {
+            return false;
+        }
+    }
+
+    private static int getPort(URI uri) {
+        if (uri.getPort() >= 0) {
+            return uri.getPort();
+        }
+        if ("http".equals(uri.getScheme())) {
+            return 80;
+        }
+        if ("https".equals(uri.getScheme())) {
+            return 443;
+        }
+        return uri.getPort();
+    }
+
+    private static URI getURI(String origin) throws URISyntaxException {
+        if (origin.startsWith("http://") || origin.startsWith("https://")) {
+            return new URI(origin);
+        }
+        return new URI("http://" + origin);
+    }
 }

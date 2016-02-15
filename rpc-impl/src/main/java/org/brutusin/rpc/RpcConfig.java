@@ -111,7 +111,7 @@ public final class RpcConfig {
         return maxRequestSize;
     }
 
-    public String getAccessControOriginHost() {
+    public String getAccessControlOriginHost() {
         return accessControOriginHost;
     }
 
