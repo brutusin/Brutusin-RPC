@@ -70,11 +70,11 @@ public class RpcWebInitializer implements WebApplicationInitializer {
         JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
         ctx.addListener(new ServletRequestListener() {
             public void requestDestroyed(ServletRequestEvent sre) {
-                HttpRequestHolder.clear();
+                GlobalThreadLocal.clear();
             }
 
             public void requestInitialized(ServletRequestEvent sre) {
-                HttpRequestHolder.set((HttpServletRequest) sre.getServletRequest());
+                GlobalThreadLocal.set(new GlobalThreadLocal((HttpServletRequest) sre.getServletRequest(), null));
             }
         });
         ctx.addListener(new ServletContextListener() {
@@ -127,12 +127,18 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 };
                 /*
                  * current request is needed for getEndpointInstance(). In glassfish getEndpointInstance() is executed out this filter chain, 
-                 * but inside whole request-response cycle (controlled by the overall listener that sets and removes HttpRequestHolder)
+                 * but inside whole request-response cycle (controlled by the overall listener that sets and removes GlobalThreadLocal)
                  */
-                if (HttpRequestHolder.get() == null) {
+                if (GlobalThreadLocal.get() == null) {
                     throw new AssertionError();
                 }
-                HttpRequestHolder.set(wrappedRequest); // override current request with the one with faked params.
+                Object securityContext;
+                if (ClassUtils.isPresent("org.springframework.security.core.context.SecurityContextHolder", RpcWebInitializer.class.getClassLoader())) {
+                    securityContext = SecurityContextHolder.getContext();
+                } else {
+                    securityContext = null;
+                }
+                GlobalThreadLocal.set(new GlobalThreadLocal(wrappedRequest, securityContext)); // override current request with the one with faked params and security context
                 chain.doFilter(wrappedRequest, response);
             }
 
@@ -180,14 +186,9 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 }
                 WebsocketEndpoint endpoint = (WebsocketEndpoint) ret;
 
-                HttpServletRequest req = HttpRequestHolder.get();
-                Object securityContext;
-                if (ClassUtils.isPresent("org.springframework.security.core.context.SecurityContextHolder", RpcWebInitializer.class.getClassLoader())) {
-                    securityContext = SecurityContextHolder.getContext();
-                } else {
-                    securityContext = null;
-                }
-                WebsocketContext wskCtx = new WebsocketContext(ctx, rpcCtx, req.getSession(), securityContext);
+                GlobalThreadLocal gtl = GlobalThreadLocal.get();
+                HttpServletRequest req = gtl.getHttpRequest();
+                WebsocketContext wskCtx = new WebsocketContext(ctx, rpcCtx, req.getSession(), gtl.getSecurityContext());
                 endpoint.getContextMap().put(req.getParameterMap().get("requestId")[0], wskCtx);
                 return ret;
             }
@@ -200,7 +201,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 String accessControlOriginHost = RpcConfig.getInstance().getAccessControlOriginHost();
                 // Host vs Origin comparation
                 if (accessControlOriginHost == null) {
-                    HttpServletRequest req = HttpRequestHolder.get();
+                    HttpServletRequest req = GlobalThreadLocal.get().getHttpRequest();
                     String hostHeaderValue = req.getHeader("Host");
                     if (hostHeaderValue == null) {
                         return false;

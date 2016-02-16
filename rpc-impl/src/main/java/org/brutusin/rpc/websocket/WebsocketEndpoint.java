@@ -88,21 +88,20 @@ public class WebsocketEndpoint extends Endpoint {
     public void onClose(Session session, CloseReason closeReason) {
         contextMap.remove(session.getRequestParameterMap().get("requestId").get(0));
         final SessionImpl sessionImpl = wrapperMap.remove(session.getId());
-        if (sessionImpl == null) {
-            throw new AssertionError();
-        }
-        try {
-            WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
-            for (Topic topic : sessionImpl.getRpcCtx().getTopics().values()) {
-                try {
-                    topic.unsubscribe();
-                } catch (InvalidSubscriptionException ise) {
-                    // Ignored already unsubscribed
+        if (sessionImpl != null) {
+            try {
+                WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
+                for (Topic topic : sessionImpl.getRpcCtx().getTopics().values()) {
+                    try {
+                        topic.unsubscribe();
+                    } catch (InvalidSubscriptionException ise) {
+                        // Ignored already unsubscribed
+                    }
                 }
+            } finally {
+                WebsocketActionSupportImpl.clear();
+                sessionImpl.close();
             }
-        } finally {
-            WebsocketActionSupportImpl.clear();
-            sessionImpl.close();
         }
     }
 

@@ -19,18 +19,34 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.NamedThreadLocal;
 
 /**
- *
+ * Instances of this class have their life-cycle managed by a ServletRequestListener
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class HttpRequestHolder {
+public class GlobalThreadLocal {
 
-    private static final ThreadLocal<HttpServletRequest> requests = new NamedThreadLocal<HttpServletRequest>("Http requests");
+    private static final ThreadLocal<GlobalThreadLocal> requests = new NamedThreadLocal<GlobalThreadLocal>("GlobalThreadLocal");
 
-    public static void set(HttpServletRequest wc) {
+    private final HttpServletRequest httpRequest;
+    private final Object securityContext;
+
+    public GlobalThreadLocal(HttpServletRequest httpRequest, Object securityContext) {
+        this.httpRequest = httpRequest;
+        this.securityContext = securityContext;
+    }
+
+    public HttpServletRequest getHttpRequest() {
+        return httpRequest;
+    }
+
+    public Object getSecurityContext() {
+        return securityContext;
+    }
+    
+    public static void set(GlobalThreadLocal wc) {
         requests.set(wc);
     }
 
-    public static HttpServletRequest get() {
+    public static GlobalThreadLocal get() {
         return requests.get();
     }
 
