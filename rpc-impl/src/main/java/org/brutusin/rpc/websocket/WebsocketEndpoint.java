@@ -20,7 +20,6 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.Session;
@@ -43,12 +42,7 @@ import org.springframework.security.core.context.SecurityContext;
  */
 public class WebsocketEndpoint extends Endpoint {
 
-    public static String SERVLET_CONTEXT_KEY = "SERVLET_CONTEXT_KEY";
-    public static String RPC_SPRING_CTX = "RPC_SPRING_CTX";
-    public static String SESSION_IMPL_KEY = "SESSION_IMPL_KEY";
-    public static String HTTP_SESSION_KEY = "HTTP_SESSION";
-    public static String SECURITY_CONTEXT_KEY = "SECURITY_CONTEXT_KEY";
-
+    private final Map<String, WebsocketContext> contextMap = Collections.synchronizedMap(new HashMap());
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
     /**
@@ -58,7 +52,8 @@ public class WebsocketEndpoint extends Endpoint {
      */
     @Override
     public void onOpen(Session session, EndpointConfig config) {
-        if (!allowAccess(session)) {
+        final WebsocketContext websocketContext = contextMap.get(session.getRequestParameterMap().get("requestId").get(0));
+        if (!allowAccess(session, websocketContext)) {
             try {
                 session.close(new CloseReason(CloseReason.CloseCodes.CANNOT_ACCEPT, "Authentication required"));
             } catch (IOException ex) {
@@ -66,9 +61,7 @@ public class WebsocketEndpoint extends Endpoint {
             }
             return;
         }
-        final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
-        final HttpSession httpSession = (HttpSession) session.getUserProperties().get(HTTP_SESSION_KEY);
-        final SessionImpl sessionImpl = new SessionImpl(session, rpcCtx, httpSession);
+        final SessionImpl sessionImpl = new SessionImpl(session, websocketContext.getSpringContext(), websocketContext.getHttpSession());
         sessionImpl.init();
         wrapperMap.put(session.getId(), sessionImpl);
 
@@ -87,8 +80,13 @@ public class WebsocketEndpoint extends Endpoint {
         });
     }
 
+    public Map<String, WebsocketContext> getContextMap() {
+        return contextMap;
+    }
+
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        contextMap.remove(session.getRequestParameterMap().get("requestId").get(0));
         final SessionImpl sessionImpl = wrapperMap.remove(session.getId());
         if (sessionImpl == null) {
             throw new AssertionError();
@@ -113,12 +111,12 @@ public class WebsocketEndpoint extends Endpoint {
         thr.printStackTrace();
     }
 
-    protected boolean allowAccess(Session session) {
-        final RpcSpringContext rpcCtx = (RpcSpringContext) session.getUserProperties().get(RPC_SPRING_CTX);
+    protected boolean allowAccess(Session session, WebsocketContext websocketContext) {
+        final RpcSpringContext rpcCtx = websocketContext.getSpringContext();
         if (rpcCtx.getParent() != null) {
             try {
                 if (rpcCtx.getParent().getBean("springSecurityFilterChain") != null) { // Security active
-                    final SecurityContext sc = (SecurityContext) session.getUserProperties().get(SECURITY_CONTEXT_KEY);
+                    final SecurityContext sc = (SecurityContext) websocketContext.getSecurityContext();
                     if (sc.getAuthentication() == null) {
                         return false;
                     } else {

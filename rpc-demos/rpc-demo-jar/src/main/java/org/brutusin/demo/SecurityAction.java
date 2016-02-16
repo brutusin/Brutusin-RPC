@@ -40,7 +40,7 @@ public class SecurityAction extends SafeAction<Void, String> {
     }
 
     public static void main(String[] args) {
-        Server.test(new SecurityAction());
+        Server.test(8181, new SecurityAction());
     }
 
 }
