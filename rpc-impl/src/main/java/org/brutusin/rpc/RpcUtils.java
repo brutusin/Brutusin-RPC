@@ -81,7 +81,7 @@ public class RpcUtils {
      * @return
      */
     public static RpcSpringContext getSpringContext(ServletContext sc) {
-        return (RpcSpringContext) sc.getAttribute(RpcWebInitializer.SERVLET_NAME);
+        return (RpcSpringContext) sc.getAttribute(RpcSpringContext.class.getName());
     }
 
     public static boolean doOriginsMatch(String origin1, String origin2) {
