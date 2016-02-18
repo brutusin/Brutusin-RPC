@@ -9,7 +9,7 @@ JEE web microframework for creating maintainable JSON-RPC APIs for single-page a
 - Messaging (publish/subscribe) over websockets
 - Javascript client API
 - Builtin descriptive services and functional testing module
-- Spring security integration
+- Spring-security integration
 
 ## Full Documentation
 
