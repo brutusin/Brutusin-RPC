@@ -1,10 +1,14 @@
 #Brutusin-RPC [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-root/)
 
-JEE web microframework for creating server-side components for [Single-page applications](https://en.wikipedia.org/wiki/Single-page_application) offering:
+JEE web microframework for creating maintainable JSON-RPC APIs for single-page applications with minimal effort.
 
-1. JSON-RPC 2.0 over HTTP
-2. JSON-RPC 2.0 over websockets
-3. Messaging (publish/subscribe) over websockets
+## Features
+
+- JSON-RPC 2.0 over HTTP
+- JSON-RPC 2.0 over websockets
+- Messaging (publish/subscribe) over websockets
+- Javascript client API
+- Builtin descriptive services and functional testing module
 
 ## Full Documentation
 
@@ -33,9 +37,6 @@ and automatically your browser will be open with a functional testing client for
 
 ![Service testing client](https://github.com/brutusin/Brutusin-RPC/wiki/img/hello-action-test.png)
 
-## Status
-This project is an evolution of https://github.com/brutusin/jsonsrv. Documentation in progress
-
 ## Live demo
 http://demo.rpc.brutusin.org
 
@@ -44,9 +45,9 @@ https://github.com/brutusin/Brutusin-RPC/issues
 
 ## Authors
 
-- Ignacio del Valle Alles (<https://github.com/idelvall/>)
+- Ignacio del Valle Alles ([@idelvall](https://github.com/idelvall))
 
-Contributions are always welcome and greatly appreciated!
+Contributions are always welcome and greatly appreciated! Just fork, and send me a pull request.
 
 ##License
 Apache License, Version 2.0
