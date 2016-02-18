@@ -15,10 +15,10 @@ package org.brutusin.demo;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -27,13 +27,27 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-            .inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER").and()                
+                .inMemoryAuthentication()
+                .withUser("user").password("password").roles("USER").and()
                 .withUser("admin").password("password").roles("ADMIN");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+            .and()
+                .formLogin()
+            .and()
+                .httpBasic()
+            .and()
+                .csrf().disable();
     }
 }

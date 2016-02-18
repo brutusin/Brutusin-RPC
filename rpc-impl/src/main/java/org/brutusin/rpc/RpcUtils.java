@@ -20,11 +20,15 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.servlet.ServletContext;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.actions.http.VersionAction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 
 /**
  *
@@ -82,6 +86,22 @@ public class RpcUtils {
      */
     public static RpcSpringContext getSpringContext(ServletContext sc) {
         return (RpcSpringContext) sc.getAttribute(RpcSpringContext.class.getName());
+    }
+
+    public static Set<String> getUserRoles(Object securityContext) {
+        Set<String> roleSet = new TreeSet<String>();
+        if (securityContext != null) {
+            SecurityContext sc = (SecurityContext) securityContext;
+            Collection<? extends GrantedAuthority> authorities = sc.getAuthentication().getAuthorities();
+            for (GrantedAuthority authority : authorities) {
+                String auth = authority.getAuthority();
+                if (auth.startsWith("ROLE_")) {
+                    auth = auth.substring(5);
+                }
+                roleSet.add(auth);
+            }
+        }
+        return Collections.unmodifiableSet(roleSet);
     }
 
     public static boolean doOriginsMatch(String origin1, String origin2) {

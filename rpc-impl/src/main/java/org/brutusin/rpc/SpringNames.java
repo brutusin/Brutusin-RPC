@@ -29,6 +29,8 @@ public interface SpringNames {
     public static final String SRV_HTTP_SERVICE_LIST = "rpc.http.services";
     public static final String SRV_HTTP_SCHEMA = "rpc.http.schema";
     public static final String SRV_HTTP_SCHEMA_PROVIDER = "rpc.http.schema-provider";
+    public static final String SRV_HTTP_LOGOUT = "rpc.http.logout";
+    public static final String SRV_HTTP_USER = "rpc.http.user";
 
     public static final String SRV_WSKT_VERSION = "rpc.wskt.version";
     public static final String SRV_WSKT_SERVICE_LIST = "rpc.wskt.services";

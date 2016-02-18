@@ -17,12 +17,17 @@ package org.brutusin.rpc.http;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.brutusin.rpc.RpcSpringContext;
+import org.brutusin.rpc.RpcUtils;
+import org.brutusin.rpc.RpcWebInitializer;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ClassUtils;
 
 /**
  *
@@ -62,6 +67,16 @@ public class HttpActionSupportImpl extends HttpActionSupport {
         return resp;
     }
 
+    public Set<String> getUserRoles() {
+        Object securityContext;
+        if (ClassUtils.isPresent("org.springframework.security.core.context.SecurityContextHolder", HttpActionSupportImpl.class.getClassLoader())) {
+            securityContext = SecurityContextHolder.getContext();
+        } else {
+            securityContext = null;
+        }
+        return RpcUtils.getUserRoles(securityContext);
+    }
+    
     @Override
     public final Principal getUserPrincipal() {
         if (req == null) {

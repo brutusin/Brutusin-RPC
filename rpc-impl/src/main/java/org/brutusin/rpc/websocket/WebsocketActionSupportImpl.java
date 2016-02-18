@@ -16,6 +16,7 @@
 package org.brutusin.rpc.websocket;
 
 import java.util.Map;
+import java.util.Set;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.http.HttpAction;
 import org.springframework.context.ApplicationContext;
@@ -43,7 +44,7 @@ public class WebsocketActionSupportImpl extends WebsocketActionSupport {
     }
 
     public WebsocketActionSupportImpl(SessionImpl session) {
-        this.rpcCtx = session.getRpcCtx();
+        this.rpcCtx = session.getCtx().getSpringContext();
         this.session = session;
     }
 
@@ -55,6 +56,11 @@ public class WebsocketActionSupportImpl extends WebsocketActionSupport {
     @Override
     public boolean isUserInRole(String role) {
         return session.isUserInRole(role);
+    }
+    
+    @Override
+    public Set<String> getUserRoles() {
+        return session.getUserRoles();
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.brutusin.rpc;
 import org.brutusin.rpc.http.*;
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.springframework.context.ApplicationContext;
@@ -30,7 +31,7 @@ public interface RpcActionSupport {
 
     public ApplicationContext getSpringContext();
 
-    public  Map<String, HttpAction> getHttpServices();
+    public Map<String, HttpAction> getHttpServices();
 
     public Map<String, WebsocketAction> getWebSocketServices();
 
@@ -39,5 +40,7 @@ public interface RpcActionSupport {
     public abstract Principal getUserPrincipal();
 
     public abstract boolean isUserInRole(String role);
+
+    public Set<String> getUserRoles();
 
 }

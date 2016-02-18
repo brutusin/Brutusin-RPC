@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
 import org.brutusin.rpc.actions.http.HttpServiceListAction;
+import org.brutusin.rpc.actions.http.LogoutAction;
+import org.brutusin.rpc.actions.http.UserDetailAction;
 import org.brutusin.rpc.actions.http.VersionAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.http.HttpActionSupportImpl;
@@ -103,6 +105,8 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SERVICE_LIST, new HttpServiceListAction());
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SCHEMA, new org.brutusin.rpc.actions.http.SchemaAction());
             getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.http.DynamicSchemaProviderAction());
+            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_LOGOUT, new LogoutAction());
+            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_USER, new UserDetailAction());
 
             getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_VERSION, new org.brutusin.rpc.actions.websocket.VersionAction());
             getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_SERVICE_LIST, new org.brutusin.rpc.actions.websocket.ServiceListAction());

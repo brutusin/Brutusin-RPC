@@ -18,18 +18,17 @@ package org.brutusin.rpc.websocket;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpSession;
 import org.brutusin.json.spi.JsonCodec;
-import org.brutusin.rpc.RpcSpringContext;
+import org.brutusin.rpc.RpcUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 /**
  *
@@ -43,11 +42,10 @@ public final class SessionImpl<M> implements WritableSession<M> {
     private final Thread t;
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
-    private final RpcSpringContext rpcCtx;
-    private final HttpSession httpSession;
-    private final Set<String> roles = new HashSet<String>();
+    private final WebsocketContext ctx;
+    private final Set<String> roles;
 
-    public SessionImpl(javax.websocket.Session session, RpcSpringContext rpcCtx, HttpSession httpSession) {
+    public SessionImpl(javax.websocket.Session session, WebsocketContext ctx) {
         this.session = session;
         Runnable runnable = new Runnable() {
             @Override
@@ -75,29 +73,19 @@ public final class SessionImpl<M> implements WritableSession<M> {
                 }
             }
         };
-        this.rpcCtx = rpcCtx;
-        t = rpcCtx.getThreadFactory().newThread(runnable);
+        t = ctx.getSpringContext().getThreadFactory().newThread(runnable);
         t.setDaemon(true);
-        this.httpSession = httpSession;
-        if (httpSession != null) {
-            Object obj = this.httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
-            if (obj != null) {
-                SecurityContext securityContext = (SecurityContext) obj;
-                Collection<? extends GrantedAuthority> authorities = securityContext.getAuthentication().getAuthorities();
-                for (GrantedAuthority authority : authorities) {
-                    String auth = authority.getAuthority();
-                    if (auth.startsWith("ROLE_")) {
-                        auth = auth.substring(5);
-                    }
-                    roles.add(auth);
-                }
-            }
-        }
+        this.ctx = ctx;
+        this.roles = RpcUtils.getUserRoles(ctx.getSecurityContext());
     }
 
     @Override
     public boolean isUserInRole(String role) {
         return roles.contains(role);
+    }
+
+    public Set<String> getUserRoles() {
+        return roles;
     }
 
     @Override
@@ -125,16 +113,12 @@ public final class SessionImpl<M> implements WritableSession<M> {
         send(JsonCodec.getInstance().transform(m));
     }
 
-    public HttpSession getHttpSession() {
-        return httpSession;
-    }
-
     public void sendToPeerRaw(String message) {
         send(message);
     }
 
-    public RpcSpringContext getRpcCtx() {
-        return rpcCtx;
+    public WebsocketContext getCtx() {
+        return ctx;
     }
 
     private void send(String message) {

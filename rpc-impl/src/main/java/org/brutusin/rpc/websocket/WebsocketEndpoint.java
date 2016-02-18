@@ -61,7 +61,7 @@ public class WebsocketEndpoint extends Endpoint {
             }
             return;
         }
-        final SessionImpl sessionImpl = new SessionImpl(session, websocketContext.getSpringContext(), websocketContext.getHttpSession());
+        final SessionImpl sessionImpl = new SessionImpl(session, websocketContext);
         sessionImpl.init();
         wrapperMap.put(session.getId(), sessionImpl);
 
@@ -91,7 +91,7 @@ public class WebsocketEndpoint extends Endpoint {
         if (sessionImpl != null) {
             try {
                 WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
-                for (Topic topic : sessionImpl.getRpcCtx().getTopics().values()) {
+                for (Topic topic : sessionImpl.getCtx().getSpringContext().getTopics().values()) {
                     try {
                         topic.unsubscribe();
                     } catch (InvalidSubscriptionException ise) {
@@ -140,7 +140,7 @@ public class WebsocketEndpoint extends Endpoint {
         Throwable throwable = null;
         try {
             req = JsonCodec.getInstance().parse(message, RpcRequest.class);
-            result = execute(req, sessionImpl.getRpcCtx());
+            result = execute(req, sessionImpl.getCtx().getSpringContext());
         } catch (Throwable th) {
             throwable = th;
         }

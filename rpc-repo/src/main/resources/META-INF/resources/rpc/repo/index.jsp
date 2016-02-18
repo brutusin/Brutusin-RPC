@@ -88,6 +88,14 @@ if(hash != null){
                     renderHTTPServices();
                     route();
                 }, service: "rpc.http.services"});
+
+            http.ajax({load: function (response) {
+                    if (response.result && response.result.principal) {
+                        var userLabel = document.getElementById("labelUser");
+                        userLabel.innerHTML = '<span class="octicon octicon-person"></span> ' + response.result.principal;
+                    }
+                }, service: "rpc.http.user"});
+
             wskt.exec({load: function (response) {
                     wsServices = response.result;
                     renderWskServices();
@@ -247,7 +255,7 @@ if(hash != null){
                 <table style="width: 100%">
                     <tr>
                         <td style="text-align: left"><label class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label></td>
-                        <td style="text-align: right; padding-right: 12px"><a id="github" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
+                        <td style="text-align: right; padding-right: 12px"><label class="label" id="labelUser" style="font-size:12px; margin-right: 10px"></label><a id="github" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
                     </tr>
                 </table>
             </div>
