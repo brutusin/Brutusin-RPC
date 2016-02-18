@@ -15,6 +15,7 @@
  */
 package org.brutusin.demo;
 
+import org.brutusin.rpc.Description;
 import org.brutusin.rpc.Server;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
@@ -23,21 +24,19 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class SecurityWsAction extends WebsocketAction<Void, String> {
+@Description("Hello word action that only accepts users with `ADMIN` role")
+public class AdminWsAction extends WebsocketAction<Void, String> {
 
     @Override
     public String execute(Void input) throws Exception {
-        String name;
-        if (WebsocketActionSupport.getInstance().getUserPrincipal() == null) {
-            name = null;
-        } else {
-            name = WebsocketActionSupport.getInstance().getUserPrincipal().getName();
+        if(!WebsocketActionSupport.getInstance().isUserInRole("ADMIN")){
+            throw new SecurityException("Only admin users are allowed");
         }
-        return name + " " + WebsocketActionSupport.getInstance().isUserInRole("USER");
+        return "Hello " + WebsocketActionSupport.getInstance().getUserPrincipal().getName() +"!";
     }
 
     public static void main(String[] args) {
-        Server.test(new SecurityWsAction());
+        Server.test(new AdminWsAction());
     }
 
 }

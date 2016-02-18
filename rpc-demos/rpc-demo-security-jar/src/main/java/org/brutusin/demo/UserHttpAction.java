@@ -15,32 +15,29 @@
  */
 package org.brutusin.demo;
 
+import org.brutusin.rpc.Description;
 import org.brutusin.rpc.Server;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.SafeAction;
-import org.springframework.context.ApplicationContext;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class SecurityAction extends SafeAction<Void, String> {
+@Description("Hello word action that only accepts users with `USER` role")
+public class UserHttpAction extends SafeAction<Void, String> {
 
     @Override
     public Cacheable<String> execute(Void input) throws Exception {
-        String name;
-        if (HttpActionSupport.getInstance().getUserPrincipal() == null) {
-            name = null;
-        } else {
-            name = HttpActionSupport.getInstance().getUserPrincipal().getName();
+        if (!HttpActionSupport.getInstance().isUserInRole("USER")) {
+            throw new SecurityException("Only users are allowed");
         }
-        ApplicationContext ctx = HttpActionSupport.getInstance().getSpringContext().getParent();
-        return Cacheable.never(name + " " + HttpActionSupport.getInstance().isUserInRole("USER"));
+        return Cacheable.never("Hello " + HttpActionSupport.getInstance().getUserPrincipal().getName() + "!");
     }
 
     public static void main(String[] args) {
-        Server.test(8181, new SecurityAction());
+        Server.test(new UserHttpAction());
     }
 
 }
