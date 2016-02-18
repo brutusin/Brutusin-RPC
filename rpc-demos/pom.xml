@@ -17,6 +17,7 @@
         <module>rpc-examples</module> 
         <module>rpc-demo-jar</module> 
         <module>rpc-demo-war</module>
+        <module>rpc-demo-security-jar</module>
     </modules>
     
 </project>

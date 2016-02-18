@@ -50,28 +50,19 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-core</artifactId>
-            <version>1.8.1</version>
-            <scope>provided</scope>
+        <dependency> 
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
         </dependency>
-         <dependency>
-            <groupId>org.glassfish.main.web</groupId>
-            <artifactId>web-core</artifactId>
-             <version>4.1</version>
-            <scope>provided</scope>
-        </dependency>-->
     </dependencies>
     <build>
         <plugins>
-            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
@@ -93,7 +84,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
@@ -110,27 +101,27 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <excludes>
+                                        <excludes>**/*</excludes>
+                                    </excludes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                                <fileset>
+                                    <directory>target/${project.artifactId}-${project.version}/WEB-INF/lib</directory>
+                                    <includes>
+                                        <include>*tomcat*.jar</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                    <filesets>
-                        <fileset>
-                            <directory>target</directory>
-                            <excludes>
-                                <excludes>**/*</excludes>
-                            </excludes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
-                            <directory>target/${project.artifactId}-${project.version}/WEB-INF/lib</directory>
-                            <includes>
-                                <include>*tomcat*.jar</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
         </plugins>
     </build>

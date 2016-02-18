@@ -80,27 +80,27 @@
                         <goals>
                             <goal>clean</goal>
                         </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <excludes>
+                                        <excludes>**/*</excludes>
+                                    </excludes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                                <fileset>
+                                    <directory>target/${project.artifactId}-${project.version}/WEB-INF/lib</directory>
+                                    <includes>
+                                        <include>*tomcat*.jar</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                    <filesets>
-                        <fileset>
-                            <directory>target</directory>
-                            <excludes>
-                                <excludes>**/*</excludes>
-                            </excludes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
-                            <directory>target/${project.artifactId}-${project.version}/WEB-INF/lib</directory>
-                            <includes>
-                                <include>*tomcat*.jar</include>
-                            </includes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
         </plugins>
     </build>
