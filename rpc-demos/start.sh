@@ -1,7 +1,7 @@
 #!/bin/sh
 # Heroku start script
 if [ "$TARGET" = "secure" ]; then
-  sh rpc-demo-secure-jar/target/bin/exec
+  sh rpc-demos/rpc-demo-secure-jar/target/bin/exec
 else
- sh rpc-demo-jar/target/bin/exec
+ sh rpc-demos/rpc-demo-jar/target/bin/exec
 fi;
