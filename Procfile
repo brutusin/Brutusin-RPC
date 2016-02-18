@@ -1,1 +1,1 @@
-web: sh rpc-demos/rpc-demo-jar/target/bin/exec
+web: sh rpc-demos/start.sh
