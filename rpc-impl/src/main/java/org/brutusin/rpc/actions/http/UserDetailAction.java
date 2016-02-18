@@ -24,7 +24,7 @@ import org.brutusin.rpc.http.SafeAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns security information about the current logged user")
+@Description("Returns security information about the logged user")
 public class UserDetailAction extends SafeAction<Void, UserDetail> {
     
     @Override
