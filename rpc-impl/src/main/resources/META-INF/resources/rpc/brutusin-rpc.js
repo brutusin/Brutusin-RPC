@@ -59,8 +59,9 @@ if (typeof brutusin === "undefined") {
     var rpc = new Object();
     brutusin["rpc"] = rpc;
     var crsfToken = getMeta("_csrf");
+    var crsfParam = getMeta("_csrf.parameterName");
     var crsfHeader = getMeta("_csrf_header");
-    
+
     function getMeta(name) {
         var metaTags = document.getElementsByTagName("meta");
         for (var i = 0; i < metaTags.length; i++) {
@@ -230,6 +231,9 @@ if (typeof brutusin === "undefined") {
 
             form.method = httpMethod;
             addHidden("jsonrpc", JSON.stringify(req));
+            if (httpMethod === "POST" && crsfToken && crsfParam) {
+                addHidden(crsfParam, crsfToken);
+            }
             if (files) {
                 form.enctype = "multipart/form-data";
                 var order = getOrder(files);
@@ -300,7 +304,7 @@ if (typeof brutusin === "undefined") {
                     }
                 }
                 xhr.open(httpMethod, endpoint, true);
-                if(crsfToken && crsfHeader){
+                if (crsfToken && crsfHeader) {
                     xhr.setRequestHeader(crsfHeader, crsfToken);
                 }
             }
