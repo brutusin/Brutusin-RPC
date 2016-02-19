@@ -7,8 +7,9 @@ if(hash != null){
 <html>
     <head>
         <meta name=viewport content='width=650'>
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
         <title>brutusin:rpc</title>
-
         <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'/>
         <link rel="stylesheet" href='lib/bootstrap/css/bootstrap-callouts.css'/>
         <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css'/>
@@ -84,12 +85,20 @@ if(hash != null){
             var service, topic;
 
             http.ajax({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
                     httpServices = response.result;
                     renderHTTPServices();
                     route();
                 }, service: "rpc.http.services"});
 
             http.ajax({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
                     if (response.result && response.result.principal) {
                         var userLabel = document.getElementById("labelUser");
                         userLabel.innerHTML = '<span class="octicon octicon-person"></span> ' + response.result.principal;
@@ -97,11 +106,19 @@ if(hash != null){
                 }, service: "rpc.http.user"});
 
             wskt.exec({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
                     wsServices = response.result;
                     renderWskServices();
                     route();
                 }, service: "rpc.wskt.services"});
             wskt.exec({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
                     topics = response.result;
                     renderTopics();
                     route();

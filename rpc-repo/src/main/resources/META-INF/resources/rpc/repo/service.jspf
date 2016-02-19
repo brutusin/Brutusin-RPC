@@ -86,7 +86,11 @@
         document.getElementById("srvDesc").innerHTML = desc;
 
         execFunction({service: schemaServiceName,
-            load: function (response) {
+            load: function  (response) {
+                    if (response === null) {
+                    location.reload();
+                    return;
+                }
                 if (response.error) {
                     if (response.error.code === -32003) { // Disconnected
                         location.reload();
@@ -115,7 +119,11 @@
             input: {id: service.id, mode: "I"}
         });
         execFunction({service: schemaServiceName,
-            load: function (response) {
+            load: function  (response) {
+                    if (response === null) {
+                    location.reload();
+                    return;
+                }
                 if (response.error) {
                     if (response.error.code === -32003) { // Disconnected
                         location.reload();
@@ -140,12 +148,16 @@
             var params = {service: service.id, input: input};
             if (!service.binaryResponse) {
                 BrutusinForms.bootstrap.showLoading(btn);
-                params.load = function (result) {
+                params.load = function  (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
                     BrutusinForms.bootstrap.hideLoading(btn);
                     var responseDiv = document.getElementById("responseDiv");
-                    if (!result.error) {
+                    if (!response.error) {
                         responseDiv.className = "panel panel-success";
-                    } else if (result.error.code === -32001) {
+                    } else if (response.error.code === -32001) {
                         responseDiv.className = "panel panel-warning";
                     } else {
                         responseDiv.className = "panel panel-danger";
@@ -159,7 +171,7 @@
                             readOnly: true
                         });
                     }
-                    codeMirrors[id].setValue(JSON.stringify(result, null, 2));
+                    codeMirrors[id].setValue(JSON.stringify(response, null, 2));
                 }
             }
             execFunction(params);

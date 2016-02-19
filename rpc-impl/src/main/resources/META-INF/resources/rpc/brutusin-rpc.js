@@ -58,6 +58,19 @@ if (typeof brutusin === "undefined") {
 
     var rpc = new Object();
     brutusin["rpc"] = rpc;
+    var crsfToken = getMeta("_csrf");
+    var crsfHeader = getMeta("_csrf_header");
+    
+    function getMeta(name) {
+        var metaTags = document.getElementsByTagName("meta");
+        for (var i = 0; i < metaTags.length; i++) {
+            if (metaTags[i].getAttribute("name") === name) {
+                return metaTags[i].getAttribute("content");
+            }
+        }
+        return null;
+    }
+
     function createRpcRequest(service, input, id) {
         var req = new Object();
         req.jsonrpc = "2.0";
@@ -287,6 +300,9 @@ if (typeof brutusin === "undefined") {
                     }
                 }
                 xhr.open(httpMethod, endpoint, true);
+                if(crsfToken && crsfHeader){
+                    xhr.setRequestHeader(crsfHeader, crsfToken);
+                }
             }
 
             xhr.onload = function () {

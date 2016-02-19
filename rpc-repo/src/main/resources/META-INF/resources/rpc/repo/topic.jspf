@@ -11,7 +11,11 @@
         document.getElementById("topicDesc").innerHTML = desc;
         document.getElementById("topicId").innerHTML = topic.id;
         wskt.exec({service: "rpc.topics.schema",
-            load: function (response) {
+            load: function  (response) {
+                    if (response === null) {
+                    location.reload();
+                    return;
+                }
                 schema = response.result;
                 setCodeMirrorValue("schema", schema);
             },
