@@ -31,6 +31,12 @@
             if (httpServices[i].description) {
                 var span = createElement("span", null, "glyphicon glyphicon-info-sign", "color:#777");
                 span.title = httpServices[i].description;
+                if (httpServices[i].framework) {
+                    span.style.color = "silver";
+                    span.help = "Framework service";
+                } else {
+                    span.help = "User service";
+                }
                 tr.appendChild(createElement("td", span));
             } else {
                 tr.appendChild(createElement("td"));
@@ -41,6 +47,9 @@
                 document.location.hash = "#http-services/" + httpServices[this.index].id;
                 //selectService(this.index, true);
             };
+            if (httpServices[i].framework) {
+                a.style.color = "silver";
+            }
             tr.appendChild(createElement("td", a, "left"));
             if (httpServices[i].safe) {
                 var span = createElement("span", "Safe", "label label-success");
@@ -89,6 +98,12 @@
             if (wsServices[i].description) {
                 var span = createElement("span", null, "glyphicon glyphicon-info-sign", "color:#777");
                 span.title = wsServices[i].description;
+                if (wsServices[i].framework) {
+                    span.style.color = "silver";
+                    span.help = "Framework service";
+                } else {
+                    span.help = "User service";
+                }
                 tr.appendChild(createElement("td", span));
             } else {
                 tr.appendChild(createElement("td"));
@@ -99,6 +114,9 @@
                 document.location.hash = "#wskt-services/" + wsServices[this.index].id;
                 //selectService(this.index, false);
             };
+            if (wsServices[i].framework) {
+                a.style.color = "silver";
+            }
             tr.appendChild(createElement("td", a, "left"));
             if (wsServices[i].dynamicInputSchema) {
                 var span = createElement("span", "Dynamic", "label label-info");
@@ -140,6 +158,7 @@
             if (topic.description) {
                 var span = createElement("span", null, "glyphicon glyphicon-info-sign", "color:#777");
                 span.title = topic.description;
+                span.help = "Topic";
                 tr.appendChild(createElement("td", span));
             } else {
                 tr.appendChild(createElement("td"));

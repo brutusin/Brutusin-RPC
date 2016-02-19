@@ -233,7 +233,11 @@ if(hash != null){
                     } else {
                         this.setAttribute("data-content", markdown.toHTML(this.title));
                     }
-                    this.title = "Help";
+                    if (this.help) {
+                        this.title = this.help;
+                    } else {
+                        this.title = "Help";
+                    }
                     $(this).popover({
                         placement: 'top',
                         container: 'body',

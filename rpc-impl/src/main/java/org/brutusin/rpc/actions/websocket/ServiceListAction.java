@@ -19,7 +19,9 @@ import org.brutusin.rpc.actions.ServiceItem;
 import java.util.Map;
 import org.brutusin.json.DynamicSchemaProvider;
 import org.brutusin.rpc.Description;
+import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
+import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
@@ -33,6 +35,7 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
     @Override
     public ServiceItem[] execute(Void input) throws Exception {
         Map<String, WebsocketAction> services = WebsocketActionSupport.getInstance().getWebSocketServices();
+         RpcSpringContext rpcSpringContext = (RpcSpringContext)WebsocketActionSupport.getInstance().getSpringContext();
         ServiceItem[] serviceItems = new ServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, WebsocketAction> entrySet : services.entrySet()) {
@@ -43,6 +46,7 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
             si.setDescription(RpcUtils.getDescription(service));
             Class<?> inputClass = RpcUtils.getClass(service.getInputType());
             si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
+            si.setFramework(rpcSpringContext.isFrameworkAction(service));
             serviceItems[i++] = si;
         }
         return serviceItems;

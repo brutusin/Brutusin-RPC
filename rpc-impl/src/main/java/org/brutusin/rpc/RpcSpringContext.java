@@ -16,7 +16,9 @@
 package org.brutusin.rpc;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
@@ -40,6 +42,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
 
     private static final Logger LOGGER = Logger.getLogger(RpcSpringContext.class.getName());
 
+    private Set<RpcAction> frameworkActions = new HashSet<RpcAction>();
     private Map<String, HttpAction> httpServices;
     private Map<String, WebsocketAction> webSocketServices;
     private Map<String, Topic> webSocketTopics;
@@ -101,27 +104,32 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
 
     private void registerBuiltServices() {
         if (RpcConfig.getInstance().isIncludeBuiltinServices()) {
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_VERSION, new VersionAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SERVICE_LIST, new HttpServiceListAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SCHEMA, new org.brutusin.rpc.actions.http.SchemaAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.http.DynamicSchemaProviderAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_LOGOUT, new LogoutAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_USER, new UserDetailAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_VERSION, new VersionAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_SERVICE_LIST, new HttpServiceListAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_SCHEMA, new org.brutusin.rpc.actions.http.SchemaAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.http.DynamicSchemaProviderAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_LOGOUT, new LogoutAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_USER, new UserDetailAction());
 
-            getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_VERSION, new org.brutusin.rpc.actions.websocket.VersionAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_SERVICE_LIST, new org.brutusin.rpc.actions.websocket.ServiceListAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_SCHEMA, new org.brutusin.rpc.actions.websocket.SchemaAction());
-            getBeanFactory().registerSingleton(SpringNames.SRV_WSKT_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.websocket.DynamicSchemaProviderAction());
+            registerBuiltinAction(SpringNames.SRV_WSKT_VERSION, new org.brutusin.rpc.actions.websocket.VersionAction());
+            registerBuiltinAction(SpringNames.SRV_WSKT_SERVICE_LIST, new org.brutusin.rpc.actions.websocket.ServiceListAction());
+            registerBuiltinAction(SpringNames.SRV_WSKT_SCHEMA, new org.brutusin.rpc.actions.websocket.SchemaAction());
+            registerBuiltinAction(SpringNames.SRV_WSKT_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.websocket.DynamicSchemaProviderAction());
 
-            getBeanFactory().registerSingleton(SpringNames.TPC_LIST, new org.brutusin.rpc.actions.websocket.TopicListAction());
-            getBeanFactory().registerSingleton(SpringNames.TPC_SCHEMA, new org.brutusin.rpc.actions.websocket.TopicSchemaAction());
-            getBeanFactory().registerSingleton(SpringNames.TPC_SUBSCRIBE, new org.brutusin.rpc.actions.websocket.SubscribeAction());
-            getBeanFactory().registerSingleton(SpringNames.TPC_UNSUBSCRIBE, new org.brutusin.rpc.actions.websocket.UnsubscribeAction());
+            registerBuiltinAction(SpringNames.TPC_LIST, new org.brutusin.rpc.actions.websocket.TopicListAction());
+            registerBuiltinAction(SpringNames.TPC_SCHEMA, new org.brutusin.rpc.actions.websocket.TopicSchemaAction());
+            registerBuiltinAction(SpringNames.TPC_SUBSCRIBE, new org.brutusin.rpc.actions.websocket.SubscribeAction());
+            registerBuiltinAction(SpringNames.TPC_UNSUBSCRIBE, new org.brutusin.rpc.actions.websocket.UnsubscribeAction());
         }
 
         if (RpcConfig.getInstance().isIncludeEnvService()) {
-            getBeanFactory().registerSingleton(SpringNames.SRV_HTTP_ENV, new EnvironmentPopertiesAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_ENV, new EnvironmentPopertiesAction());
         }
+    }
+
+    private void registerBuiltinAction(String name, RpcAction action) {
+        getBeanFactory().registerSingleton(name, action);
+        frameworkActions.add(action);
     }
 
     private static <E extends RpcComponent> void destroy(Collection<E> components) {
@@ -197,6 +205,10 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
                 throw new RuntimeException(ex);
             }
         }
+    }
+
+    public boolean isFrameworkAction(RpcAction action) {
+        return frameworkActions.contains(action);
     }
 
     public Map<String, HttpAction> getHttpServices() {

@@ -22,6 +22,7 @@ package org.brutusin.rpc.actions;
 public class ServiceItem extends ResourceItem {
 
     private boolean dynamicInputSchema;
+    private boolean framework;
 
     public final boolean isDynamicInputSchema() {
         return dynamicInputSchema;
@@ -29,5 +30,13 @@ public class ServiceItem extends ResourceItem {
 
     public final void setDynamicInputSchema(boolean dynamicInputSchema) {
         this.dynamicInputSchema = dynamicInputSchema;
+    }
+
+    public boolean isFramework() {
+        return framework;
+    }
+
+    public void setFramework(boolean framework) {
+        this.framework = framework;
     }
 }

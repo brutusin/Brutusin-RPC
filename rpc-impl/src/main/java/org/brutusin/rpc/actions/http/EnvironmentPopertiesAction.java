@@ -16,7 +16,6 @@
 package org.brutusin.rpc.actions.http;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import org.brutusin.rpc.Description;

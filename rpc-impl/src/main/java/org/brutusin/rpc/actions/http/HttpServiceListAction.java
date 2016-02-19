@@ -19,6 +19,7 @@ import java.util.Map;
 import org.brutusin.json.DynamicSchemaProvider;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.Description;
+import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.HttpAction;
@@ -35,6 +36,7 @@ public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
 
     @Override
     public Cacheable<HttpServiceItem[]> execute(Void input) throws Exception {
+        RpcSpringContext rpcSpringContext = (RpcSpringContext)HttpActionSupport.getInstance().getSpringContext();
         Map<String, HttpAction> services = HttpActionSupport.getInstance().getHttpServices();
         HttpServiceItem[] serviceItems = new HttpServiceItem[services.size()];
         int i = 0;
@@ -50,6 +52,7 @@ public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
             si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
             si.setBinaryResponse(StreamResult.class.isAssignableFrom(RpcUtils.getClass(service.getOutputType())));
             si.setUpload(JsonCodec.getInstance().getSchema(inputClass).toString().contains("\"format\":\"inputstream\""));
+            si.setFramework(rpcSpringContext.isFrameworkAction(service));
             serviceItems[i++] = si;
         }
         return Cacheable.conditionally(serviceItems);
