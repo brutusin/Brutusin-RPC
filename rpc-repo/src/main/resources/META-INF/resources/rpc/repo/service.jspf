@@ -86,8 +86,8 @@
         document.getElementById("srvDesc").innerHTML = desc;
 
         execFunction({service: schemaServiceName,
-            load: function  (response) {
-                    if (response === null) {
+            load: function (response) {
+                if (response === null) {
                     location.reload();
                     return;
                 }
@@ -119,8 +119,8 @@
             input: {id: service.id, mode: "I"}
         });
         execFunction({service: schemaServiceName,
-            load: function  (response) {
-                    if (response === null) {
+            load: function (response) {
+                if (response === null) {
                     location.reload();
                     return;
                 }
@@ -144,11 +144,12 @@
     function execute() {
         if (bf && bf.validate()) {
             var input = bf.getData();
+            var files = bf.getFileMap();
             var btn = document.getElementById("btExecute");
-            var params = {service: service.id, input: input};
+            var params = {service: service.id, input: input, files: files};
             if (!service.binaryResponse) {
                 BrutusinForms.bootstrap.showLoading(btn);
-                params.load = function  (response) {
+                params.load = function (response) {
                     if (response === null) {
                         location.reload();
                         return;
