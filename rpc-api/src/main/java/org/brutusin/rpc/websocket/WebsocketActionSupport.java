@@ -31,6 +31,8 @@ public abstract class WebsocketActionSupport implements RpcActionSupport{
     }
 
     public abstract Session getSession();
+    
+    public abstract Object getHttpSession();
 
     public final Principal getUserPrincipal() {
         Session session = getWebsocketSession();

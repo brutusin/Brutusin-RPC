@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.Session;
@@ -30,6 +31,7 @@ import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
+import org.brutusin.rpc.RpcConfig;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.InvalidRequestException;
@@ -41,7 +43,7 @@ import org.springframework.security.core.context.SecurityContext;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class WebsocketEndpoint extends Endpoint {
-
+    
     private final Map<String, WebsocketContext> contextMap = Collections.synchronizedMap(new HashMap());
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
@@ -64,7 +66,7 @@ public class WebsocketEndpoint extends Endpoint {
         final SessionImpl sessionImpl = new SessionImpl(session, websocketContext);
         sessionImpl.init();
         wrapperMap.put(session.getId(), sessionImpl);
-
+        
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
                 WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
@@ -79,11 +81,11 @@ public class WebsocketEndpoint extends Endpoint {
             }
         });
     }
-
+    
     public Map<String, WebsocketContext> getContextMap() {
         return contextMap;
     }
-
+    
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         contextMap.remove(session.getRequestParameterMap().get("requestId").get(0));
@@ -104,12 +106,12 @@ public class WebsocketEndpoint extends Endpoint {
             }
         }
     }
-
+    
     @Override
     public void onError(Session session, Throwable thr) {
         thr.printStackTrace();
     }
-
+    
     protected boolean allowAccess(Session session, WebsocketContext websocketContext) {
         final RpcSpringContext rpcCtx = websocketContext.getSpringContext();
         if (rpcCtx.getParent() != null) {

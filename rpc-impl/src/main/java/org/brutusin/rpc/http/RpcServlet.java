@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
@@ -71,7 +72,7 @@ public final class RpcServlet extends HttpServlet {
 
     public static final String PARAM_PAYLOAD = "jsonrpc";
 
-    private int uploadCounter;
+    private AtomicInteger uploadCounter = new AtomicInteger();
 
     private Map<String, HttpAction> services;
 
@@ -230,7 +231,7 @@ public final class RpcServlet extends HttpServlet {
      */
     private File createTempUploadDirectory() throws IOException {
         synchronized (RpcConfig.getInstance().getUploadFolder()) {
-            File ret = new File(RpcConfig.getInstance().getUploadFolder(), String.valueOf(uploadCounter++));
+            File ret = new File(RpcConfig.getInstance().getUploadFolder(), String.valueOf(uploadCounter.incrementAndGet()));
             Miscellaneous.createDirectory(ret);
             return ret;
         }
@@ -379,16 +380,27 @@ public final class RpcServlet extends HttpServlet {
             throw new InvalidHttpMethodException("Action is not idempotent. Only POST method is allowed");
         }
         Object input;
+        Map<String, InputStream> streams;
         if (request.getParams() == null) {
             input = null;
+            streams = null;
         } else {
             Type inputType = service.getInputType();
             JsonSchema inputSchema = JsonCodec.getInstance().getSchema(inputType);
             inputSchema.validate(request.getParams());
-            Map<String, InputStream> streams = getStreams(req, request, service);
+            streams = getStreams(req, request, service);
             input = JsonCodec.getInstance().parse(request.getParams().toString(), RpcUtils.getClass(inputType), streams).getElement1();
         }
-        return service.execute(input);
+        try {
+            return service.execute(input);
+        } finally {
+            if (streams != null) {
+                for (Map.Entry<String, InputStream> entrySet : streams.entrySet()) {
+                    InputStream stream = entrySet.getValue();
+                    stream.close();
+                }
+            }
+        }
     }
 
     private int getInputStreamsNumber(RpcRequest rpcRequest, HttpAction service) throws ParseException {

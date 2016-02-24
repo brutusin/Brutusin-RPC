@@ -44,7 +44,7 @@ public final class RpcConfig {
     private File uploadFolder;
     private Long maxFileSize;
     private Long maxRequestSize;
-    private String accessControOriginHost;
+    private String accessControlOriginHost;
     private boolean includeBuiltinServices;
     private boolean includeEnvService;
     private boolean testMode;
@@ -62,7 +62,7 @@ public final class RpcConfig {
         this.uploadFolder = new File(getEnv(ENV_PROP_UPLOAD_FOLDER, new File(System.getProperty("java.io.tmpdir"), "brutusin-rcp-uploads").getAbsolutePath()));
         this.maxFileSize = Long.valueOf(getEnv(ENV_PROP_MAX_FILE_SIZE, String.valueOf(Long.MAX_VALUE)));
         this.maxRequestSize = Long.valueOf(getEnv(ENV_PROP_MAX_REQUEST_SIZE, String.valueOf(Long.MAX_VALUE)));
-        this.accessControOriginHost = getEnv(ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST, null);
+        this.accessControlOriginHost = getEnv(ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST, null);
         this.includeBuiltinServices = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_BUITIN_SERVICES, "true"));
         this.includeEnvService = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_ENV_SERVICE, "true"));
         this.testMode = Boolean.valueOf(getEnv(ENV_PROP_TEST_MODE, "false"));
@@ -112,7 +112,7 @@ public final class RpcConfig {
     }
 
     public String getAccessControlOriginHost() {
-        return accessControOriginHost;
+        return accessControlOriginHost;
     }
 
     public boolean isIncludeBuiltinServices() {
@@ -147,8 +147,8 @@ public final class RpcConfig {
         this.maxRequestSize = maxRequestSize;
     }
 
-    public void setAccessControOriginHost(String accessControOriginHost) {
-        this.accessControOriginHost = accessControOriginHost;
+    public void setAccessControlOriginHost(String accessControOriginHost) {
+        this.accessControlOriginHost = accessControOriginHost;
     }
 
     public void setIncludeBuiltinServices(boolean includeBuiltinServices) {

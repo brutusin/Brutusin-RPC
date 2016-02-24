@@ -69,6 +69,11 @@ public class WebsocketActionSupportImpl extends WebsocketActionSupport {
     }
 
     @Override
+    public Object getHttpSession() {
+        return session.getCtx().getHttpSession();
+    }
+    
+    @Override
     public Map<String, HttpAction> getHttpServices() {
         return rpcCtx.getHttpServices();
     }
