@@ -51,9 +51,9 @@ public abstract class Topic<F, M> extends RpcComponent {
      */
     public abstract Set<WritableSession> getSubscribers(F filter);
 
-    public final void fire(F filter, M message) {
+    public final boolean fire(F filter, M message) {
         if (message == null) {
-            return;
+            return false;
         }
         JsonSchema messageSchema = JsonCodec.getInstance().getSchema(getMessageType());
         try {
@@ -65,6 +65,9 @@ public abstract class Topic<F, M> extends RpcComponent {
         mr.setTopic(getId());
         mr.setMessage(message);
         Set<WritableSession> subscribers = getSubscribers(filter);
+        if (subscribers == null || subscribers.isEmpty()) {
+            return false;
+        }
         synchronized (subscribers) {
             if (subscribers != null) {
                 for (WritableSession session : subscribers) {
@@ -72,6 +75,7 @@ public abstract class Topic<F, M> extends RpcComponent {
                 }
             }
         }
+        return true;
     }
 
     public final void subscribe() throws InvalidSubscriptionException {
@@ -99,6 +103,7 @@ public abstract class Topic<F, M> extends RpcComponent {
      * iterating over the whole collection of subscribers.
      *
      * See {@link #afterUnsubscribe(org.brutusin.rpc.websocket.WritableSession)}
+     *
      * @param session
      */
     protected void beforeSubscribe(WritableSession session) {
@@ -106,7 +111,8 @@ public abstract class Topic<F, M> extends RpcComponent {
 
     /**
      * See {@link #beforeSubscribe(org.brutusin.rpc.websocket.WritableSession)}
-     * @param session 
+     *
+     * @param session
      */
     protected void afterUnsubscribe(WritableSession session) {
     }
