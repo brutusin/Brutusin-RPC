@@ -89,7 +89,7 @@ if ("undefined" === typeof brutusin["rpc"]) {
             var tagName = element.tagName.toLowerCase();
             if (tagName === "input" && element.type === "file") {
                 if (element.files !== null && element.files.length > 0) {
-                    map[element.id] = element.files;
+                    map[element.id] = element.files[0];
                 }
             }
         }

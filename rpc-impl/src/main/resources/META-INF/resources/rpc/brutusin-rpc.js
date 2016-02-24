@@ -59,7 +59,6 @@ if (typeof brutusin === "undefined") {
     var rpc = new Object();
     brutusin["rpc"] = rpc;
     var crsfToken = getMeta("_csrf");
-    var crsfParam = getMeta("_csrf.parameterName");
     var crsfHeader = getMeta("_csrf_header");
 
     function getMeta(name) {
@@ -89,7 +88,6 @@ if (typeof brutusin === "undefined") {
             return proxy;
         };
         var queue = [];
-        var queuedSubmit;
         var services;
 
         ajax(function (response, status) {
@@ -97,10 +95,6 @@ if (typeof brutusin === "undefined") {
                 services = new Object();
                 for (var i = 0; i < response.result.length; i++) {
                     services[response.result[i].id] = response.result[i];
-                }
-                if (queuedSubmit) {
-                    proxy.submit(queuedSubmit);
-                    return;
                 }
                 for (var i = 0; i < queue.length; i++) {
                     var ajaxParam = queue[i];
@@ -148,50 +142,6 @@ if (typeof brutusin === "undefined") {
                 queue[queue.length] = ajaxParam;
             }
         };
-
-        var submitted = false;
-        var queued = false;
-        proxy.submit = function (submitParam) {
-            if (submitParam === null || typeof submitParam !== "object") {
-                throw "submit() parameter has to be an object";
-            }
-            if (submitted) {
-                return;
-            }
-            if (services) {
-                var httpMethod;
-                if (submitParam.service) {
-                    var service = services[submitParam.service];
-                    if (!service) {
-                        throw "Service not found: '" + submitParam.service + "'";
-                    }
-                    var httpMethod;
-                    if (service.safe) {
-                        httpMethod = "GET";
-                    } else {
-                        if (service.idempotent) {
-                            httpMethod = "PUT";
-                        } else {
-                            httpMethod = "POST";
-                        }
-                    }
-                } else {
-                    httpMethod = "GET";
-                }
-                submitted = true;
-                setTimeout(function () {
-                    submitted = false;
-                }, 500);
-                submit(submitParam.service, submitParam.input, submitParam.files, httpMethod);
-
-            } else {
-                if (!queued) {
-                    queuedSubmit = submitParam;
-                    queued = true;
-                }
-            }
-
-        };
         return proxy;
 
         /**
@@ -204,64 +154,10 @@ if (typeof brutusin === "undefined") {
             var keys = Object.keys(files).slice(0);
             keys.sort(
                     function (a, b) {
-                        if (files[a].length === 0) {
-                            return 1;
-                        } else if (files[b].length === 0) {
-                            return -1;
-                        }
-                        return files[a][0].size - files[b][0].size;
+                        return files[a].size - files[b].size;
                     }
             );
             return keys;
-        }
-
-        function submit(service, input, files, httpMethod) {
-            var req = createRpcRequest(service, input);
-            if (files) {
-                httpMethod = "POST";
-            }
-            if (httpMethod === "PUT") { // HTML forms only supports GET and POST
-                if (window.console) {
-                    console.warn("Idempotent unsafe services (like '" + service + "' service) are recommended to be executed via ajax() httpMethod, since it supports the PUT HTTP method");
-                }
-                httpMethod = "POST";
-            }
-            var form = document.createElement("form");
-            form.action = endpoint;
-
-            form.method = httpMethod;
-            addHidden("jsonrpc", JSON.stringify(req));
-            if (httpMethod === "POST" && crsfToken && crsfParam) {
-                addHidden(crsfParam, crsfToken);
-            }
-            if (files) {
-                form.enctype = "multipart/form-data";
-                var order = getOrder(files);
-                for (var i = 0; i < order.length; i++) {
-                    var p = order[i];
-                    if (files[p].length > 0) {
-                        addFile(p, files[p]);
-                    }
-                }
-            }
-            document.body.appendChild(form);
-            form.submit();
-
-            function addHidden(name, value) {
-                var input = document.createElement("input");
-                input.type = "hidden";
-                input.name = name;
-                input.value = value;
-                form.appendChild(input);
-            }
-
-            function addFile(name, fileList) {
-                var input = document.createElement("input");
-                input.type = "file";
-                input.name = name;
-                input.files = fileList;
-                form.appendChild(input);
-            }
         }
 
         function getAttachmentFileName(contentDisposition) {
@@ -298,9 +194,7 @@ if (typeof brutusin === "undefined") {
                     var order = getOrder(files);
                     for (var i = 0; i < order.length; i++) {
                         var p = order[i];
-                        if (files[p].length > 0) {
-                            data.append(p, files[p][0]);
-                        }
+                        data.append(p, files[p]);
                     }
                 }
                 xhr.open(httpMethod, endpoint, true);
