@@ -102,7 +102,7 @@ if (typeof brutusin === "undefined") {
                 }
                 queue = [];
             } else {
-                throw response;
+                throw JSON.stringify(response);
             }
         }, "rpc.http.services", null, null, "GET", "json");
 
@@ -110,7 +110,7 @@ if (typeof brutusin === "undefined") {
         setInterval(function () {
             ajax(function (response, status) {
                 if (status !== 200) {
-                    throw response;
+                    throw JSON.stringify(response);
                 }
             }, "rpc.http.ping", null, null, "GET", "json");
         }, ping ? ping : 60000);
