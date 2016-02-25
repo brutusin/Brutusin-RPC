@@ -31,11 +31,13 @@ public interface SpringNames {
     public static final String SRV_HTTP_SCHEMA_PROVIDER = "rpc.http.schema-provider";
     public static final String SRV_HTTP_LOGOUT = "rpc.http.logout";
     public static final String SRV_HTTP_USER = "rpc.http.user";
+    public static final String SRV_HTTP_PING = "rpc.http.ping";
 
     public static final String SRV_WSKT_VERSION = "rpc.wskt.version";
     public static final String SRV_WSKT_SERVICE_LIST = "rpc.wskt.services";
     public static final String SRV_WSKT_SCHEMA = "rpc.wskt.schema";
     public static final String SRV_WSKT_SCHEMA_PROVIDER = "rpc.wskt.schema-provider";
+    public static final String SRV_WSKT_PING = "rpc.wskt.ping";
 
     public static final String TPC_LIST = "rpc.topics";
     public static final String TPC_SCHEMA = "rpc.topics.schema";

@@ -82,7 +82,7 @@ if (typeof brutusin === "undefined") {
         return req;
     }
 
-    rpc.initHttpEndpoint = function (endpoint) {
+    rpc.initHttpEndpoint = function (endpoint, ping) {
         var proxy = new Object();
         rpc.getHttpEndpoint = function () {
             return proxy;
@@ -105,6 +105,16 @@ if (typeof brutusin === "undefined") {
                 throw response;
             }
         }, "rpc.http.services", null, null, "GET", "json");
+
+
+        setInterval(function () {
+            ajax(function (response, status) {
+                if (status !== 200) {
+                    throw response;
+                }
+            }, "rpc.http.ping", null, null, "GET", "json");
+        }, ping ? ping : 60000);
+
 
         proxy.ajax = function (ajaxParam) {
             if (ajaxParam === null || typeof ajaxParam !== "object") {
@@ -267,7 +277,7 @@ if (typeof brutusin === "undefined") {
             xhr.send(data);
         }
     };
-    rpc.initWebsocketEndpoint = function (endpoint) {
+    rpc.initWebsocketEndpoint = function (endpoint, ping) {
         var proxy = new Object();
         rpc.getWebsocketEndpoint = function () {
             return proxy;
@@ -350,6 +360,15 @@ if (typeof brutusin === "undefined") {
             }
             queue = [];
         }, "rpc.wskt.services");
+
+        setInterval(function () {
+            exec(function (response) {
+                if (response.error) {
+                    throw response.error.meaning + ". " + response.error.data;
+                }
+            }, "rpc.wskt.ping");
+        }, ping ? ping : 30000);
+
         proxy.subscribe = function (topic, callback) {
             topicCallbacks[topic] = callback;
             proxy.exec({
