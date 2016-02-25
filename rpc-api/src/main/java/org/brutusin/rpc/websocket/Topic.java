@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
+import org.brutusin.rpc.RpcActionSupport;
 import org.brutusin.rpc.RpcComponent;
 import org.springframework.core.ResolvableType;
 
@@ -79,7 +80,7 @@ public abstract class Topic<F, M> extends RpcComponent {
     }
 
     public final void subscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
+        WritableSession session = (WritableSession) RpcActionSupport.forWskt().getSession();
         if (sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is already subscribed to this topic");
         }
@@ -88,7 +89,7 @@ public abstract class Topic<F, M> extends RpcComponent {
     }
 
     public final void unsubscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
+        WritableSession session = (WritableSession) RpcActionSupport.forWskt().getSession();
         if (!sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is not subscribed to this topic");
         }

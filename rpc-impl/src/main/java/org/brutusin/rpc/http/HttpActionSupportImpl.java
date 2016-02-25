@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
-import org.brutusin.rpc.RpcWebInitializer;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.springframework.context.ApplicationContext;
@@ -58,12 +58,12 @@ public class HttpActionSupportImpl extends HttpActionSupport {
     }
 
     @Override
-    public HttpServletRequest getRequest() {
+    public HttpServletRequest getHttpServletRequest() {
         return req;
     }
 
     @Override
-    public HttpServletResponse getResponse() {
+    public HttpServletResponse getHttpServletResponse() {
         return resp;
     }
 
@@ -96,6 +96,11 @@ public class HttpActionSupportImpl extends HttpActionSupport {
     @Override
     public ApplicationContext getSpringContext() {
         return rpcCtx;
+    }
+
+    @Override
+    public HttpSession getHttpSession() {
+        return req.getSession();
     }
 
     @Override

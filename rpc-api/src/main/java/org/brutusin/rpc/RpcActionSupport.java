@@ -19,28 +19,55 @@ import org.brutusin.rpc.http.*;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 import org.springframework.context.ApplicationContext;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public interface RpcActionSupport {
+public abstract class RpcActionSupport {
 
-    public ApplicationContext getSpringContext();
+    protected static final ThreadLocal<RpcActionSupport> CONTEXTS = new ThreadLocal();
 
-    public Map<String, HttpAction> getHttpServices();
+    public static RpcActionSupport getInstance() {
+        return CONTEXTS.get();
+    }
+    
+    public static HttpActionSupport forHttp() {
+        RpcActionSupport instance = getInstance();
+        if(instance instanceof HttpActionSupport){
+            return (HttpActionSupport)instance;
+        }
+        throw new IllegalStateException("Caller is not in a HTTP request scope");
+    }
+    
+    public static WebsocketActionSupport forWskt() {
+        RpcActionSupport instance = getInstance();
+        if(instance instanceof WebsocketActionSupport){
+            return (WebsocketActionSupport)instance;
+        }
+        throw new IllegalStateException("Caller is not in a Websocket request scope");
+    }
+    
 
-    public Map<String, WebsocketAction> getWebSocketServices();
+    public abstract ApplicationContext getSpringContext();
 
-    public Map<String, Topic> getTopics();
+    public abstract Map<String, HttpAction> getHttpServices();
+
+    public abstract Map<String, WebsocketAction> getWebSocketServices();
+
+    public abstract Map<String, Topic> getTopics();
 
     public abstract Principal getUserPrincipal();
 
     public abstract boolean isUserInRole(String role);
 
-    public Set<String> getUserRoles();
+    public abstract Set<String> getUserRoles();
+
+    public abstract HttpSession getHttpSession();
 
 }

@@ -15,22 +15,18 @@
  */
 package org.brutusin.rpc.http;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.brutusin.rpc.RpcActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public abstract class HttpActionSupport implements RpcActionSupport{
+public abstract class HttpActionSupport extends RpcActionSupport{
 
-    protected static final ThreadLocal<HttpActionSupport> CONTEXTS = new ThreadLocal();
+    public abstract HttpServletRequest getHttpServletRequest();
 
-    public static HttpActionSupport getInstance() {
-        return CONTEXTS.get();
-    }
-
-    public abstract Object getRequest();
-
-    public abstract Object getResponse();
+    public abstract HttpServletResponse getHttpServletResponse();
 
 }

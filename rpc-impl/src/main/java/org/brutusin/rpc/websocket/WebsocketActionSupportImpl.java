@@ -17,6 +17,7 @@ package org.brutusin.rpc.websocket;
 
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.http.HttpAction;
 import org.springframework.context.ApplicationContext;
@@ -69,7 +70,7 @@ public class WebsocketActionSupportImpl extends WebsocketActionSupport {
     }
 
     @Override
-    public Object getHttpSession() {
+    public HttpSession getHttpSession() {
         return session.getCtx().getHttpSession();
     }
     

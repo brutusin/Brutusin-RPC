@@ -22,18 +22,9 @@ import org.brutusin.rpc.RpcActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public abstract class WebsocketActionSupport implements RpcActionSupport{
-
-    protected static final ThreadLocal<WebsocketActionSupport> CONTEXTS = new ThreadLocal();
-
-    public static WebsocketActionSupport getInstance() {
-        return CONTEXTS.get();
-    }
-
-    public abstract Session getSession();
+public abstract class WebsocketActionSupport extends RpcActionSupport{
     
-    public abstract Object getHttpSession();
-
+    @Override
     public final Principal getUserPrincipal() {
         Session session = getWebsocketSession();
         if (session == null) {
@@ -42,6 +33,8 @@ public abstract class WebsocketActionSupport implements RpcActionSupport{
         return session.getUserPrincipal();
     }
 
+    public abstract Session getSession();
+    
     private Session getWebsocketSession() {
         Object session = getSession();
         if (!(session instanceof Session)) {
