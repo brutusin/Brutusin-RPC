@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
         <meta charset="utf-8">
-        <title>Arquitectura Java, Brutusin-RPC chat demo</title>
+        <title>Brutusin-RPC chat</title>
         <script src="rpc/brutusin-rpc.js"></script>
         <script language='javascript'>
             var http = brutusin["rpc"].initHttpEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getInstance().getPath() + "/http"%>");
@@ -151,17 +153,23 @@
                     http.ajax({service: "svr.sendFile",
                         files: input.fileMap,
                         input: input.data,
-                        load: function (response) {
-                            if (response.error) {
-                                progressNode.nodeValue = " [" + response.error.meaning + (response.error.data ? (". " + response.error.data) : "") + "]";
-                                progressNode.parentNode.className+=" error";
-                                scroll();
-                            } else if (!response.result) {
-                                progressNode.nodeValue = " [Files could not be delivered]";
-                                progressNode.parentNode.className+=" error";
-                                scroll();
+                        load: function (response, status, message) {
+                            if (response) {
+                                if (response.error) {
+                                    progressNode.nodeValue = " [" + response.error.meaning + (response.error.data ? (". " + response.error.data) : "") + "]";
+                                    progressNode.parentNode.className += " error";
+                                    scroll();
+                                } else if (!response.result) {
+                                    progressNode.nodeValue = " [Files could not be delivered]";
+                                    progressNode.parentNode.className += " error";
+                                    scroll();
+                                } else {
+                                    progressNode.parentNode.parentNode.removeChild(progressNode.parentNode);
+                                }
                             } else {
-                                progressNode.parentNode.parentNode.removeChild(progressNode.parentNode);
+                                progressNode.nodeValue = " [HTTP " + status + " (" + message + ")]";
+                                progressNode.parentNode.className += " error";
+                                scroll();
                             }
                         },
                         progress: function (evt) {

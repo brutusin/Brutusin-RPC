@@ -40,14 +40,20 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>json-provider</artifactId>
-            <version>2.4.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
+        <dependency> 
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
         </dependency>
     </dependencies>
     <build>
