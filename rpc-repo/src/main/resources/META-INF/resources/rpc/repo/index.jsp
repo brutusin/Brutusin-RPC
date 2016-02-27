@@ -8,7 +8,6 @@ if(hash != null){
     <head>
         <meta name=viewport content='width=650'>
         <meta name="_csrf" content="${_csrf.token}"/>
-        <meta name="_csrf.parameterName" content="${_csrf.parameterName}"/>
         <meta name="_csrf_header" content="${_csrf.headerName}"/>
         <title>brutusin:rpc</title>
         <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'/>
