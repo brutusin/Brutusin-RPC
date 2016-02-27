@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="topic.messages" class="org.brutusin.chat.topics.MessageTopic"/> 
+    <bean id="svr.getUsers" class="org.brutusin.chat.actions.GetUsersAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+    <bean id="svr.download" class="org.brutusin.chat.actions.DownloadFileAction"/>
+    <bean id="svr.getUserInfo" class="org.brutusin.chat.actions.GetUserInfoAction"/> 
+    <bean id="svr.sendFile" class="org.brutusin.chat.actions.SendFileAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+    <bean id="svr.sendMessage" class="org.brutusin.chat.actions.SendMessageAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+</beans>

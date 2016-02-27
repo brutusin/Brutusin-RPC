@@ -364,7 +364,7 @@ if (typeof brutusin === "undefined") {
         setInterval(function () {
             exec(function (response) {
                 if (response.error) {
-                    throw response.error.meaning + ". " + response.error.data;
+                    throw response.error.meaning + (response.error.data?(". " + response.error.data):"");
                 }
             }, "rpc.wskt.ping");
         }, ping ? ping : 30000);

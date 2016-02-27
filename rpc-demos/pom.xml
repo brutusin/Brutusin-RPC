@@ -18,6 +18,7 @@
         <module>rpc-demo-jar</module> 
         <module>rpc-demo-war</module>
         <module>rpc-demo-security-jar</module>
+        <module>rpc-chat</module>
     </modules>
     
 </project>
