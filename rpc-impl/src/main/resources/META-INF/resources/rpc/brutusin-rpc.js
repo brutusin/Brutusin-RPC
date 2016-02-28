@@ -304,6 +304,8 @@ if (typeof brutusin === "undefined") {
         var rpcCallbacks = new Object();
         var topicCallbacks = new Object();
 
+        var restored = false;
+
         function exec(load, service, input) {
             var reqId;
             if (load) {
@@ -315,6 +317,7 @@ if (typeof brutusin === "undefined") {
             function sendMessage(msg) {
                 if (ws.readyState === 1) {
                     ws.send(msg);
+                    restored = false;
                 } else if (ws.readyState === 0) {
                     setTimeout(
                             function () {
@@ -322,16 +325,22 @@ if (typeof brutusin === "undefined") {
                             },
                             100);
                 } else {
-                    load({
-                        "jsonrpc": "2.0",
-                        "id": reqId,
-                        "error": {
-                            "code": -32003,
-                            "message": "Connection error",
-                            "meaning": "Cannot connect to server",
-                            "data": "Server connection lost. Try reloading the page"
-                        }
-                    });
+                    if (!restored) {
+                        ws = new WebSocket(url);
+                        restored = true;
+                        sendMessage(msg);
+                    } else {
+                        load({
+                            "jsonrpc": "2.0",
+                            "id": reqId,
+                            "error": {
+                                "code": -32003,
+                                "message": "Connection error",
+                                "meaning": "Cannot connect to server",
+                                "data": "Server connection lost. Try reloading the page"
+                            }
+                        });
+                    }
                 }
             }
             sendMessage(JSON.stringify(req));
@@ -364,7 +373,7 @@ if (typeof brutusin === "undefined") {
         setInterval(function () {
             exec(function (response) {
                 if (response.error) {
-                    throw response.error.meaning + (response.error.data?(". " + response.error.data):"");
+                    throw response.error.meaning + (response.error.data ? (". " + response.error.data) : "");
                 }
             }, "rpc.wskt.ping");
         }, ping ? ping : 30000);
