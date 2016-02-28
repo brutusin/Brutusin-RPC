@@ -277,6 +277,7 @@ if (typeof brutusin === "undefined") {
             xhr.send(data);
         }
     };
+
     rpc.initWebsocketEndpoint = function (endpoint, ping) {
         var proxy = new Object();
         rpc.getWebsocketEndpoint = function () {
@@ -299,12 +300,35 @@ if (typeof brutusin === "undefined") {
                 url += "//" + window.location.host + window.location.pathname + endpoint;
             }
         }
-        var ws = new WebSocket(url);
+        var ws;
+        reconnect();
         var lastReqId = 0;
         var rpcCallbacks = new Object();
         var topicCallbacks = new Object();
 
-        var restored = false;
+        function reconnect() {
+            ws = new WebSocket(url);
+            ws.onmessage = function (event) {
+                var response;
+                eval("response=" + event.data);
+                if (response.jsonrpc) {
+                    var callback = rpcCallbacks[response.id];
+                    delete rpcCallbacks[response.id];
+                    callback(response);
+                } else {
+                    var callback = topicCallbacks[response.topic];
+                    callback(response.message);
+                }
+            };
+            for (var topic in topicCallbacks) {
+                if (topicCallbacks.hasOwnProperty(topic)) {
+                    proxy.exec({
+                        service: "rpc.topics.subscribe",
+                        input: {id: topic}
+                    });
+                }
+            }
+        }
 
         function exec(load, service, input) {
             var reqId;
@@ -314,10 +338,12 @@ if (typeof brutusin === "undefined") {
             }
             var req = createRpcRequest(service, input, reqId);
 
+            var reconnected = false;
+
             function sendMessage(msg) {
                 if (ws.readyState === 1) {
                     ws.send(msg);
-                    restored = false;
+                    reconnected = false;
                 } else if (ws.readyState === 0) {
                     setTimeout(
                             function () {
@@ -325,39 +351,29 @@ if (typeof brutusin === "undefined") {
                             },
                             100);
                 } else {
-                    if (!restored) {
-                        ws = new WebSocket(url);
-                        restored = true;
+                    if (!reconnected) {
+                        reconnect();
+                        reconnected = true;
                         sendMessage(msg);
                     } else {
-                        load({
-                            "jsonrpc": "2.0",
-                            "id": reqId,
-                            "error": {
-                                "code": -32003,
-                                "message": "Connection error",
-                                "meaning": "Cannot connect to server",
-                                "data": "Server connection lost. Try reloading the page"
-                            }
-                        });
+                        if (load) {
+                            load({
+                                "jsonrpc": "2.0",
+                                "id": reqId,
+                                "error": {
+                                    "code": -32003,
+                                    "message": "Connection error",
+                                    "meaning": "Cannot connect to server",
+                                    "data": "Server connection lost. Try reloading the page"
+                                }
+                            });
+                        }
                     }
                 }
             }
             sendMessage(JSON.stringify(req));
         }
 
-        ws.onmessage = function (event) {
-            var response;
-            eval("response=" + event.data);
-            if (response.jsonrpc) {
-                var callback = rpcCallbacks[response.id];
-                delete rpcCallbacks[response.id];
-                callback(response);
-            } else {
-                var callback = topicCallbacks[response.topic];
-                callback(response.message);
-            }
-        };
         exec(function (response) {
             services = new Object();
             for (var i = 0; i < response.result.length; i++) {
