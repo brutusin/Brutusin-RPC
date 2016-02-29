@@ -80,7 +80,7 @@ cd brutusin-rpc-chat
 Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
 Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
-[`src/main/java/org/brutusin/chat/User.java`](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java):
+[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java):
  
  ```java
  public final class User {
@@ -111,9 +111,9 @@ Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y deja
 
 ### Topic
 
-El topic a implementar trabajará con mensajes de tipo 'org.brutusin.chat.topics.Message' y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`
 
-[`src/main/java/org/brutusin/chat/topics/MessageTopic.java`](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
+[**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
 
 ```java
 public class MessageTopic extends Topic<Integer, Message> {
