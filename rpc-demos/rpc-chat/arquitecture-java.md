@@ -40,8 +40,8 @@ Esta aplicación de define un único "topic":
 ## Implementación
 
 ### Requisitos
->JDK 1.7 o posterior
-Maven 3.0+
+>- JDK 1.7 o posterior
+- Maven 3.0+
 
 ### Creación del project
 El primer paso consiste en crear la estructura del proyecto utilizando el siguiente arquetipo maven:
