@@ -49,7 +49,7 @@ El primer paso consiste en crear la estructura del proyecto utilizando el siguie
 
 Para ello, en el directorio de tu elección, ejecuta el siguiente comando maven:
 ```properties
-mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=test -DartifactId=brutusin-rpc-chat -Dversion=1.0.0-SNAPSHOT
+mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=org.brutusin -DartifactId=rpc-chat -Dversion=1.0.0-SNAPSHOT
 ```
 
 Siendo:
@@ -58,29 +58,31 @@ Siendo:
 y entonces, la siguiente estructura del proyecto será creada:
 ```
 .
-|-- brutusin-rpc-chat
+|-- rpc-chat
 |   |-- src/main
-|   |   |-- java/test
 |   |   |-- webapp
 |   |   |   |-- index.jsp
 |   |   |   |-- WEB-INF
 |   |   |   |   |-- web.xml
 |   |   |-- resources
 |   |   |   |-- brutusin-rpc.xml
+|   |   |-- java/org/brutusin/rpc_chat/security
+|   |   |   |-- SecurityConfig.java
+|   |   |   |-- SecurityInitializer.java
 |   |-- pom.xml
 ```
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
 
 ```sh
-cd brutusin-rpc-chat
+cd rpc-chat
 ```
 
 ### Identificación del usuario
  
 Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
-Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
+Crearemos la clase `org.brutusin.rpc_chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
-[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java):
+[**`src/main/java/org/brutusin/rpc_chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/User.java):
  
  ```java
  public final class User {
@@ -111,9 +113,113 @@ Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y deja
 
 ### Topic
 
-El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.rpc_chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario).
 
-[**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
+#### Mensaje:
+
+Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y login/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
+
+[**`src/main/java/org/brutusin/rpc_chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Message.java):
+
+```java
+public class Message {
+
+    private long time;
+    private Integer from;
+    private Integer to;
+    private String message;
+    private Attachment[] attachments;
+    private Boolean logged;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Integer getFrom() {
+        return from;
+    }
+
+    public void setFrom(Integer from) {
+        this.from = from;
+    }
+
+    public Integer getTo() {
+        return to;
+    }
+
+    public void setTo(Integer to) {
+        this.to = to;
+    }
+
+    public Attachment[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachment[] attachments) {
+        this.attachments = attachments;
+    }
+
+    public Boolean getLogged() {
+        return logged;
+    }
+
+    public void setLogged(Boolean logged) {
+        this.logged = logged;
+    }
+}
+```
+representando `Attachment` una referencia a un upload almacenado en el repositorio:
+
+[**`src/main/java/org/brutusin/rpc_chat/topics/Attachment.java`**](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Attachment.java):
+
+```java
+private String id;
+    private String name;
+    private String contentType;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+```
+#### Implementación:
+
+Para crear un topic se extiende de la clase base del framework `Topic<F,M>`, siendo `F` la clase que representa al filtro, y `M` la de sus mensajes.
+
+Por lo tanto en este caso crearemos la clase `MessageTopic` extendiendo de `Topic<Integer, Message>`:
+
+[**`src/main/java/org/brutusin/rpc_chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/MessageTopic.java):
 
 ```java
 public class MessageTopic extends Topic<Integer, Message> {
@@ -164,6 +270,8 @@ public class MessageTopic extends Topic<Integer, Message> {
 }
 
 ```
+Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout actual.
+
 
 getUserInfo
 
@@ -186,7 +294,6 @@ Especialmente orientado a la mantenibilidad de los servicios, creación aplicaci
 
 Está orientado a la mantenibilidad de los servicios.
 
- 
 
 Las características diferenciadoras frente a otras alternativas son las siguientes: 
 1 RPC, no REST. Existe mucha controversia en cuanto a qué modelo es mejor, si el REST, orientado a recursos (entidades), con un numero limitado de operaciones por entidad (una por cada método HTTP), o RPC orientado a operaciones. Los principales argumentos a favor de REST son la interoperabilidad, dada su predictibilidad debida a una semantica conocida (verbos, plurales, ...) y su popularidad (es el estandar de-facto). y que REST realiza un uso correcto de HTTP (en realidad está vinculado a él)
