@@ -117,7 +117,7 @@ El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics
 
 Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y lofin/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
 
-[**`src/main/java/org/brutusin/chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Message.java):`
+[**`src/main/java/org/brutusin/chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Message.java):
 
 ```java
 public class Message {
@@ -177,6 +177,38 @@ public class Message {
         this.logged = logged;
     }
 }
+```
+
+representando [**`src/main/java/org/brutusin/chat/topics/Attachment.java`**]https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Attachment.java), una referencia a un upload almacenado en el repositorio.
+
+```java
+private String id;
+    private String name;
+    private String contentType;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 ```
 #### Implementación:
 
