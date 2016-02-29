@@ -12,18 +12,18 @@ La API a crear será la siguiente:
 ### Servicios HTTP
 Estos servicios serán los consumidos mediante AJAX desde el navegador.
 
- - ´sendFile(to, files)´: Subirá los ficheros al servidor y comunicará a los destinatarios (emisor/receptor o todos) su identificador para descargarlos.
- - ´download(id)´: Permita descargar un fichero, conocido su identificador.
+ - `sendFile(to, files)`: Subirá los ficheros al servidor y comunicará a los destinatarios (emisor/receptor o todos) su identificador para descargarlos.
+ - `download(id)`: Permita descargar un fichero, conocido su identificador.
  
 ### Servicios Websocket
 Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Por ello su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos.
 
- - ´getUserInfo()´: Devuelve la información (id de usuario), del propio usuario
- - ´getUsers()´: Devuelve el listado de usuarios activos
- - ´sendMessage(to, message)´: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
+ - `getUserInfo()`: Devuelve la información (id de usuario), del propio usuario
+ - `getUsers()`: Devuelve el listado de usuarios activos
+ - `sendMessage(to, message)`: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
  
 ### Topics
-Los "topic" son entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus actores. Definidos originalmente en el patrón de diseño publish/subscribe, en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente.
+Los "topics" son entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus actores. Definidos originalmente en el patrón de diseño publish/subscribe, en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente.
 Utilizando la API Javascript proporcionada por el framework, el código cliente puede realizar la suscripción al topic y especificar una función callback que será invocada por el framework cada vez que llege un mensaje del servidor. 
 
 Desde el punto de vista del servidor, los topics:
@@ -31,7 +31,7 @@ Desde el punto de vista del servidor, los topics:
  - Ofrecen un método para publicar mensajes (utilizado desde los servicios)
  
 Esta aplicación de define un único "topic":
- - ´messages´: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. La aplicación publicará en este topic 3 tipos diferentes de mensajes: 
+ - `messages`: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. La aplicación publicará en este topic 3 tipos diferentes de mensajes: 
    1. Mensajes de texto
    2. Mensajes de subidas de ficheros
    3. Login/logout de usuarios
