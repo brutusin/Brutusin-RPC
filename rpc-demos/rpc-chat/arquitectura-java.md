@@ -49,7 +49,7 @@ El primer paso consiste en crear la estructura del proyecto utilizando el siguie
 
 Para ello, en el directorio de tu elección, ejecuta el siguiente comando maven:
 ```properties
-mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=test -DartifactId=brutusin-rpc-chat -Dversion=1.0.0-SNAPSHOT
+mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=org.brutusin -DartifactId=rpc-chat -Dversion=1.0.0-SNAPSHOT
 ```
 
 Siendo:
@@ -58,8 +58,11 @@ Siendo:
 y entonces, la siguiente estructura del proyecto será creada:
 ```
 .
-|-- brutusin-rpc-chat
+|-- rpc-chat
 |   |-- src/main
+|   |   |-- java/org/brutusin/rpc_chat/security
+|   |   |   |-- SecurityConfig.java
+|   |   |   |-- SecurityInitializer.java
 |   |   |-- java/test
 |   |   |-- webapp
 |   |   |   |-- index.jsp
