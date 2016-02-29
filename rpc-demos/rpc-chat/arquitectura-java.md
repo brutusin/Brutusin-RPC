@@ -77,10 +77,10 @@ cd brutusin-rpc-chat
 
 ### Identificación del usuario
  
- Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
- Crearemos la clase 'User' para reprentar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
+Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
+Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
- En la carpeta `src/main/java/org/brutusin/chat/` crearermos la siguiente clase:
+`src/main/java/org/brutusin/chat/User.java`:
  
  ```java
  public final class User {
