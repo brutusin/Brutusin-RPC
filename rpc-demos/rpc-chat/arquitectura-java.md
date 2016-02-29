@@ -267,6 +267,10 @@ public class MessageTopic extends Topic<Integer, Message> {
     private User getUser() {
         return User.from(RpcActionSupport.getInstance().getHttpSession());
     }
+    
+    public static void main(String[] args) {
+        Server.test(new MessageTopic());
+    }
 }
 
 ```
