@@ -178,7 +178,7 @@ public class Message {
     }
 }
 ```
-representando `Attachment.java` una referencia a un upload almacenado en el repositorio:
+representando `Attachment` una referencia a un upload almacenado en el repositorio:
 
 [**`src/main/java/org/brutusin/chat/topics/Attachment.java`**](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Attachment.java):
 
