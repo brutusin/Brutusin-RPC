@@ -63,7 +63,6 @@ y entonces, la siguiente estructura del proyecto será creada:
 |   |   |-- java/org/brutusin/rpc_chat/security
 |   |   |   |-- SecurityConfig.java
 |   |   |   |-- SecurityInitializer.java
-|   |   |-- java/test
 |   |   |-- webapp
 |   |   |   |-- index.jsp
 |   |   |   |-- WEB-INF
@@ -75,15 +74,15 @@ y entonces, la siguiente estructura del proyecto será creada:
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
 
 ```sh
-cd brutusin-rpc-chat
+cd rpc-chat
 ```
 
 ### Identificación del usuario
  
 Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
-Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
+Crearemos la clase `org.brutusin.rpc_chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
-[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java):
+[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/User.java):
  
  ```java
  public final class User {
@@ -114,13 +113,13 @@ Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y deja
 
 ### Topic
 
-El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario).
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.rpc_chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario).
 
 #### Mensaje:
 
 Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y login/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
 
-[**`src/main/java/org/brutusin/chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Message.java):
+[**`src/main/java/org/brutusin/rpc_chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Message.java):
 
 ```java
 public class Message {
@@ -183,7 +182,7 @@ public class Message {
 ```
 representando `Attachment` una referencia a un upload almacenado en el repositorio:
 
-[**`src/main/java/org/brutusin/chat/topics/Attachment.java`**](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Attachment.java):
+[**`src/main/java/org/brutusin/rpc_chat/topics/Attachment.java`**](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Attachment.java):
 
 ```java
 private String id;
@@ -220,7 +219,7 @@ Para crear un topic se extiende de la clase base del framework `Topic<F,M>`, sie
 
 Por lo tanto en este caso crearemos la clase `MessageTopic` extendiendo de `Topic<Integer, Message>`:
 
-[**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
+[**`src/main/java/org/brutusin/rpc_chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/MessageTopic.java):
 
 ```java
 public class MessageTopic extends Topic<Integer, Message> {
