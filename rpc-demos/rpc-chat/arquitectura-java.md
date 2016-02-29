@@ -115,7 +115,7 @@ El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics
 
 #### Mensaje:
 
-Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y lofin/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
+Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y login/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
 
 [**`src/main/java/org/brutusin/chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Message.java):
 
@@ -292,7 +292,6 @@ Especialmente orientado a la mantenibilidad de los servicios, creación aplicaci
 
 Está orientado a la mantenibilidad de los servicios.
 
- 
 
 Las características diferenciadoras frente a otras alternativas son las siguientes: 
 1 RPC, no REST. Existe mucha controversia en cuanto a qué modelo es mejor, si el REST, orientado a recursos (entidades), con un numero limitado de operaciones por entidad (una por cada método HTTP), o RPC orientado a operaciones. Los principales argumentos a favor de REST son la interoperabilidad, dada su predictibilidad debida a una semantica conocida (verbos, plurales, ...) y su popularidad (es el estandar de-facto). y que REST realiza un uso correcto de HTTP (en realidad está vinculado a él)
