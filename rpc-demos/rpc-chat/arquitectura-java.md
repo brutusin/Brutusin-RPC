@@ -111,7 +111,9 @@ Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y deja
 
 ### Topic
 
-El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`. 
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario).
+
+#### Mensaje:
 
 Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y lofin/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
 
@@ -176,9 +178,9 @@ public class Message {
     }
 }
 ```
+#### Implementación:
 
-
-Así mismo utiliza una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y crea mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores cuando se crea o cancela una suscripcion.
+Para crear un topic se extiende de una clase base del framework `Topic<F,M>` siendo `F` la clase que representa al filtro, y `M` la de sus mensajes. Por lo tanto en este caso crearemos la clase `MessageTopic`  extiendiendo de `Topic<Integer, Message>`. 
 
 [**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
 
@@ -231,6 +233,8 @@ public class MessageTopic extends Topic<Integer, Message> {
 }
 
 ```
+Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales del evento de login/logout al que hacíamos referencia.
+
 
 getUserInfo
 
