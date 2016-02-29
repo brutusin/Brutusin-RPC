@@ -74,7 +74,39 @@ finalmente, establece la carpeta raiz del proyecto recien creado como directorio
 cd brutusin-rpc-chat
 ```
 
+ ### Identificación del usuario
+ Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
+ Crearemos la clase 'User' para reprentar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
+ 
+ En la carpeta `src/main/java/org/brutusin/chat/` crearermos la siguiente clase:
+ 
+ ```java
+ public final class User {
 
+    private static final AtomicInteger counter = new AtomicInteger();
+    private final Integer id;
+
+    private User() {
+        this.id = counter.incrementAndGet();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public static User from(HttpSession httpSession) {
+        synchronized (httpSession) {
+            User user = (User) httpSession.getAttribute(User.class.getName());
+            if (user == null) {
+                user = new User();
+                httpSession.setAttribute(User.class.getName(), user);
+            }
+            return user;
+        }
+    }
+}
+ ```
+> [Codigo completo](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java)
 
 getUserInfo
 
