@@ -111,7 +111,74 @@ Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y deja
 
 ### Topic
 
-El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`. 
+
+Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y lofin/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
+
+[**`src/main/java/org/brutusin/chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/Message.java):`
+
+```java
+public class Message {
+
+    private long time;
+    private Integer from;
+    private Integer to;
+    private String message;
+    private Attachment[] attachments;
+    private Boolean logged;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Integer getFrom() {
+        return from;
+    }
+
+    public void setFrom(Integer from) {
+        this.from = from;
+    }
+
+    public Integer getTo() {
+        return to;
+    }
+
+    public void setTo(Integer to) {
+        this.to = to;
+    }
+
+    public Attachment[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachment[] attachments) {
+        this.attachments = attachments;
+    }
+
+    public Boolean getLogged() {
+        return logged;
+    }
+
+    public void setLogged(Boolean logged) {
+        this.logged = logged;
+    }
+}
+```
+
+
+Así mismo utiliza una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y crea mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores cuando se crea o cancela una suscripcion.
 
 [**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
 
