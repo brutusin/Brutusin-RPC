@@ -60,15 +60,15 @@ y entonces, la siguiente estructura del proyecto será creada:
 .
 |-- rpc-chat
 |   |-- src/main
-|   |   |-- java/org/brutusin/rpc_chat/security
-|   |   |   |-- SecurityConfig.java
-|   |   |   |-- SecurityInitializer.java
 |   |   |-- webapp
 |   |   |   |-- index.jsp
 |   |   |   |-- WEB-INF
 |   |   |   |   |-- web.xml
 |   |   |-- resources
 |   |   |   |-- brutusin-rpc.xml
+|   |   |-- java/org/brutusin/rpc_chat/security
+|   |   |   |-- SecurityConfig.java
+|   |   |   |-- SecurityInitializer.java
 |   |-- pom.xml
 ```
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
