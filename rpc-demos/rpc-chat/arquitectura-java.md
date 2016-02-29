@@ -276,6 +276,9 @@ public class MessageTopic extends Topic<Integer, Message> {
 ```
 Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
 
+### Servicios de usuario
+### Envío de mensajes
+### Servicios de ficheros
 
 getUserInfo
 
