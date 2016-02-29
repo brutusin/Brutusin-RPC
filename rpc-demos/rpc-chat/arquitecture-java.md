@@ -23,7 +23,8 @@ Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriorme
  - `sendMessage(to, message)`: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
  
 ### Topics
-Los "topics" son entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus actores. Definidos originalmente en el patrón de diseño publish/subscribe, en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente.
+Los "topics" son entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus clientes. Definidos originalmente en el patrón de diseño ["publish/subscribe"](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern), en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente.
+
 Utilizando la API Javascript proporcionada por el framework, el código cliente puede realizar la suscripción al topic y especificar una función callback que será invocada por el framework cada vez que llege un mensaje del servidor. 
 
 Desde el punto de vista del servidor, los topics:
