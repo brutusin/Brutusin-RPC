@@ -82,7 +82,7 @@ cd rpc-chat
 Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
 Crearemos la clase `org.brutusin.rpc_chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
-[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/User.java):
+[**`src/main/java/org/brutusin/rpc_chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/User.java):
  
  ```java
  public final class User {
