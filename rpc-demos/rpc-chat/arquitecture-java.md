@@ -43,13 +43,13 @@ Esta aplicación de define un único "topic":
 >- JDK 1.7 o posterior
 - Maven 3.0+
 
-### Creación del project
+### Creación del proyecto
 El primer paso consiste en crear la estructura del proyecto utilizando el siguiente arquetipo maven:
  [`rpc-tomcat-war`](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-archetypes/rpc-tomcat-war)
 
 Para ello, en el directorio de tu elección, ejecuta el siguiente comando maven:
 ```properties
-mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=test -DartifactId=brutusin-rpc-demo -Dversion=1.0.0-SNAPSHOT
+mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=test -DartifactId=brutusin-rpc-chat -Dversion=1.0.0-SNAPSHOT
 ```
 
 Siendo:
@@ -58,7 +58,7 @@ Siendo:
 y entonces, la siguiente estructura del proyecto será creada:
 ```
 .
-|-- brutusin-rpc-demo
+|-- brutusin-rpc-chat
 |   |-- src/main
 |   |   |-- java/test
 |   |   |-- webapp
@@ -71,7 +71,7 @@ y entonces, la siguiente estructura del proyecto será creada:
 ```
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
 ```sh
-cd brutusin-rpc-demo
+cd brutusin-rpc-chat
 ```
 
 
