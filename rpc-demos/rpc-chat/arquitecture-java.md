@@ -38,7 +38,39 @@ Esta aplicación de define un único "topic":
    3. Login/logout de usuarios
  
 ## Implementación
+### Requisitos
+>JDK 1.7 o posterior
+Maven 3.0+
+### Creación del project
+El primer paso consiste en crear la estructura del proyecto utilizando el siguiente arquetipo maven:
+ [`rpc-tomcat-war`](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-archetypes/rpc-tomcat-war)
 
+Para ello, en el directorio de tu elección, ejecuta el siguiente comando maven:
+```properties
+mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=test -DartifactId=brutusin-rpc-demo -Dversion=1.0.0-SNAPSHOT
+```
+
+Siendo:
+`${version}` la última versión del arquetipo disponible en Maven Central [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-war/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-war/)
+
+y entonces, la siguiente estructura del proyecto será creada:
+```
+.
+|-- brutusin-rpc-demo
+|   |-- src/main
+|   |   |-- java/test
+|   |   |-- webapp
+|   |   |   |-- index.jsp
+|   |   |   |-- WEB-INF
+|   |   |   |   |-- web.xml
+|   |   |-- resources
+|   |   |   |-- brutusin-rpc.xml
+|   |-- pom.xml
+```
+finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
+```sh
+cd brutusin-rpc-demo
+```
 
 
 
