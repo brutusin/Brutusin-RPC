@@ -13,39 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.chat.topics;
+package org.brutusin.rpc_chat.actions;
+
+import org.brutusin.rpc_chat.topics.Attachment;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class Attachment {
+public class UploadMetadata {
+    private Integer uploader;
+    private Attachment attachment;
 
-    private String id;
-    private String name;
-    private String contentType;
-
-    public String getId() {
-        return id;
+    public Integer getUploader() {
+        return uploader;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUploader(Integer uploader) {
+        this.uploader = uploader;
     }
 
-    public String getName() {
-        return name;
+    public Attachment getAttachment() {
+        return attachment;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
     }
 }

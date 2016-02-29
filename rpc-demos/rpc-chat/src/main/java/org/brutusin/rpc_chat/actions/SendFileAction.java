@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.chat.actions;
+package org.brutusin.rpc_chat.actions;
 
-import org.brutusin.chat.User;
-import org.brutusin.chat.actions.SendFileAction.SendFileInput;
-import org.brutusin.chat.topics.Attachment;
-import org.brutusin.chat.topics.Message;
-import org.brutusin.chat.topics.MessageTopic;
+import org.brutusin.rpc_chat.User;
+import org.brutusin.rpc_chat.actions.SendFileAction.SendFileInput;
+import org.brutusin.rpc_chat.topics.Attachment;
+import org.brutusin.rpc_chat.topics.Message;
+import org.brutusin.rpc_chat.topics.MessageTopic;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

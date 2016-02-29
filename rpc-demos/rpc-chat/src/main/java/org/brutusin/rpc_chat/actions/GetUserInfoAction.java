@@ -13,31 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.chat.actions;
+package org.brutusin.rpc_chat.actions;
 
-import org.brutusin.chat.topics.Attachment;
+import org.brutusin.rpc_chat.User;
+import javax.servlet.http.HttpSession;
+import org.brutusin.rpc.websocket.WebsocketAction;
+import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class UploadMetadata {
-    private Integer uploader;
-    private Attachment attachment;
+public class GetUserInfoAction extends WebsocketAction<Void, User> {
 
-    public Integer getUploader() {
-        return uploader;
-    }
-
-    public void setUploader(Integer uploader) {
-        this.uploader = uploader;
-    }
-
-    public Attachment getAttachment() {
-        return attachment;
-    }
-
-    public void setAttachment(Attachment attachment) {
-        this.attachment = attachment;
+    @Override
+    public User execute(Void input) throws Exception {
+       return User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession());
     }
 }

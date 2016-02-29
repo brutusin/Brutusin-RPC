@@ -13,21 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.chat.actions;
+package org.brutusin.rpc_chat;
 
-import org.brutusin.chat.User;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpSession;
-import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class GetUserInfoAction extends WebsocketAction<Void, User> {
+public final class User {
 
-    @Override
-    public User execute(Void input) throws Exception {
-       return User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession());
+    private static final AtomicInteger counter = new AtomicInteger();
+    private final Integer id;
+
+    private User() {
+        this.id = counter.incrementAndGet();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public static User from(HttpSession httpSession) {
+        synchronized (httpSession) {
+            User user = (User) httpSession.getAttribute(User.class.getName());
+            if (user == null) {
+                user = new User();
+                httpSession.setAttribute(User.class.getName(), user);
+            }
+            return user;
+        }
     }
 }

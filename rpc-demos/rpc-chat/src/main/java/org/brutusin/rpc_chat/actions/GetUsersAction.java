@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.chat.actions;
+package org.brutusin.rpc_chat.actions;
 
-import org.brutusin.chat.User;
-import org.brutusin.chat.topics.MessageTopic;
+import org.brutusin.rpc_chat.User;
+import org.brutusin.rpc_chat.topics.MessageTopic;
 import java.util.Set;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WritableSession;

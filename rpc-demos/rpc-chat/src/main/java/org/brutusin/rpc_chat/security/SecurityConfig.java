@@ -1,4 +1,4 @@
-package org.brutusin.chat.security;
+package org.brutusin.rpc_chat.security;
 
 /*
  * Copyright 2016 Ignacio del Valle Alles idelvall@brutusin.org.
