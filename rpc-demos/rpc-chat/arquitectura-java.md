@@ -75,6 +75,7 @@ cd brutusin-rpc-chat
 ```
 
  ### Identificación del usuario
+ 
  Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
  Crearemos la clase 'User' para reprentar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
  
