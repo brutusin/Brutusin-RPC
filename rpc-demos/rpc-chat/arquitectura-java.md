@@ -70,11 +70,12 @@ y entonces, la siguiente estructura del proyecto será creada:
 |   |-- pom.xml
 ```
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
+
 ```sh
 cd brutusin-rpc-chat
 ```
 
- ### Identificación del usuario
+### Identificación del usuario
  
  Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
  Crearemos la clase 'User' para reprentar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
