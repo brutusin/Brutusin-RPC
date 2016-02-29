@@ -70,11 +70,100 @@ y entonces, la siguiente estructura del proyecto será creada:
 |   |-- pom.xml
 ```
 finalmente, establece la carpeta raiz del proyecto recien creado como directorio de trabajo:
+
 ```sh
 cd brutusin-rpc-chat
 ```
 
+### Identificación del usuario
+ 
+Como se ha comentado, el usuario se identificará mediante un entero asociado a su sesión. 
+Crearemos la clase `org.brutusin.chat.User` para representar a un usuario y dejar lugar a futura funcionalidad (nickname, IP, ...)
+ 
+[**`src/main/java/org/brutusin/chat/User.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/User.java):
+ 
+ ```java
+ public final class User {
 
+    private static final AtomicInteger counter = new AtomicInteger();
+    private final Integer id;
+
+    private User() {
+        this.id = counter.incrementAndGet();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public static User from(HttpSession httpSession) {
+        synchronized (httpSession) {
+            User user = (User) httpSession.getAttribute(User.class.getName());
+            if (user == null) {
+                user = new User();
+                httpSession.setAttribute(User.class.getName(), user);
+            }
+            return user;
+        }
+    }
+}
+ ```
+
+### Topic
+
+El topic a implementar trabajará con mensajes de tipo `org.brutusin.chat.topics.Message` y permitirá filtrado por id de usuario (para permitir mensajes privados que sólo lleguen a ese usuario) por lo tanto será implementado una clase que extiende de `Topic<Integer, Message>`
+
+[**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
+
+```java
+public class MessageTopic extends Topic<Integer, Message> {
+
+    private final Map<Integer, WritableSession> sessionMap = Collections.synchronizedMap(new HashMap());
+
+    @Override
+    protected void beforeSubscribe(WritableSession session) {
+        User user = getUser();
+        session.getUserProperties().put("user", user);
+        sessionMap.put(user.getId(), session);
+        Message message = new Message();
+        message.setFrom(user.getId());
+        message.setTime(System.currentTimeMillis());
+        message.setLogged(true);
+        fire(null, message);
+    }
+
+    @Override
+    protected void afterUnsubscribe(WritableSession session) {
+        User user = getUser();
+        sessionMap.remove(getUser().getId());
+        Message message = new Message();
+        message.setFrom(user.getId());
+        message.setTime(System.currentTimeMillis());
+        message.setLogged(false);
+        fire(null, message);
+    }
+
+    @Override
+    public Set<WritableSession> getSubscribers(Integer filter) {
+        if (filter == null) {
+            return super.getSubscribers();
+        }
+        WritableSession toSession = sessionMap.get(filter);
+        if (toSession == null) {
+            return null;
+        }
+        HashSet<WritableSession> ret = new HashSet<WritableSession>();
+        ret.add(toSession);
+        ret.add(sessionMap.get(getUser().getId()));
+        return ret;
+    }
+
+    private User getUser() {
+        return User.from(RpcActionSupport.getInstance().getHttpSession());
+    }
+}
+
+```
 
 getUserInfo
 
