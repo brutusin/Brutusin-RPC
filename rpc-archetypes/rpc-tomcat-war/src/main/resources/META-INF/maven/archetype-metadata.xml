@@ -15,7 +15,7 @@
                 <include>**/*</include>
             </includes>
         </fileSet>
-        <fileSet packaged="true">
+        <fileSet packaged="true" filtered="true">
             <directory>src/main/java</directory>
             <includes>
                 <include>**/*</include>
@@ -23,11 +23,20 @@
         </fileSet>
     </fileSets>
     <requiredProperties>
+        <requiredProperty key="artifactIdUnhyphenated">
+            <defaultValue>${artifactId.replace("-","_")}</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="org-brutusin-version">
+            <defaultValue>${project.version}</defaultValue>
+        </requiredProperty>
         <requiredProperty key="org-brutusin-version">
             <defaultValue>${project.version}</defaultValue>
         </requiredProperty>
         <requiredProperty key="json-provider-version">
             <defaultValue>${json-provider-version}</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="spring-security-version">
+            <defaultValue>${spring-security-version}</defaultValue>
         </requiredProperty>
     </requiredProperties>
 </archetype-descriptor>
