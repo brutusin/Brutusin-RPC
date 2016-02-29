@@ -45,9 +45,4 @@ public final class User {
             return user;
         }
     }
-    public static void main(String[] args) {
-          for (int i = 4; i < 80; i++) {
-            System.out.print(i+",");
-        }
-    }
 }

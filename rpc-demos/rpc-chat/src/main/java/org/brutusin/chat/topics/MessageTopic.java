@@ -21,10 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.RpcActionSupport;
 import org.brutusin.rpc.websocket.Topic;
-import org.brutusin.rpc.websocket.WebsocketActionSupport;
 import org.brutusin.rpc.websocket.WritableSession;
 
 /**
