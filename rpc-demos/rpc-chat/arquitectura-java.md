@@ -213,7 +213,7 @@ private String id;
 ```
 #### Implementación:
 
-Para crear un topic se extiende de una clase base del framework `Topic<F,M>` siendo `F` la clase que representa al filtro, y `M` la de sus mensajes. Por lo tanto en este caso crearemos la clase `MessageTopic`  extiendiendo de `Topic<Integer, Message>`. 
+Para crear un topic se extiende de la clase base del framework `Topic<F,M>`, siendo `F` la clase que representa al filtro, y `M` la de sus mensajes. Por lo tanto en este caso crearemos la clase `MessageTopic` extendiendo de `Topic<Integer, Message>`. 
 
 [**`src/main/java/org/brutusin/chat/topics/MessageTopic.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/chat/topics/MessageTopic.java):
 
