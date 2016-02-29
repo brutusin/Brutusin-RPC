@@ -33,9 +33,9 @@ Desde el punto de vista del servidor, los topics:
  
 Esta aplicación de define un único "topic":
  - `messages`: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. La aplicación publicará en este topic 3 tipos diferentes de mensajes: 
-   1. Mensajes de texto
-   2. Mensajes de subidas de ficheros
-   3. Login/logout de usuarios
+   - Mensajes de texto
+   - Mensajes de subidas de ficheros
+   - Login/logout de usuarios
  
 ## Implementación
 
