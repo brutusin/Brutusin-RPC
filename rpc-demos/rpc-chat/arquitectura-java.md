@@ -182,7 +182,7 @@ public class Message {
 ```
 representando `Attachment` una referencia a un upload almacenado en el repositorio:
 
-[**`src/main/java/org/brutusin/rpc_chat/topics/Attachment.java`**](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Attachment.java):
+[**`src/main/java/org/brutusin/rpc_chat/topics/Attachment.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Attachment.java):
 
 ```java
 private String id;
