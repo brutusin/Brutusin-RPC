@@ -338,12 +338,12 @@ if (typeof brutusin === "undefined") {
             }
             var req = createRpcRequest(service, input, reqId);
 
-            var reconnected = false;
+            var reconnecting = false;
 
             function sendMessage(msg) {
                 if (ws.readyState === 1) {
                     ws.send(msg);
-                    reconnected = false;
+                    reconnecting = false;
                 } else if (ws.readyState === 0) {
                     setTimeout(
                             function () {
@@ -351,9 +351,9 @@ if (typeof brutusin === "undefined") {
                             },
                             100);
                 } else {
-                    if (!reconnected) {
+                    if (!reconnecting) {
                         reconnect();
-                        reconnected = true;
+                        reconnecting = true;
                         sendMessage(msg);
                     } else {
                         if (load) {

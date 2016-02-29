@@ -31,7 +31,6 @@ import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.json.annotations.JsonProperty;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.RpcActionSupport;
-import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.UnsafeAction;
 
 /**
