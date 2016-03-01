@@ -30,7 +30,7 @@ import org.brutusin.commons.utils.CryptoUtils;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.json.annotations.JsonProperty;
 import org.brutusin.json.spi.JsonCodec;
-import org.brutusin.rpc.RpcActionSupport;
+import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.UnsafeAction;
 
 /**
@@ -60,7 +60,7 @@ public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
         }
         MetaDataInputStream[] streams = input.getFiles();
         Attachment[] attachments = new Attachment[streams.length];
-        HttpServletRequest request = (HttpServletRequest) RpcActionSupport.forHttp().getHttpServletRequest();
+        HttpServletRequest request = HttpActionSupport.getInstance().getHttpServletRequest();
         Integer uploader = User.from(request.getSession()).getId();
         for (int i = 0; i < streams.length; i++) {
             MetaDataInputStream is = streams[i];

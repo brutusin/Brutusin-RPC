@@ -22,7 +22,6 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionSupport;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -37,23 +36,6 @@ public abstract class RpcActionSupport {
         return CONTEXTS.get();
     }
     
-    public static HttpActionSupport forHttp() {
-        RpcActionSupport instance = getInstance();
-        if(instance instanceof HttpActionSupport){
-            return (HttpActionSupport)instance;
-        }
-        throw new IllegalStateException("Caller is not in a HTTP request scope");
-    }
-    
-    public static WebsocketActionSupport forWskt() {
-        RpcActionSupport instance = getInstance();
-        if(instance instanceof WebsocketActionSupport){
-            return (WebsocketActionSupport)instance;
-        }
-        throw new IllegalStateException("Caller is not in a Websocket request scope");
-    }
-    
-
     public abstract ApplicationContext getSpringContext();
 
     public abstract Map<String, HttpAction> getHttpServices();

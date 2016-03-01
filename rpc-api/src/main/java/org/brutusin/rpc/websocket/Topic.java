@@ -70,17 +70,15 @@ public abstract class Topic<F, M> extends RpcComponent {
             return false;
         }
         synchronized (subscribers) {
-            if (subscribers != null) {
-                for (WritableSession session : subscribers) {
-                    session.sendToPeer(mr);
-                }
+            for (WritableSession session : subscribers) {
+                session.sendToPeer(mr);
             }
         }
         return true;
     }
 
     public final void subscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) RpcActionSupport.forWskt().getSession();
+        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is already subscribed to this topic");
         }
@@ -89,7 +87,7 @@ public abstract class Topic<F, M> extends RpcComponent {
     }
 
     public final void unsubscribe() throws InvalidSubscriptionException {
-        WritableSession session = (WritableSession) RpcActionSupport.forWskt().getSession();
+        WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (!sessions.contains(session)) {
             throw new InvalidSubscriptionException("Current session is not subscribed to this topic");
         }

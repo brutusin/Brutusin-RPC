@@ -25,6 +25,14 @@ import org.brutusin.rpc.RpcActionSupport;
  */
 public abstract class HttpActionSupport extends RpcActionSupport{
 
+    public static HttpActionSupport getInstance() {
+        RpcActionSupport instance = RpcActionSupport.getInstance();
+        if(instance instanceof HttpActionSupport){
+            return (HttpActionSupport)instance;
+        }
+        throw new IllegalStateException("Caller is not in a HTTP request scope");
+    }
+    
     public abstract HttpServletRequest getHttpServletRequest();
 
     public abstract HttpServletResponse getHttpServletResponse();

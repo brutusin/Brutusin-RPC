@@ -18,9 +18,8 @@ package org.brutusin.rpc.actions.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcActionSupport;
+import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.UnsafeAction;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -36,9 +35,8 @@ public class LogoutAction extends UnsafeAction<Void, Void> {
 
     @Override
     public Void execute(Void input) throws Exception {
-        HttpServletRequest request = (HttpServletRequest) RpcActionSupport.forHttp().getHttpServletRequest();
+        HttpServletRequest request = HttpActionSupport.getInstance().getHttpServletRequest();
         request.logout();
-        SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();

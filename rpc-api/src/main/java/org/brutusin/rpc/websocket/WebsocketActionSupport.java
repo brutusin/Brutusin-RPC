@@ -24,6 +24,14 @@ import org.brutusin.rpc.RpcActionSupport;
  */
 public abstract class WebsocketActionSupport extends RpcActionSupport{
     
+    public static WebsocketActionSupport getInstance() {
+        RpcActionSupport instance = RpcActionSupport.getInstance();
+        if(instance instanceof WebsocketActionSupport){
+            return (WebsocketActionSupport)instance;
+        }
+        throw new IllegalStateException("Caller is not in a Websocket request scope");
+    }
+    
     @Override
     public final Principal getUserPrincipal() {
         Session session = getWebsocketSession();

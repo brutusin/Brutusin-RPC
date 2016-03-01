@@ -274,9 +274,24 @@ public class MessageTopic extends Topic<Integer, Message> {
 }
 
 ```
-Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado su id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
+Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado el id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
 
 ### Servicios de usuario
+
+A continuación vamos a implementar los servicios Websocket `getUserInfo()` y `getUsers()` a los que hacíamos referencia previamente. Para ello extendemos de la clase del framework `WebsocketAction<I, O>` siendo 
+`I` y `O` los parámetros de los tipos que representan los mensajes de entrada y salida del servicio.
+
+
+```java
+public class GetUserInfoAction extends WebsocketAction<Void, User> {
+
+    @Override
+    public User execute(Void input) throws Exception {
+       return User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession());
+    }
+}
+```
+
 ### Envío de mensajes
 ### Servicios de ficheros
 

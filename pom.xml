@@ -117,7 +117,6 @@
         <module>rpc-tomcat</module>
         <module>rpc-demos</module>
         <module>rpc-archetypes</module>
-    <module>rpc-chat</module>
   </modules>
     
 </project>

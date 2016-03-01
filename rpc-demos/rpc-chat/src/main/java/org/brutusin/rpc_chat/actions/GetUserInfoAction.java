@@ -16,7 +16,6 @@
 package org.brutusin.rpc_chat.actions;
 
 import org.brutusin.rpc_chat.User;
-import javax.servlet.http.HttpSession;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
@@ -28,6 +27,6 @@ public class GetUserInfoAction extends WebsocketAction<Void, User> {
 
     @Override
     public User execute(Void input) throws Exception {
-       return User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession());
+       return User.from(WebsocketActionSupport.getInstance().getHttpSession());
     }
 }
