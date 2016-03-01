@@ -30,12 +30,10 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
 @Description("This descriptor service returns the **list** of the availabe **topics**. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/TopicListAction.java)]*")
 public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
 
-    private ResourceItem[] topicItems;
-
     @Override
-    public void init() throws Exception {
-        Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
-        this.topicItems = new ResourceItem[topics.size()];
+    public ResourceItem[] execute(Void input) throws Exception {
+         Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
+        ResourceItem[] topicItems = new ResourceItem[topics.size()];
         int i = 0;
         for (Map.Entry<String, Topic> entrySet : topics.entrySet()) {
             String id = entrySet.getKey();
@@ -43,12 +41,8 @@ public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
             ResourceItem ti = new ResourceItem();
             ti.setId(id);
             ti.setDescription(RpcUtils.getDescription(topic));
-            this.topicItems[i++] = ti;
+            topicItems[i++] = ti;
         }
-    }
-
-    @Override
-    public ResourceItem[] execute(Void input) throws Exception {
-        return this.topicItems;
+        return topicItems;
     }
 }

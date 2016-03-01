@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -32,7 +32,7 @@
     </scm>
     
     <properties>
-        <commons-version>1.4.3</commons-version>
+        <commons-version>1.4.4</commons-version>
         <json-version>1.3.0</json-version>
         <json-provider-version>2.4.0</json-provider-version>
         <spring-version>4.2.4.RELEASE</spring-version>
@@ -117,6 +117,7 @@
         <module>rpc-tomcat</module>
         <module>rpc-demos</module>
         <module>rpc-archetypes</module>
-    </modules>
+    <module>rpc-chat</module>
+  </modules>
     
 </project>
