@@ -5,11 +5,11 @@
 	   					   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="topic.messages" class="org.brutusin.rpc_chat.topics.MessageTopic"/> 
-    <bean id="svr.getUsers" class="org.brutusin.rpc_chat.actions.GetUsersAction"> 
+    <bean id="svr.getAllUsers" class="org.brutusin.rpc_chat.actions.GetAllUsersAction"> 
         <property name="topic" ref="topic.messages"/>
     </bean>
     <bean id="svr.download" class="org.brutusin.rpc_chat.actions.DownloadFileAction"/>
-    <bean id="svr.getUserInfo" class="org.brutusin.rpc_chat.actions.GetUserInfoAction"/> 
+    <bean id="svr.getCurrentUser" class="org.brutusin.rpc_chat.actions.GetCurrentUserAction"/> 
     <bean id="svr.sendFile" class="org.brutusin.rpc_chat.actions.SendFileAction"> 
         <property name="topic" ref="topic.messages"/>
     </bean>

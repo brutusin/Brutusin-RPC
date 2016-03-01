@@ -16,17 +16,37 @@
 package org.brutusin.rpc_chat.actions;
 
 import org.brutusin.rpc_chat.User;
+import org.brutusin.rpc_chat.topics.MessageTopic;
+import java.util.Set;
 import org.brutusin.rpc.websocket.WebsocketAction;
-import org.brutusin.rpc.websocket.WebsocketActionSupport;
+import org.brutusin.rpc.websocket.WritableSession;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class GetUserInfoAction extends WebsocketAction<Void, User> {
+public class GetAllUsersAction extends WebsocketAction<Void, User[]> {
+
+    private MessageTopic topic;
+
+    public MessageTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(MessageTopic topic) {
+        this.topic = topic;
+    }
 
     @Override
-    public User execute(Void input) throws Exception {
-       return User.from(WebsocketActionSupport.getInstance().getHttpSession());
+    public User[] execute(Void v) throws Exception {
+        Set<WritableSession> subscribers = topic.getSubscribers();
+        User[] ret = new User[subscribers.size()];
+        synchronized (subscribers) {
+            int i = 0;
+            for (WritableSession session : subscribers) {
+                ret[i++] = (User) session.getUserProperties().get("user");
+            }
+        }
+        return ret;
     }
 }

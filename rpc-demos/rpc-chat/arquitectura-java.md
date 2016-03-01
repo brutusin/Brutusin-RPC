@@ -18,8 +18,8 @@ Estos servicios serán los consumidos mediante AJAX desde el navegador.
 ### Servicios Websocket
 Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Por ello su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos.
 
- - `getUserInfo()`: Devuelve la información (id de usuario), del propio usuario
- - `getUsers()`: Devuelve el listado de usuarios activos
+ - `getCurrentUser()`: Devuelve la información (id de usuario), del propio usuario
+ - `getAllUsers()`: Devuelve el listado de usuarios activos
  - `sendMessage(to, message)`: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
  
 ### Topics
@@ -281,7 +281,7 @@ Hay dos puntos a resaltar sobre el anterior código:
 
 ### Servicios de usuario
 
-A continuación vamos a implementar los servicios Websocket `getUserInfo()` y `getUsers()` a los que hacíamos referencia previamente. Para ello extendemos de la clase del framework `WebsocketAction<I, O>` siendo 
+A continuación vamos a implementar los servicios Websocket `getCurrentUser()` y `getAllUsers()` a los que hacíamos referencia previamente. Para ello extendemos de la clase del framework `WebsocketAction<I, O>` siendo 
 `I` y `O` los parámetros de los tipos que representan los mensajes de entrada y salida del servicio.
 
 [**`src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java);
@@ -328,7 +328,7 @@ public class GetUsersAction extends WebsocketAction<Void, User[]> {
 ### Envío de mensajes
 ### Servicios de ficheros
 
-getUserInfo
+getCurrentUser
 
 JSON Schema es una especificación (actualmente en estado draft) que define una sintaxis JSON para representar la estructura y restricciones de otros documentos JSON. Es el hómologo a XSD en el mundo JSON.
 Los esquemas JSON le permiten describir de manera automática la estructura de los mensajes de los servicios a través de unos meta-servicios proporcionados por el propio framework, y más aún, ofrecer una interfaz al desarrollador para listar todos los servicios disponibles, ver sus características y descriptción, y ejecutarlos directamente.

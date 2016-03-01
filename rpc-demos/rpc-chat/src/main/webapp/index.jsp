@@ -17,13 +17,13 @@
             var inputText;
             wsk.subscribe("topic.messages", onMessage);
             wsk.exec({
-                service: "svr.getUserInfo",
+                service: "svr.getCurrentUser",
                 load: function (response) {
                     userId = response.result.id;
                     document.getElementById("userId").innerHTML = userId;
                 }});
             wsk.exec({
-                service: "svr.getUsers",
+                service: "svr.getAllUsers",
                 load: function (response) {
                     setTotalUsers(response.result.length);
                 }});
