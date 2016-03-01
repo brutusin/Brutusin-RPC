@@ -274,23 +274,56 @@ public class MessageTopic extends Topic<Integer, Message> {
 }
 
 ```
-Resaltar que hemos utilizado una estructura (`sessionMap`) orientada a obtener las sesiones de usuario dado el id y que en la creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
+Hay dos puntos a resaltar sobre el anterior código:
+1. La creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
+2. Se almacena el usuario en la sesión Websocket (`session.getUserProperties().put("user", user);`) para poder obtenerlo posteriormente fuera del ámbito de una invocación del propio usuario
+
 
 ### Servicios de usuario
 
 A continuación vamos a implementar los servicios Websocket `getUserInfo()` y `getUsers()` a los que hacíamos referencia previamente. Para ello extendemos de la clase del framework `WebsocketAction<I, O>` siendo 
 `I` y `O` los parámetros de los tipos que representan los mensajes de entrada y salida del servicio.
 
-
+[**`src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java);
 ```java
 public class GetUserInfoAction extends WebsocketAction<Void, User> {
 
     @Override
     public User execute(Void input) throws Exception {
-       return User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession());
+       return User.from(WebsocketActionSupport.getInstance().getHttpSession());
     }
 }
 ```
+
+[**`src/main/java/org/brutusin/rpc_chat/actions/GetUsersAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetUsersAction.java)
+```java
+public class GetUsersAction extends WebsocketAction<Void, User[]> {
+
+    private MessageTopic topic;
+
+    public MessageTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(MessageTopic topic) {
+        this.topic = topic;
+    }
+
+    @Override
+    public User[] execute(Void v) throws Exception {
+        Set<WritableSession> subscribers = topic.getSubscribers();
+        User[] ret = new User[subscribers.size()];
+        synchronized (subscribers) {
+            int i = 0;
+            for (WritableSession session : subscribers) {
+                ret[i++] = (User) session.getUserProperties().get("user");
+            }
+        }
+        return ret;
+    }
+}
+```
+
 
 ### Envío de mensajes
 ### Servicios de ficheros
