@@ -340,11 +340,11 @@
                 </table>
             </footer>
         </div>
+        <script>
+            autoscroll = document.getElementById("autoscroll");
+            inputTo = document.getElementById("inputTo");
+            inputText = document.getElementById("message");
+            inputText.focus();
+        </script>
     </body>
-    <script>
-        autoscroll = document.getElementById("autoscroll");
-        inputTo = document.getElementById("inputTo");
-        inputText = document.getElementById("message");
-        inputText.focus();
-    </script>
 </html>
