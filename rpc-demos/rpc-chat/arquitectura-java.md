@@ -284,7 +284,7 @@ Hay dos puntos a resaltar sobre el anterior código:
 A continuación vamos a implementar los servicios Websocket `getCurrentUser()` y `getAllUsers()` a los que hacíamos referencia previamente. Para ello extendemos de la clase del framework `WebsocketAction<I, O>` siendo 
 `I` y `O` los parámetros de los tipos que representan los mensajes de entrada y salida del servicio.
 
-[**`src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetUserInfoAction.java);
+[**`src/main/java/org/brutusin/rpc_chat/actions/GetCurrentUserAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetCurrentUserAction.java);
 ```java
 public class GetUserInfoAction extends WebsocketAction<Void, User> {
 
@@ -295,7 +295,7 @@ public class GetUserInfoAction extends WebsocketAction<Void, User> {
 }
 ```
 
-[**`src/main/java/org/brutusin/rpc_chat/actions/GetUsersAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetUsersAction.java)
+[**`src/main/java/org/brutusin/rpc_chat/actions/GetAllUsersAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/GetAllUsersAction.java)
 ```java
 public class GetUsersAction extends WebsocketAction<Void, User[]> {
 
@@ -323,9 +323,68 @@ public class GetUsersAction extends WebsocketAction<Void, User[]> {
     }
 }
 ```
+A resaltar dos puntos:
 
+1. Cómo hacemos uso de la sesión para recuperar el usuario (almacenado previamente por el topic en el proceso de subcripción).
+2. Esta clase tiene como atributo un objeto topic que posteriormente inyectaremos via Spring.
 
 ### Envío de mensajes
+
+A continuación codificaremos el servicio que permite al usuario actual publicar mensajes de texto en el topic, lo que le permite, de manera indirecta, enviárselo a todos los usuario conectados o a un único destinatario, dependiendo de si el filtro del topic (id del destinatario) es o no especificado
+
+[**`src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java);
+
+```java
+public class SendMessageAction extends WebsocketAction<SendMessageAction.SendMessageInput, Boolean> {
+
+    private MessageTopic topic;
+
+    public MessageTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(MessageTopic topic) {
+        this.topic = topic;
+    }
+
+    @Override
+    public Boolean execute(SendMessageInput input) throws Exception {
+        if (input == null) {
+            throw new IllegalArgumentException("Input is required");
+        }
+        Integer from = User.from((HttpSession) WebsocketActionSupport.getInstance().getHttpSession()).getId();
+        Message message = new Message();
+        message.setFrom(from);
+        message.setTo(input.getTo());
+        message.setMessage(input.getMessage());
+        message.setTime(System.currentTimeMillis());
+        return topic.fire(input.getTo(), message);
+    }
+
+    public static class SendMessageInput {
+        private Integer to;
+        @JsonProperty(required = true)
+        private String message;
+
+        public Integer getTo() {
+            return to;
+        }
+
+        public void setTo(Integer to) {
+            this.to = to;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+}
+```
+
 ### Servicios de ficheros
 
 getCurrentUser
