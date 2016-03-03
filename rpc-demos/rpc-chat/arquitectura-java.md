@@ -274,9 +274,10 @@ public class MessageTopic extends Topic<Integer, Message> {
 }
 
 ```
-Hay dos puntos a resaltar sobre el anterior código:
-1. La creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
-2. Se almacena el usuario en la sesión Websocket (`session.getUserProperties().put("user", user);`) para poder obtenerlo posteriormente fuera del ámbito de una invocación del propio usuario
+Hay varios puntos a resaltar sobre el anterior código:
+- La creación y cancelación de suscripciones estamos creando mensajes (llamadas a `fire(null, message)`) para notificar a todos los suscriptores actuales el evento de login/logout en curso.
+- Se almacena el usuario en la sesión Websocket (`session.getUserProperties().put("user", user);`) para poder obtenerlo posteriormente fuera del ámbito de una invocación del propio usuario
+- Si el filtro (id del destinatario) es nulo, todos los subscriptores del topic serán destinatarios del mensaje.
 
 
 ### Servicios de usuario
@@ -330,7 +331,7 @@ A resaltar dos puntos:
 
 ### Envío de mensajes
 
-A continuación codificaremos el servicio que permite al usuario actual publicar mensajes de texto en el topic, lo que le permite, de manera indirecta, enviárselo a todos los usuario conectados o a un único destinatario, dependiendo de si el filtro del topic (id del destinatario) es o no especificado
+A continuación codificaremos el servicio que permite al usuario actual publicar mensajes de texto en el topic y, de manera indirecta, enviárselo a todos los usuario conectados o a un único destinatario, dependiendo de si el filtro del topic (id del destinatario) es o no especificado:
 
 [**`src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java);
 
@@ -384,6 +385,8 @@ public class SendMessageAction extends WebsocketAction<SendMessageAction.SendMes
     }
 }
 ```
+Como vemos, el servicio recibe una entrada de tipo `SendMessageInput`, compone un mensaje y lo publica en el topic. 
+
 
 ### Servicios de ficheros
 
