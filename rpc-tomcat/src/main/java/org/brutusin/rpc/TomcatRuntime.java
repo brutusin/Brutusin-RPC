@@ -134,11 +134,6 @@ public class TomcatRuntime extends ServerRuntime {
         tomcat.setBaseDir(tempPath.toString());
         tomcat.setPort(port);
 
-        MemoryRealm realm = new MemoryRealm();
-        realm.setPathname("C:\\Users\\DGPORTATIL01\\Desktop\\users.xml");
-
-        tomcat.getEngine().setRealm(null);
-
         return tomcat;
     }
 
