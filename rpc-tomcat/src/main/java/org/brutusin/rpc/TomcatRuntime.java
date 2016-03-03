@@ -105,9 +105,9 @@ public class TomcatRuntime extends ServerRuntime {
             docBase = Files.createTempDirectory("default-doc-base").toString();
         }
         LOGGER.info("Setting application docbase as '" + docBase + "'");
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
+        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", docBase);
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
-        if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SKIP_JARS_PROPERTY) == null) {
+        if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
             LOGGER.info("Disabling TLD scanning");
             StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
             jarScanFilter.setTldSkip("*");
