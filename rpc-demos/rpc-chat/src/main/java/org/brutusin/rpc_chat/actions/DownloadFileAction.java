@@ -23,6 +23,7 @@ import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.SafeAction;
 import org.brutusin.rpc.http.StreamResult;
+import org.brutusin.rpc_chat.topics.Attachment;
 
 /**
  *
@@ -37,8 +38,8 @@ public class DownloadFileAction extends SafeAction<String, StreamResult> {
             throw new IllegalArgumentException("Invalid id: " + id);
         }
         File metaFile = new File(SendFileAction.UPLOAD_ROOT, id + ".info");
-        UploadMetadata metadata = JsonCodec.getInstance().parse(Miscellaneous.toString(new FileInputStream(metaFile), "UTF-8"), UploadMetadata.class);
-        StreamResult ret = new StreamResult(new MetaDataInputStream(new FileInputStream(f), metadata.getAttachment().getName(), metadata.getAttachment().getContentType(), f.length(), f.lastModified()));
+        Attachment attachment = JsonCodec.getInstance().parse(Miscellaneous.toString(new FileInputStream(metaFile), "UTF-8"), Attachment.class);
+        StreamResult ret = new StreamResult(new MetaDataInputStream(new FileInputStream(f), attachment.getName(), attachment.getContentType(), f.length(), f.lastModified()));
         return Cacheable.forMaxHours(ret, 1);
     }
 

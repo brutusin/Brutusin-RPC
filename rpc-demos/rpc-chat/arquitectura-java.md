@@ -185,7 +185,9 @@ representando `Attachment` una referencia a un upload almacenado en el repositor
 [**`src/main/java/org/brutusin/rpc_chat/topics/Attachment.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Attachment.java):
 
 ```java
-private String id;
+public class Attachment {
+
+    private String id;
     private String name;
     private String contentType;
 
@@ -212,6 +214,7 @@ private String id;
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
+}
 ```
 #### Implementación:
 
@@ -389,6 +392,105 @@ Como vemos, el servicio recibe una entrada de tipo `SendMessageInput`, compone u
 
 
 ### Servicios de ficheros
+
+En esta parte final implementaremos los servicios de subida y descarga de ficheros, que permitirán a los usuarios enviar ficheros a otros usuarios de manera pública o privada.
+
+#### Servicio de envío de ficheros
+
+Este servicio será el encargado de realizar el upload de los fichero seleccionados por el usuario, almacenarlos en un directorio temporal bajo un nombre aleatorio (que no permita su descarga a usuarios que desconozcan su id) y finalmente publicará en el topic un mensaje con la información necesaria para que los receptores puedan descargarlo.
+
+La subida de ficheros en Brutusin-RPC no supone ninguna complejidad y se realiza de manera transparente sólo con utilizar propiedades de `MetadataInputStream` dentro de la clase del mensaje de entrada del servicio. Para ello, y como novedad el servicio no será un servicio Websocket sino HTTP. 
+
+El framework proporciona dos clases base para la creación de servicios sobre HTTP. `SafeAction<I,O>` y `UnsafeAction<I,O>`.
+Como esta operación envía y modifica datos en el servidor (se considera "no segura" según la especificación HTTP), utilizaremos la segunda opción:
+
+
+```java
+public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
+
+    public static final File UPLOAD_ROOT = new File(System.getProperty("java.io.tmpdir"), "chat-uploads");
+    
+    private final AtomicInteger counter = new AtomicInteger();
+
+    private MessageTopic topic;
+
+    public MessageTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(MessageTopic topic) {
+        this.topic = topic;
+    }
+
+    @Override
+    public Boolean execute(SendFileInput input) throws Exception {
+        if (input == null) {
+            throw new IllegalArgumentException("Input can no be null");
+        }
+        MetaDataInputStream[] streams = input.getFiles();
+        Attachment[] attachments = new Attachment[streams.length];
+        HttpServletRequest request = HttpActionSupport.getInstance().getHttpServletRequest();
+        Integer uploader = User.from(request.getSession()).getId();
+        for (int i = 0; i < streams.length; i++) {
+            MetaDataInputStream is = streams[i];
+            attachments[i] = saveStream(is);
+        }
+        Message message = new Message();
+        message.setTime(System.currentTimeMillis());
+        message.setFrom(uploader);
+        message.setTo(input.getTo());
+        message.setAttachments(attachments);
+        return topic.fire(input.getTo(), message);
+    }
+
+    private Attachment saveStream(MetaDataInputStream is) throws IOException {
+        if (is == null) {
+            throw new IllegalArgumentException("Input stream can no be null");
+        }
+        String id = counter.getAndIncrement() + "-" + CryptoUtils.getHashMD5(is.getName() + System.currentTimeMillis()) + "/" + is.getName();
+
+        File dataFile = new File(UPLOAD_ROOT, id);
+        Miscellaneous.createDirectory(dataFile.getParent());
+        File metadataFile = new File(dataFile.getAbsolutePath() + ".info");
+        FileOutputStream fos = new FileOutputStream(dataFile);
+        Attachment attachment = new Attachment();
+        attachment.setId(id);
+        attachment.setName(is.getName());
+        attachment.setContentType(is.getContentType());
+        Miscellaneous.writeStringToFile(metadataFile, JsonCodec.getInstance().transform(attachment), "UTF-8");
+        Miscellaneous.pipeSynchronously(is, fos);
+        return attachment;
+
+    }
+
+    public static class SendFileInput {
+
+        private Integer to;
+        @JsonProperty(required = true)
+        private MetaDataInputStream[] files;
+
+        public Integer getTo() {
+            return to;
+        }
+
+        public void setTo(Integer to) {
+            this.to = to;
+        }
+
+        public MetaDataInputStream[] getFiles() {
+            return files;
+        }
+
+        public void setFiles(MetaDataInputStream[] files) {
+            this.files = files;
+        }
+    }
+}
+```
+
+
+
+
 
 getCurrentUser
 

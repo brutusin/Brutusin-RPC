@@ -64,7 +64,7 @@ public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
         Integer uploader = User.from(request.getSession()).getId();
         for (int i = 0; i < streams.length; i++) {
             MetaDataInputStream is = streams[i];
-            attachments[i] = saveStream(uploader, is);
+            attachments[i] = saveStream(is);
         }
         Message message = new Message();
         message.setTime(System.currentTimeMillis());
@@ -74,7 +74,7 @@ public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
         return topic.fire(input.getTo(), message);
     }
 
-    private Attachment saveStream(Integer uploader, MetaDataInputStream is) throws IOException {
+    private Attachment saveStream(MetaDataInputStream is) throws IOException {
         if (is == null) {
             throw new IllegalArgumentException("Input stream can no be null");
         }
@@ -84,14 +84,11 @@ public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
         Miscellaneous.createDirectory(dataFile.getParent());
         File metadataFile = new File(dataFile.getAbsolutePath() + ".info");
         FileOutputStream fos = new FileOutputStream(dataFile);
-        UploadMetadata metaData = new UploadMetadata();
         Attachment attachment = new Attachment();
         attachment.setId(id);
         attachment.setName(is.getName());
         attachment.setContentType(is.getContentType());
-        metaData.setAttachment(attachment);
-        metaData.setUploader(uploader);
-        Miscellaneous.writeStringToFile(metadataFile, JsonCodec.getInstance().transform(metaData), "UTF-8");
+        Miscellaneous.writeStringToFile(metadataFile, JsonCodec.getInstance().transform(attachment), "UTF-8");
         Miscellaneous.pipeSynchronously(is, fos);
         return attachment;
 
