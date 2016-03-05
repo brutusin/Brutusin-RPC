@@ -336,7 +336,7 @@ A resaltar dos puntos:
 
 A continuación codificaremos el servicio que permite al usuario actual publicar mensajes de texto en el topic y, de manera indirecta, enviárselo a todos los usuario conectados o a un único destinatario, dependiendo de si el filtro del topic (id del destinatario) es o no especificado:
 
-[**`src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java);
+[**`src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendMessageAction.java):
 
 ```java
 public class SendMessageAction extends WebsocketAction<SendMessageAction.SendMessageInput, Boolean> {
@@ -404,7 +404,7 @@ La subida de ficheros en Brutusin-RPC no supone ninguna complejidad y se realiza
 El framework proporciona dos clases base para la creación de servicios sobre HTTP. `SafeAction<I,O>` y `UnsafeAction<I,O>`.
 Como esta operación envía y modifica datos en el servidor (se considera "no segura" según la especificación HTTP), utilizaremos la segunda opción:
 
-
+[**`src/main/java/org/brutusin/rpc_chat/actions/SendFileAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendFileAction.java):
 ```java
 public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
 
