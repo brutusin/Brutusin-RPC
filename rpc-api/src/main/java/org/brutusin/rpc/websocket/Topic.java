@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
-import org.brutusin.rpc.RpcActionSupport;
 import org.brutusin.rpc.RpcComponent;
 import org.springframework.core.ResolvableType;
 
@@ -52,6 +51,16 @@ public abstract class Topic<F, M> extends RpcComponent {
      */
     public abstract Set<WritableSession> getSubscribers(F filter);
 
+    /**
+     * Publish the message to the subscribers of the topic that satisfy the
+     * specified filter.
+     *
+     * If filter is null, the message is sent to all topic subscribers.
+     *
+     * @param filter
+     * @param message
+     * @return True if sent to at least one subscriber, false otherwise
+     */
     public final boolean fire(F filter, M message) {
         if (message == null) {
             return false;
@@ -65,7 +74,12 @@ public abstract class Topic<F, M> extends RpcComponent {
         MessageResponse mr = new MessageResponse();
         mr.setTopic(getId());
         mr.setMessage(message);
-        Set<WritableSession> subscribers = getSubscribers(filter);
+        Set<WritableSession> subscribers;
+        if (filter == null) {
+            subscribers = getSubscribers();
+        } else {
+            subscribers = getSubscribers(filter);
+        }
         if (subscribers == null || subscribers.isEmpty()) {
             return false;
         }
@@ -77,6 +91,11 @@ public abstract class Topic<F, M> extends RpcComponent {
         return true;
     }
 
+    /**
+     * Subscribes the Websocket session of the caller to this topic
+     *
+     * @throws InvalidSubscriptionException
+     */
     public final void subscribe() throws InvalidSubscriptionException {
         WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (sessions.contains(session)) {
@@ -86,6 +105,11 @@ public abstract class Topic<F, M> extends RpcComponent {
         sessions.add(session);
     }
 
+    /**
+     * Unsubscribes the Websocket session of the caller from this topic
+     *
+     * @throws InvalidSubscriptionException
+     */
     public final void unsubscribe() throws InvalidSubscriptionException {
         WritableSession session = (WritableSession) WebsocketActionSupport.getInstance().getSession();
         if (!sessions.contains(session)) {
