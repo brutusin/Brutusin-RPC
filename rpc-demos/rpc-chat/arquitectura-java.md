@@ -399,10 +399,10 @@ En esta parte final implementaremos los servicios de subida y descarga de ficher
 
 Este servicio será el encargado de realizar el upload de los fichero seleccionados por el usuario, almacenarlos en un directorio temporal bajo un nombre aleatorio (que no permita su descarga a usuarios que desconozcan su id) y finalmente publicará en el topic un mensaje con la información necesaria para que los receptores puedan descargarlo.
 
-La subida de ficheros en Brutusin-RPC no supone ninguna complejidad y se realiza de manera transparente sólo con utilizar propiedades de `MetadataInputStream` dentro de la clase del mensaje de entrada del servicio. Para ello, y como novedad el servicio no será un servicio Websocket sino HTTP. 
+La subida de ficheros en Brutusin-RPC se implementa de manera transparente sólo con utilizar propiedades de `MetadataInputStream` en el input servicios HTTP.
 
-El framework proporciona dos clases base para la creación de servicios sobre HTTP. `SafeAction<I,O>` y `UnsafeAction<I,O>`.
-Como esta operación envía y modifica datos en el servidor (se considera "no segura" según la especificación HTTP), utilizaremos la segunda opción:
+El framework proporciona dos clases base para la creación de servicios sobre HTTP: `SafeAction<I,O>` y `UnsafeAction<I,O>` dependiendo de si la operación se considera "segura" desde el punto de vista HTTP.
+Como esta operación envía y modifica datos en el servidor, se considera "no segura" y, por lo tanto, utilizaremos la segunda opción:
 
 [**`src/main/java/org/brutusin/rpc_chat/actions/SendFileAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/SendFileAction.java):
 ```java
@@ -488,9 +488,67 @@ public class SendFileAction extends UnsafeAction<SendFileInput, Boolean> {
 }
 ```
 
+#### Servicio de descarga de ficheros
 
+Este último servicio es el que permite descargar los ficheros subidos por el servicio anterior, conocido su identificador.
+En este caso la operación es segura desde el punto de vista HTTP, y especificaremos un tiempo de cache de 1 hora.
 
+[**`src/main/java/org/brutusin/rpc_chat/actions/DownloadFileAction.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/actions/DownloadFileAction.java):
+```java
+public class DownloadFileAction extends SafeAction<String, StreamResult> {
 
+    @Override
+    public Cacheable<StreamResult> execute(String id) throws Exception {
+        File f = new File(SendFileAction.UPLOAD_ROOT, id);
+        if (!isValid(f)) {
+            throw new IllegalArgumentException("Invalid id: " + id);
+        }
+        File metaFile = new File(SendFileAction.UPLOAD_ROOT, id + ".info");
+        Attachment attachment = JsonCodec.getInstance().parse(Miscellaneous.toString(new FileInputStream(metaFile), "UTF-8"), Attachment.class);
+        StreamResult ret = new StreamResult(new MetaDataInputStream(new FileInputStream(f), attachment.getName(), attachment.getContentType(), f.length(), f.lastModified()));
+        return Cacheable.forMaxHours(ret, 1);
+    }
+
+    private static boolean isValid(File f) {
+        if (!f.exists()) {
+            return false;
+        }
+        File parent = f.getParentFile();
+        while (parent != null) {
+            if (parent.equals(SendFileAction.UPLOAD_ROOT)) {
+                return true;
+            }
+            parent = parent.getParentFile();
+        }
+        return false;
+    }
+}
+```
+
+## Registro de componentes
+Ahora reazalizaremos el registro de los componentes en contexto de aplicación de Spring del framework, configurado a través del fichero [`src/main/resources/brutusin-rpc.xml`](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/resources/brutusin-rpc.xml):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="topic.messages" class="org.brutusin.rpc_chat.topics.MessageTopic"/> 
+    <bean id="svr.getAllUsers" class="org.brutusin.rpc_chat.actions.GetAllUsersAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+    <bean id="svr.download" class="org.brutusin.rpc_chat.actions.DownloadFileAction"/>
+    <bean id="svr.getCurrentUser" class="org.brutusin.rpc_chat.actions.GetCurrentUserAction"/> 
+    <bean id="svr.sendFile" class="org.brutusin.rpc_chat.actions.SendFileAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+    <bean id="svr.sendMessage" class="org.brutusin.rpc_chat.actions.SendMessageAction"> 
+        <property name="topic" ref="topic.messages"/>
+    </bean>
+</beans>
+```
 
 getCurrentUser
 
