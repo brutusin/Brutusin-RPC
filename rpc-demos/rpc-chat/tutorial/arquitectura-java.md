@@ -7,6 +7,8 @@ En este artículo, a modo de tutorial, desarrollaremos una pequeña chat de ejem
 El chat, será construido como una aplicación de página única. Una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente esté codigo cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios implementados por con Brutusin-RPC, para obtener datos.
 La aplicación asociará un identificador (entero autoincremental) a cada sesión de usuario, y permitirá el envío de mensajes públicos (visibles por todos los usuarios) como privados (visible sólo por emisor y receptor), así como la subida/bajada de ficheros.
 
+![Brutusin-RPC chat](img/chat.png)
+
 La API a crear será la siguiente:
 
 ### Servicios HTTP
@@ -554,12 +556,10 @@ Ahora reazalizaremos el registro de los componentes en contexto de aplicación d
 Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional, editando el fichero [src/main/webapp/index.jsp](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/webapp/index.jsp):
 
  - Fuera del ambito del framework
+ - CSRF token
  - API javascript
  - Drag and drop
  
-
-![Brutusin-RPC chat](img/chat.png)
-
 ```html
 <!DOCTYPE html>
 <html>
