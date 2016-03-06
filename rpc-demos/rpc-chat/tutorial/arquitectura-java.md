@@ -553,6 +553,11 @@ Ahora reazalizaremos el registro de los componentes en contexto de aplicación d
 ### Aplicación cliente
 Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional, editando el fichero [src/main/webapp/index.jsp](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/webapp/index.jsp):
 
+ - Fuera del ambito del framework
+ - API javascript
+ - Drag and drop
+ 
+
 ![Brutusin-RPC chat](img/chat.png)
 
 ```html
@@ -910,37 +915,34 @@ Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin n
 
 
 
-## Building
+## Construcción
 
-Pasaremos ahora a realizar la compilación y empaquetado de la aplicación
+Pasaremos ahora a realizar la compilación y empaquetado de la aplicación. Para ello desde el directorio raiz de la aplicación ejecutaremos:
+
+```properties
+mvn clean package
+```
+
+## Ejecución
+
+- Runtimes integrados
+
+```properties
+mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
+```
+
+## Repositorio de servicios
+
+![Brutusin-RPC chat](img/repo.png)
+
+![Brutusin-RPC chat](img/upload.png)
+
+![Brutusin-RPC chat](img/topic.png)
+
+- Mantenimiento de los servicios
+
+## Proyecto completo
+
+## Siguientes pasos
 
 
-getCurrentUser
-
-JSON Schema es una especificación (actualmente en estado draft) que define una sintaxis JSON para representar la estructura y restricciones de otros documentos JSON. Es el hómologo a XSD en el mundo JSON.
-Los esquemas JSON le permiten describir de manera automática la estructura de los mensajes de los servicios a través de unos meta-servicios proporcionados por el propio framework, y más aún, ofrecer una interfaz al desarrollador para listar todos los servicios disponibles, ver sus características y descriptción, y ejecutarlos directamente.
-
-
-
-- Asegurar un correcto uso de HTTP:
-
-
-
-
-El segundo punto
- para de manera automática, describir la estructura de los mensajes lo permite al usuario implementar servicios con complejos mensajes de entrada/salida, sin comprometer la usabilidad.
-Así mismo sus capacidades de descripción de los servicios le permiten ofrecer de serie, una aplicación de repositorio de servicios, donde se pueden listar todos los servicios disponibles, ver sus características y descriptción, y ejecutarlos directamente. Esto repercute en una alta mantenibilidad de los servicios, 
-donde
-
-Especialmente orientado a la mantenibilidad de los servicios, creación aplicaciones SPA de alta complejidad, en términos del número de servicios, de su naturaleza y de la estructura de sus mensajes.
-
-Está orientado a la mantenibilidad de los servicios.
-
-
-Las características diferenciadoras frente a otras alternativas son las siguientes: 
-1 RPC, no REST. Existe mucha controversia en cuanto a qué modelo es mejor, si el REST, orientado a recursos (entidades), con un numero limitado de operaciones por entidad (una por cada método HTTP), o RPC orientado a operaciones. Los principales argumentos a favor de REST son la interoperabilidad, dada su predictibilidad debida a una semantica conocida (verbos, plurales, ...) y su popularidad (es el estandar de-facto). y que REST realiza un uso correcto de HTTP (en realidad está vinculado a él)
-2 Basado en JSON-Schema
-3 
-
->mvn archetype:generate -B -DarchetypeGroupId=org
->cd chat
