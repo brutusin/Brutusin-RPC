@@ -943,6 +943,8 @@ mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
 
 ## Proyecto completo
 
+https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-chat
+
 ## Siguientes pasos
 
 
