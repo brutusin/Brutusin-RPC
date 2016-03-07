@@ -1,10 +1,15 @@
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
-El framework ha sido diseñado con el objetivos principal de ofrecer una alta mantentenibilidad de los servicios, y como característica diferenciadora, proporciona al desarrollador (cliente de la API) un repositorio de los servicios disponibles, que muestra sus características y descripciones, y permite oejecutarlos directamente.
 
-En este artículo, a modo de tutorial, desarrollaremos una pequeña chat de ejemplo, en el que se hará uso de los distintos elementos que ofrece el framework: servicios sobre HTTP, servicios sobre Websocket y Topics sobre Websockets.
+El framework ha sido diseñado con el objetivos principal de ofrecer una alta mantentenibilidad de los servicios, y como característica diferenciadora, incluye por defecto un repositorio de los servicios disponibles, donde el desarrollador puede ver lo servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta funcionalidad que permite crear APIs auto descriptivas, y aumenta sustancialmente la mantenibilidad y legibilidad de los servicios.
+
+En este tutorial desarrollaremos una aplicación de chat, en la que se hará uso de los distintos elementos que ofrece el framework:
+ - JSON-RPC sobre HTTP
+ - JSON-RPC sobre Websockets
+ - Publish/subscribe sobre Websockets.
 
 ## Descripción general
-El chat, será construido como una aplicación de página única. Una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente esté codigo cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios implementados por con Brutusin-RPC, para obtener datos.
+El chat, será construido como una aplicación de página única. Una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente esté codigo cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios implementados por con Brutusin-RPC, para obtener los datos.
+
 La aplicación asociará un identificador (entero autoincremental) a cada sesión de usuario, y permitirá el envío de mensajes públicos (visibles por todos los usuarios) como privados (visible sólo por emisor y receptor), así como la subida/bajada de ficheros.
 
 ![Brutusin-RPC chat](img/chat.png)
