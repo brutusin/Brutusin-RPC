@@ -1,6 +1,6 @@
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
 
-El framework ha sido diseñado con el objetivos principal de ofrecer una alta mantentenibilidad de los servicios, y como característica diferenciadora, incluye un repositorio donde el desarrollador puede ver lo servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta funcionalidad que permite crear APIs auto descriptivas, y aumenta sustancialmente la mantenibilidad y legibilidad de los servicios.
+El framework ha sido diseñado con el objetivos principal de ofrecer una alta mantentenibilidad de los servicio, y como característica diferenciadora, incluye un repositorio donde el desarrollador puede ver lo servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta funcionalidad que permite crear APIs auto descriptivas, y aumenta sustancialmente la mantenibilidad y legibilidad de los servicios.
 
 En este tutorial desarrollaremos una aplicación de chat, en la que se hará uso de los distintos elementos que ofrece el framework:
  - JSON-RPC sobre HTTP
