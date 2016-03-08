@@ -18,7 +18,7 @@ En este tutorial desarrollaremos una aplicación de chat, en la que se hará uso
  - JSON-RPC sobre Websockets
  - Publish/subscribe sobre Websockets.
 
-El chat, será construido como una aplicación de página única. Una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente esté codigo cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios implementados por con Brutusin-RPC, para obtener los datos.
+Como ya hemos comentado, el chat será construido como una aplicación de página única: una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente este código de cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios creados con el framework para obtener los datos.
 
 La aplicación asociará un identificador (entero autoincremental) a cada sesión de usuario, y permitirá el envío de mensajes públicos (visibles por todos los usuarios) como privados (visible sólo por emisor y receptor), así como la subida/bajada de ficheros.
 
