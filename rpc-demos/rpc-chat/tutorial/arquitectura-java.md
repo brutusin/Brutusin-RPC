@@ -1,4 +1,4 @@
->Originally created for [!http://www.arquitecturajava.com]
+# Tutorial creado para http://www.arquitecturajava.com
 
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
 
