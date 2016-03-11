@@ -30,13 +30,13 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.Constants;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.spi.ServerRuntime;
@@ -105,11 +105,13 @@ public class TomcatRuntime extends ServerRuntime {
             docBase = Files.createTempDirectory("default-doc-base").toString();
         }
         LOGGER.info("Setting application docbase as '" + docBase + "'");
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", docBase);
+        StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
+        StandardJarScanner jarScanner = (StandardJarScanner) ctx.getJarScanner();
+        jarScanner.setScanClassPath(true);
         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
             LOGGER.info("Disabling TLD scanning");
-            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) ctx.getJarScanner().getJarScanFilter();
+            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
             jarScanFilter.setTldSkip("*");
         }
         WebResourceRoot resources = new StandardRoot(ctx);
@@ -117,7 +119,7 @@ public class TomcatRuntime extends ServerRuntime {
         File additionClassesFolder = new File(rootFolder.getAbsolutePath(), "target/classes");
         if (additionClassesFolder.exists()) {
             resourceSet = new DirResourceSet(resources, "/WEB-INF/classes", additionClassesFolder.getAbsolutePath(), "/");
-            LOGGER.info("Loading application resources from as '" + additionClassesFolder.getAbsolutePath() + "'");
+            LOGGER.info("Loading application resources from '" + additionClassesFolder.getAbsolutePath() + "'");
         } else {
             resourceSet = new EmptyResourceSet(resources);
         }
