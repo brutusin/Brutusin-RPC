@@ -17,18 +17,13 @@ package org.brutusin.rpc.websocket;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.RpcUtils;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 
 /**
  *
@@ -38,7 +33,7 @@ import org.springframework.security.core.context.SecurityContext;
 public final class SessionImpl<M> implements WritableSession<M> {
 
     private static final Logger LOGGER = Logger.getLogger(SessionImpl.class.getName());
-    private final int queueMaxSize = 10;
+    private final int queueMaxSize = 0;
     private final Thread t;
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
@@ -123,7 +118,7 @@ public final class SessionImpl<M> implements WritableSession<M> {
 
     private void send(String message) {
         synchronized (messageQueue) {
-            if (messageQueue.size() == queueMaxSize) {
+            if (queueMaxSize > 0 && messageQueue.size() == queueMaxSize) {
                 throw new IllegalStateException("Exceeded maximum size message queue for a peer session: " + queueMaxSize);
             }
             messageQueue.add(message);
