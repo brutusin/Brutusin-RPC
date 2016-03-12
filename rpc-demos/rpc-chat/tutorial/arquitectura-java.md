@@ -989,11 +989,15 @@ mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
 ```
 El ejecutar esto en un entorno con capacidades gráficas, se abrirá automáticamente un navegador apuntando a:
 
-http://localhost:8080
+<http://localhost:8080>
+
+
 
 ## Repositorio de servicios
 
 Como hemos comentados todas las aplicaciones desarrolladas con el framework incluyen un respositorio (accesible en la URL relativa `/rpc/repo`) donde se pueden ver los componentes disponibles y sus carácterísticas, lo que contribuye enormemente a mejorar su legibilidad y mantenimiento.
+
+<http://localhost:8080/rpc/repo>
 
 ##Listados de servicios
 
@@ -1006,10 +1010,19 @@ Como hemos comentados todas las aplicaciones desarrolladas con el framework incl
 ##Detalle y visualización de mensajes recibidos del topic
 ![Brutusin-RPC chat](img/topic.png)
 
+## Siguientes pasos
+
+Algunas ideas para mejorar la aplicación actual:
+
+- Permitir nombres de usuario
+- Visualizar quien está online
+- Añadir funcionalidad "<usuario> está escribiendo..." o "<usuario> está subiendo archivo ..."
+- Persistir conversación en base de datos
+
 ## Proyecto completo
 
-https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-chat
+El proyecto completo está disponible en GitHub: 
+<https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-chat>
 
-## Siguientes pasos
 
 
