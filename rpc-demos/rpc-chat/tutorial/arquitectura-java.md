@@ -2,8 +2,6 @@
 
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en aplicaciones "single-page" via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
 
-## Aplicaciones "single-page"
-
 > **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que cargan una sola página HTML y la actualizan de forma dinámica cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones fluidas y sensibles, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
 
 ![Snapshot from msdn.microsoft.com](https://msdn.microsoft.com/dynimg/IC690875.png)
