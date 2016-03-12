@@ -4,7 +4,7 @@ Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-
 
 ## Aplicaciones "single-page"
 
-> **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que se cargan una sola página HTML y actualizan de forma dinámica la página cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones Web fluida y sensible, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
+> **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que cargan una sola página HTML y la actualizan de forma dinámica cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones fluidas y sensibles, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
 
 ![Snapshot from msdn.microsoft.com](https://msdn.microsoft.com/dynimg/IC690875.png)
 
@@ -13,7 +13,7 @@ Los objetivos principales de Brutusin-RPC son ofrecer una alta mantentenibilidad
 
 Para ello, y como característica diferenciadora, el framework hace extensivo uso de [JSON Schema](http://json-schema.org/latest/json-schema-core.html); una especificación (en estado "draft") que define una sintaxis JSON específica para describir la estructura y restricciones de otros datos JSON. 
 
-Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estrucutura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta útil característica del framework.
+Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estructura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta útil característica del framework.
 
 ## Servicios
 El framework ofrece dos posibilidades para crear servicios JSON-RPC:
@@ -28,7 +28,7 @@ Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriorme
 
 Su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos. 
 
-Como puntos en contra, a parte de se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores (aunque las últimas versiones de los más utilizados la soportan).
+Como puntos en contra, a parte de se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores como el de AJAX (aunque las últimas versiones de los más utilizados la soportan).
 
 ## Mensajería
 Adicionalmente Brutusin-RPC proporciona otro modelo de programación orientado la notificación de mensajes de servidor a cliente, mensajes que, al contrario que el caso de los servicios, no son devueltos en respuesta a una petición del cliente.
