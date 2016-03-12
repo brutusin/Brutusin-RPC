@@ -989,17 +989,22 @@ mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
 ```
 El ejecutar esto en un entorno con capacidades gráficas, se abrirá automáticamente un navegador apuntando a:
 
-http://localhost:8080/
+http://localhost:8080
 
 ## Repositorio de servicios
 
+Como hemos comentados todas las aplicaciones desarrolladas con el framework incluyen un respositorio (accesible en la URL relativa `/rpc/repo`) donde se pueden ver los componentes disponibles y sus carácterísticas, lo que contribuye enormemente a mejorar su legibilidad y mantenimiento.
+
+##Listados de servicios
+
 ![Brutusin-RPC chat](img/repo.png)
+
+##Detalle y ejecución de un servicio
 
 ![Brutusin-RPC chat](img/upload.png)
 
+##Detalle y visualización de mensajes recibidos del topic
 ![Brutusin-RPC chat](img/topic.png)
-
-- Mantenimiento de los servicios
 
 ## Proyecto completo
 
