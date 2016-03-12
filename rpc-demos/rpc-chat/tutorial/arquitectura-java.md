@@ -1,6 +1,6 @@
 # Tutorial creado para http://www.arquitecturajava.com
 
-Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
+Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
 
 > **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que se cargan una sola página HTML y actualizan de forma dinámica la página cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones Web fluida y sensible, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
 
@@ -9,40 +9,17 @@ Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-
 
 *Tradicionalmente se ha optado por soluciones basadas en REST para la creación de estos servicios en el lado del servidor, debido debido principalmente a su popularidad, aunque para API complejas REST presenta serias limitaciones*
 
-Los objetivos principales de Brutusin-RPC son ofrecer una alta mantentenibilidad de los servicios y soportar la creación de complejas APIs (tanto en el número de servicios como en la estructura de los mensajes) sin comprometer su usabilidad y comprensión. Para ello, y como característica diferenciadora, el framework hace extensivo uso de JSON-Schema; una especificación (en estado "draft") que define una sintaxis JSON específica para describir la estructura y restricciones de otros datos JSON. Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estrucutura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. 
+Los objetivos principales de Brutusin-RPC son ofrecer una alta mantentenibilidad de los servicios y soportar la creación de complejas APIs (tanto en el número de servicios como en la estructura de los mensajes) sin comprometer su usabilidad y comprensión. Para ello, y como característica diferenciadora, el framework hace extensivo uso de JSON-Schema; una especificación (en estado "draft") que define una sintaxis JSON específica para describir la estructura y restricciones de otros datos JSON. Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estrucutura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta útil característica del framework.
 
-Al final del tutorial exploraremos esta útil característica que permite crear APIs auto descriptivas, y aumenta sustancialmente la mantenibilidad y legibilidad de los servicios.
+El framework ofrece dos posibilidades para crear servicios JSON-RPC: sobre HTTP y sobre Websockets.
 
-## Descripción general
+En el primer caso, la APIs desarrolladas sobre HTTP se benefician de múltiples características ofrecidas por el protocolo HTTP como son cacheo de recursos, en concepto de petición segura (obtener recursos frente a modificarlos) con implicaciones en seguridad y fiabilidad, el concepto de idempotencia (mejorando la tolerancia a errores), códigos de respuesta, payloads binarios. Como puntos en contra, este transporte incrementa el tamaño de los mensajes intercambiados entre el cliente y el servidor y suele utiliza un nuevo socket por petición, lo que incrementa la latencia.
 
-En este tutorial desarrollaremos una aplicación de chat, en la que se hará uso de los distintos elementos que ofrece el framework:
- - JSON-RPC sobre HTTP
- - JSON-RPC sobre Websockets
- - Publish/subscribe sobre Websockets.
+Por otra parte Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Utiliza una única conexión sobre la que se envian mensajes de manera asincrona desde ambos extremos. Por ello su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos. Como puntos en contra, a parte de se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores (aunque las últimas versiones de los más utilizados la soportan).
 
-Como ya hemos comentado, el chat será construido como una aplicación de página única: una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente este código de cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios del servidor creados con el framework para enviar y obtener los datos, según sea necesario.
+Adicionalmente Brutusin-RPC proporciona otro modelo de programación orientado la notificación de mensajes de servidor a cliente, mensajes que, al contrario que el caso de los servicios, no son devueltos en respuesta a una petición del cliente.
 
-La aplicación asociará un identificador (entero autoincremental) a cada sesión de usuario, y permitirá el envío de mensajes públicos (visibles por todos los usuarios) como privados (visible sólo por emisor y receptor), así como la subida/bajada de ficheros.
-
-![Brutusin-RPC chat](img/chat.png)
-
-La API a crear será la siguiente:
-
-### Servicios HTTP
-Estos servicios serán los consumidos mediante AJAX desde el navegador.
-
- - `sendFile(to, files)`: Subirá los ficheros al servidor y comunicará a los destinatarios (emisor/receptor o todos) su identificador para descargarlos.
- - `download(id)`: Permita descargar un fichero, conocido su identificador.
- 
-### Servicios Websocket
-Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Por ello su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos.
-
- - `getCurrentUser()`: Devuelve la información (id de usuario), del propio usuario
- - `getAllUsers()`: Devuelve el listado de usuarios activos
- - `sendMessage(to, message)`: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
- 
-### Topics
-Los "topics" son entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus clientes. Definidos originalmente en el patrón de diseño ["publish/subscribe"](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern), en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente.
+Se utilizan en este caso los denominados "topics", unas entidades lógicas que, conceptualmente y de manera genérica, representan "puntos de interés" para sus clientes. Definidos originalmente en el patrón de diseño ["publish/subscribe"](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern), en el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente implementados sobre Websockets.
 
 Utilizando la [API Javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework, el código cliente puede realizar la suscripción al topic y especificar una función callback que será invocada por el framework cada vez que llege un mensaje del servidor. 
 
@@ -50,14 +27,43 @@ Desde el punto de vista del servidor, los topics:
  - Implementan un método de filtrado, que define, dado un filtro, qué subscriptores son destinatarios del mensaje
  - Ofrecen un método para publicar mensajes (utilizado desde los servicios)
  
-Esta aplicación de define un único "topic":
- - `messages`: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. La aplicación publicará en este topic 3 tipos diferentes de mensajes: 
-   - Mensajes de texto
-   - Mensajes de subidas de ficheros
-   - Login/logout de usuarios
- 
-## Implementación
+## Tutorial
 
+En este tutorial desarrollaremos una aplicación de chat, en la que se hará uso de los distintos elementos que ofrece el framework:
+Los servicios (sobre HTTP y Websockets) y topics.
+  
+Como ya hemos comentado, el chat será construido como una aplicación de página única: una jsp (`index.jsp`) recibirá la petición inicial, y devolverá al navegador el código HTML, CSS y Javascript que definirá la presentación. Posteriormente este código de cliente desencadenará una sucesión de peticiones AJAX y Websocket a los servicios del servidor creados con el framework para enviar y obtener los datos, según sea necesario.
+
+El servidor asociará un identificador (entero autoincremental) a cada sesión HTTP de usuario, y permitirá el envío de mensajes públicos (visibles por todos los usuarios) como privados (visible sólo por emisor y receptor), así como la subida/bajada de ficheros.
+
+![Brutusin-RPC chat](img/chat.png)
+
+### API
+La API a crear será la siguiente:
+
+#### Servicios HTTP
+Estos servicios serán los consumidos mediante AJAX desde el navegador.
+
+ - `sendFile(to, files)`: Subirá los ficheros al servidor y comunicará a los destinatarios (emisor/receptor o todos) su identificador para descargarlos.
+ - `download(id)`: Permita descargar un fichero, conocido su identificador.
+  
+#### Servicios Websocket
+Los servicios Websocket a desarrollar son los siguientes:
+
+ - `getCurrentUser()`: Devuelve la información (id de usuario), del propio usuario
+ - `getAllUsers()`: Devuelve el listado de usuarios activos
+ - `sendMessage(to, message)`: Envía un mensaje a los destinatarios (emisor/receptor o todos) 
+ 
+#### Topics
+
+Esta aplicación de define un único "topic":
+ - `messages`: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. 
+ 
+La aplicación publicará en este topic mensajes representando tres tipos diferentes de eventos: 
+   - Publicación de mensajes de texto
+   - Publicación de referencias a ficheros subidos
+   - Notificación de eventos de login/logout de usuarios
+ 
 ### Requisitos
 >- JDK 1.7 o posterior
 - Maven 3.0+
