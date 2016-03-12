@@ -1,6 +1,6 @@
 # Tutorial creado para http://www.arquitecturajava.com
 
-Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en [aplicaciones "single-page"](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
+Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en aplicaciones "single-page" via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
 
 ## Aplicaciones "single-page"
 
