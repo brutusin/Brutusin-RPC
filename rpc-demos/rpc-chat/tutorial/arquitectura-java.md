@@ -1016,8 +1016,8 @@ Algunas ideas para mejorar la aplicación actual:
 
 - Documentar los componentes para mejorar su legibilidad
 - Permitir nombres de usuario
-- Visualizar quien está online
-- Añadir funcionalidad "<usuario> está escribiendo..." o "<usuario> está subiendo archivo ..."
+- Visualizar quién está conectado
+- Añadir funcionalidad "{usuario} está escribiendo..." o "{usuario} está subiendo archivo ..."
 - Persistir conversación en base de datos
 
 ## Proyecto completo
