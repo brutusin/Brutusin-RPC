@@ -2,7 +2,7 @@
 
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en [aplicaciones "single-page"](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
 
-## Aplicaciones "single-page"
+## Aplicaciones "single-page"en
 
 > **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que cargan una sola página HTML y la actualizan de forma dinámica cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones fluidas y sensibles, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
 
@@ -156,7 +156,7 @@ El topic a implementar trabajará con mensajes de tipo `org.brutusin.rpc_chat.to
 
 #### Mensaje:
 
-Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, envio de fichero y login/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
+Como hemos comentado anteriormente, estos mensajes representarán tres tipos de eventos (mensajes de texto, referencia a ficheros y login/logout de usuarios). Podría haberse optado por utilizar topics independientes para estos casos, pero por mantener el ejemplo más simple se ha optado por esto.
 
 [**`src/main/java/org/brutusin/rpc_chat/topics/Message.java`**](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/java/org/brutusin/rpc_chat/topics/Message.java):
 
