@@ -603,6 +603,7 @@ La página utilizará la [API javascript](https://github.com/brutusin/Brutusin-R
 - Maneja errores de conexión con el servidor
 - Incluye los headers CRSF en las peticiones HTTP, como se ha comentado
 - Facilita y optimiza las subidas AJAX de ficheros
+- Ofrece métodos de alto nivel para la suscripción a topics
 
 ```javascript
 <script src="rpc/brutusin-rpc.js"></script>
