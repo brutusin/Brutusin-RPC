@@ -592,7 +592,7 @@ Ahora reazalizaremos el registro de los componentes en contexto de aplicación d
 ### Aplicación cliente
 Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional. 
 
-Dado que esta parte queda fuera del ámbito del framework, no la explicaremos en mucho detalle, salvo dos puntos que requiren especial mención:
+Dado que esta parte queda fuera del ámbito del framework, no la explicaremos con mucho detalle, salvo dos puntos que requiren especial mención:
 
 ####  CSRF token
 El framework utiliza de manera implícita Spring Security. Para hacer uso de los servicios creados, la página debe incluir los siguientes "metas" en el header del HTML:
