@@ -604,7 +604,7 @@ El framework utiliza de manera implícita Spring Security. Para hacer uso de los
 La API javascript automáticamente hará uso de esta información (generada por Spring) para incluirla en sucesivas peticiones al servidor y así evitar ataques [CSRF](https://es.wikipedia.org/wiki/Cross_Site_Request_Forgery).
 
 ####  API javascript
-La página utilizará la [API javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework para interactuar con los componentes (servicios y topic) expuestos por el servidor. Esto presenta una series de ventajas
+La página utilizará la [API javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework para interactuar con los componentes (servicios y topic) expuestos por el servidor, lo que presenta una series de ventajas:
 
 - Evita especificar el método HTTP de la petición.
 - Envía mensajes de "keepalive" para mantener la sesión HTTP y la conexión Websocket abiertas
