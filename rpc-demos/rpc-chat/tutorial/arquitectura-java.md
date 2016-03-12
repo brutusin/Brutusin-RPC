@@ -1014,6 +1014,7 @@ Como hemos comentados todas las aplicaciones desarrolladas con el framework incl
 
 Algunas ideas para mejorar la aplicación actual:
 
+- Documentar los componentes para mejorar su legibilidad
 - Permitir nombres de usuario
 - Visualizar quien está online
 - Añadir funcionalidad "<usuario> está escribiendo..." o "<usuario> está subiendo archivo ..."
