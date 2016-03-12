@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.brutusin.json.spi.JsonCodec;
+import org.brutusin.rpc.RpcConfig;
 import org.brutusin.rpc.RpcUtils;
 
 /**
@@ -33,7 +34,7 @@ import org.brutusin.rpc.RpcUtils;
 public final class SessionImpl<M> implements WritableSession<M> {
 
     private static final Logger LOGGER = Logger.getLogger(SessionImpl.class.getName());
-    private final int queueMaxSize = 0;
+    private final int queueMaxSize;
     private final Thread t;
     private final LinkedList<String> messageQueue = new LinkedList();
     private final javax.websocket.Session session;
@@ -42,6 +43,7 @@ public final class SessionImpl<M> implements WritableSession<M> {
 
     public SessionImpl(javax.websocket.Session session, WebsocketContext ctx) {
         this.session = session;
+        this.queueMaxSize = RpcConfig.getInstance().getMaxWsktQueueSize();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

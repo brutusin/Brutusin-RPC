@@ -29,6 +29,7 @@ public final class RpcConfig {
     public static final String ENV_PROP_SERVER_URI_ENC = "org.brutusin.rpc.server-uri-encoding";
     public static final String ENV_PROP_UPLOAD_FOLDER = "org.brutusin.rpc.upload.folder";
     public static final String ENV_PROP_MAX_FILE_SIZE = "org.brutusin.rpc.upload.max-file-size";
+    public static final String ENV_PROP_MAX_WSK_QUEUE_SIZE = "org.brutusin.rpc.wskt.max-queue-size";
     public static final String ENV_PROP_MAX_REQUEST_SIZE = "org.brutusin.rpc.upload.max-request-size";
     public static final String ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST = "org.brutusin.rpc.cors-host";
     public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "org.brutusin.rpc.include-builtin-services";
@@ -44,6 +45,7 @@ public final class RpcConfig {
     private File uploadFolder;
     private Long maxFileSize;
     private Long maxRequestSize;
+    private Integer maxWsktQueueSize;
     private String accessControlOriginHost;
     private boolean includeBuiltinServices;
     private boolean includeEnvService;
@@ -62,6 +64,7 @@ public final class RpcConfig {
         this.uploadFolder = new File(getEnv(ENV_PROP_UPLOAD_FOLDER, new File(System.getProperty("java.io.tmpdir"), "brutusin-rcp-uploads").getAbsolutePath()));
         this.maxFileSize = Long.valueOf(getEnv(ENV_PROP_MAX_FILE_SIZE, String.valueOf(Long.MAX_VALUE)));
         this.maxRequestSize = Long.valueOf(getEnv(ENV_PROP_MAX_REQUEST_SIZE, String.valueOf(Long.MAX_VALUE)));
+        this.maxWsktQueueSize = Integer.valueOf(getEnv(ENV_PROP_MAX_WSK_QUEUE_SIZE, "0"));
         this.accessControlOriginHost = getEnv(ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST, null);
         this.includeBuiltinServices = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_BUITIN_SERVICES, "true"));
         this.includeEnvService = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_ENV_SERVICE, "true"));
@@ -131,6 +134,14 @@ public final class RpcConfig {
         this.path = path;
     }
 
+    public Integer getMaxWsktQueueSize() {
+        return maxWsktQueueSize;
+    }
+
+    public void setMaxWsktQueueSize(Integer maxWsktQueueSize) {
+        this.maxWsktQueueSize = maxWsktQueueSize;
+    }
+    
     public void setServerUriEncoding(String serverUriEncoding) {
         this.serverUriEncoding = serverUriEncoding;
     }
