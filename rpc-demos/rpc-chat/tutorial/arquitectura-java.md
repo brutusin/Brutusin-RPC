@@ -6,9 +6,6 @@ Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-
 
 ![Snapshot from msdn.microsoft.com](https://msdn.microsoft.com/dynimg/IC690875.png)
 
-
-*Tradicionalmente se ha optado por soluciones basadas en REST para la creación de estos servicios en el lado del servidor, debido debido principalmente a su popularidad, aunque para API complejas REST presenta serias limitaciones*
-
 Los objetivos principales de Brutusin-RPC son ofrecer una alta mantentenibilidad de los servicios y soportar la creación de complejas APIs (tanto en el número de servicios como en la estructura de los mensajes) sin comprometer su usabilidad y comprensión. Para ello, y como característica diferenciadora, el framework hace extensivo uso de JSON-Schema; una especificación (en estado "draft") que define una sintaxis JSON específica para describir la estructura y restricciones de otros datos JSON. Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estrucutura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta útil característica del framework.
 
 El framework ofrece dos posibilidades para crear servicios JSON-RPC: sobre HTTP y sobre Websockets.
