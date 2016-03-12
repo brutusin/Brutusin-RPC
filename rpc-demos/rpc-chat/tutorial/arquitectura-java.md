@@ -587,7 +587,7 @@ Ahora reazalizaremos el registro de los componentes en contexto de aplicación d
 Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional. Esta parte quefuera del ámbito del framework, por lo tanto no la explicaremos en mucho detalle, salvo dos puntos que requiren especial mención:
 
 ####  CSRF token
-El framework utiliza de manera implícita Spring Security. Para hacer uso de la API de la API creada, la página debe incluir los siguientes "metas" en el header del HTML:
+El framework utiliza de manera implícita Spring Security. Para hacer uso de los servicios creados, la página debe incluir los siguientes "metas" en el header del HTML:
 
 ``` html
         <meta name="_csrf" content="${_csrf.token}"/>
