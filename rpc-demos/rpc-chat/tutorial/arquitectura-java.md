@@ -584,12 +584,36 @@ Ahora reazalizaremos el registro de los componentes en contexto de aplicación d
 ```
 
 ### Aplicación cliente
-Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional, editando el fichero [src/main/webapp/index.jsp](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/webapp/index.jsp):
+Para crear la aplicación cliente del chat, utilizaremos HTML y Javascript sin ningún framework adicional. Esta parte quefuera del ámbito del framework, por lo tanto no la explicaremos en mucho detalle, salvo dos puntos que requiren especial mención:
 
- - Fuera del ambito del framework
- - CSRF token
- - API javascript
- - Drag and drop
+####  CSRF token
+El framework utiliza de manera implícita Spring Security. Para hacer uso de la API de la API creada, la página debe incluir los siguientes "metas" en el header del HTML:
+
+``` html
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
+```
+La API javascript automáticamente hará uso de esta información (generada por Spring) para incluirla en sucesivas peticiones al servidor y así evitar ataques [CSRF](https://es.wikipedia.org/wiki/Cross_Site_Request_Forgery).
+
+####  API javascript
+La página utilizará la [API javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework para interactuar con los componentes (servicios y topic) expuestos por el servidor. Esto presenta una series de ventajas
+
+- Evita especificar el método HTTP de la petición.
+- Envía mensajes de "keepalive" para mantener la sesión HTTP y la conexión Websocket abiertas
+- Maneja errores de conexión con el servidor
+- Incluye los headers CRSF en las peticiones HTTP, como se ha comentado
+- Facilita y optimiza las subidas AJAX de ficheros
+
+```javascript
+<script src="rpc/brutusin-rpc.js"></script>
+<script language='javascript'>
+	var http = brutusin["rpc"].initHttpEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/http"%>");
+	var wskt = brutusin["rpc"].initWebsocketEndpoint("<%=request.getContextPath() + org.brutusin.rpc.RpcConfig.getPath()+"/wskt"%>");
+</script>
+```
+
+Editamos ahora el fichero [src/main/webapp/index.jsp](https://raw.githubusercontent.com/brutusin/Brutusin-RPC/master/rpc-demos/rpc-chat/src/main/webapp/index.jsp) con el siguiente contenido:
+
  
 ```html
 <!DOCTYPE html>
