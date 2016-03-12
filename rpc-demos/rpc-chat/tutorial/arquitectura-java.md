@@ -14,11 +14,13 @@ Para ello, y como característica diferenciadora, el framework hace extensivo us
 Esto le permite ofrecer un conjunto de servicios "built-in" que describen la estrucutura de los mensajes de otros servicios e incluir una interfaz web orientada al desarrador donde puede verse un repositorio con todos los servicios disponibles, sus características y descripciones, e incluso ejecutarlos directamente a través de un formulario generado automáticamente acorde a la estructura del mensaje de entrada del servicio. Al final del tutorial exploraremos esta útil característica del framework.
 
 ## Servicios
-El framework ofrece dos posibilidades para crear servicios JSON-RPC: sobre HTTP y sobre Websockets.
+El framework ofrece dos posibilidades para crear servicios JSON-RPC:
 
-En el primer caso, la APIs desarrolladas sobre HTTP se benefician de múltiples características ofrecidas por el protocolo HTTP como son cacheo de recursos, en concepto de petición segura (obtener recursos frente a modificarlos) con implicaciones en seguridad y fiabilidad, el concepto de idempotencia (mejorando la tolerancia a errores), códigos de respuesta, payloads binarios. Como puntos en contra, este transporte incrementa el tamaño de los mensajes intercambiados entre el cliente y el servidor y suele utiliza un nuevo socket por petición, lo que incrementa la latencia.
+### Servicios sobre HTTP
+Las APIs desarrolladas sobre HTTP se benefician de múltiples características ofrecidas por el protocolo HTTP como son cacheo de recursos, en concepto de petición segura (obtener recursos frente a modificarlos) con implicaciones en seguridad y fiabilidad, el concepto de idempotencia (mejorando la tolerancia a errores), códigos de respuesta, payloads binarios. Como puntos en contra, este transporte incrementa el tamaño de los mensajes intercambiados entre el cliente y el servidor y suele utiliza un nuevo socket por petición, lo que incrementa la latencia.
 
-Por otra parte Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Utiliza una única conexión sobre la que se envían mensajes de manera asíncrona desde ambos extremos. 
+### Servicios sobre Websockets
+Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriormente no incluye ninguna caraterística adicional a TCP/IP. Utiliza una única conexión sobre la que se envían mensajes de manera asíncrona desde ambos extremos. 
 
 Su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos. Como puntos en contra, a parte de se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores (aunque las últimas versiones de los más utilizados la soportan).
 
