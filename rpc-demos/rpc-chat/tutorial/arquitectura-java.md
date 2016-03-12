@@ -988,7 +988,7 @@ mvn clean package
 ```
 
 ## Ejecución
-Los runtimes de Tomcat integrados permiten ejecutar la aplicación sin ningun esfuerzo adicional. Esta característica hace que las aplicaciones sean autónomas y portables, lo ideal distribuirse como servicios y ser desplegadas en entornos cloud.
+Los runtimes de Tomcat integrados permiten ejecutar la aplicación sin ningun esfuerzo adicional. Esta característica hace que las aplicaciones sean autónomas y portables, lo ideal para distribuirlas como servicios y desplegarlas en entornos cloud.
 
 ```properties
 mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
