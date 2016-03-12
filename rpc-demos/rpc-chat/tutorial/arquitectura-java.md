@@ -1,6 +1,6 @@
 # Tutorial creado para http://www.arquitecturajava.com
 
-Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets.
+Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en [aplicaciones single-page](https://es.wikipedia.org/wiki/Single-page_application) via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
 
 > **msdn.microsoft.com:** Las aplicaciones de una sola página (SPA) son aplicaciones web que se cargan una sola página HTML y actualizan de forma dinámica la página cuando el usuario interactúa con la aplicación. Utilizan AJAX y HTML5 para crear aplicaciones Web fluida y sensible, sin necesidad de refrescar la página constantemente. Sin embargo, esto significa que gran parte del trabajo sucede en el lado del cliente, en JavaScript...
 
@@ -980,12 +980,14 @@ mvn clean package
 ```
 
 ## Ejecución
-
-- Runtimes integrados
+Los runtimes de Tomcat integrados permiten ejecutar la aplicación sin ningun esfuerzo adicional. Esta característica hace que las aplicaciones sean autónomas y portables, lo ideal distribuirse como servicios y ser desplegadas en entornos cloud.
 
 ```properties
 mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
 ```
+El ejecutar esto en un entorno con capacidades gráficas, se abrirá automáticamente un navegador apuntando a:
+
+http://localhost:8080/
 
 ## Repositorio de servicios
 
