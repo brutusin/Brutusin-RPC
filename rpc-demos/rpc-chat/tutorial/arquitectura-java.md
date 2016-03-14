@@ -79,8 +79,12 @@ La aplicación publicará en este topic mensajes representando tres tipos difere
    - Notificación de eventos de login/logout de usuarios
  
 ### Requisitos
+Para desarrollar el tutorial es necesario disponer del siguiente software instalado:
+
 >- JDK 1.7 o posterior
 - Maven 3.0+
+
+El tutorial es agnóstico en cuanto al IDE a utilizar.
 
 ### Creación del proyecto
 El primer paso consiste en crear la estructura del proyecto utilizando el siguiente arquetipo maven:
