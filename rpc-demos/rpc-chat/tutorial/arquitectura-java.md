@@ -70,9 +70,9 @@ Los servicios Websocket a desarrollar son los siguientes:
  
 #### Topics
 
-Esta aplicación de define un único "topic":
+En esta aplicación utilizaremos un único "topic":
+
  - `messages`: Topic al que se suscriben todos los usuarios y que permite su interacción, via publicación y notificación de mensajes. 
- 
 La aplicación publicará en este topic mensajes representando tres tipos diferentes de eventos: 
    - Publicación de mensajes de texto
    - Publicación de referencias a ficheros subidos
