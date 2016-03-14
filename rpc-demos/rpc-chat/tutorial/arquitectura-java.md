@@ -35,7 +35,7 @@ Se utilizan en este caso los denominados "topics"; unas entidades lógicas defin
 
 En el caso particular de Brutusin-RPC representan canales de comunicación de servidor a cliente implementados sobre Websockets.
 
-De manera práctica, Utilizando la [API Javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework, el código cliente puede realizar la suscripción al topic y especificar una función callback que será invocada por el framework cada vez que llege un mensaje del servidor. 
+De manera práctica, mediante la [API Javascript](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API) proporcionada por el framework, el código cliente puede realizar la suscripción al topic y especificar una función callback que será invocada por el framework cada vez que llege un mensaje del servidor. 
 
 Desde el punto de vista del servidor, los topics:
  - Implementan un método de filtrado, que define, dado un filtro, qué subscriptores son destinatarios del mensaje
