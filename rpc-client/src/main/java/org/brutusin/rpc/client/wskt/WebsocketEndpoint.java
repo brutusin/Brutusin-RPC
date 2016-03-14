@@ -20,8 +20,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -274,21 +272,6 @@ public class WebsocketEndpoint {
         } catch (ParseException ex) {
             throw new AssertionError();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        WebsocketEndpoint wsEndpoint = new WebsocketEndpoint(new URI("ws://localhost:8080/rpc/wskt"), 3);
-        wsEndpoint.subscribe("topic.scheduler", new Callback() {
-            public void call(JsonNode value) {
-                System.out.println(value);
-            }
-        });
-        wsEndpoint.exec(new Callback() {
-            public void call(JsonNode value) {
-                System.out.println(value);
-            }
-        }, "rpc.wskt.version", null);
-        new CountDownLatch(1).await(1000, TimeUnit.SECONDS);
     }
 
     public void close() {

@@ -118,6 +118,6 @@
         <module>rpc-demos</module>
         <module>rpc-archetypes</module>
         <module>rpc-client</module>
-  </modules>
+    </modules>
     
 </project>
