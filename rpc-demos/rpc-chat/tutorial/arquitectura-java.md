@@ -17,7 +17,7 @@ Esto le permite ofrecer un conjunto de servicios "built-in" que describen la est
 El framework ofrece dos posibilidades para crear servicios JSON-RPC:
 
 ### Servicios sobre HTTP
-Las APIs desarrolladas sobre HTTP se benefician de múltiples características ofrecidas por el protocolo HTTP como son cacheo de recursos, en concepto de petición segura (obtener recursos frente a modificarlos) con implicaciones en seguridad y fiabilidad, el concepto de idempotencia (mejorando la tolerancia a errores), códigos de respuesta y payloads binarios. 
+Las APIs desarrolladas sobre HTTP se benefician de múltiples características ofrecidas por el protocolo HTTP como son cacheo de recursos, el concepto de petición segura (obtener recursos frente a modificarlos) con implicaciones en seguridad y fiabilidad, el concepto de idempotencia (mejorando la tolerancia a errores), códigos de respuesta y payloads binarios. 
 
 Como puntos en contra, este transporte incrementa el tamaño de los mensajes intercambiados entre el cliente y el servidor y suele utilizar un nuevo socket por petición, lo que incrementa la latencia.
 
