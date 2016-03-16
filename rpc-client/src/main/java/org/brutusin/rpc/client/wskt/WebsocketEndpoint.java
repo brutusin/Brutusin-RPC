@@ -25,16 +25,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 import org.brutusin.commons.Trie;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonNode;
 import org.brutusin.rpc.client.RpcRequest;
-import org.glassfish.tyrus.client.ClientManager;
 
 /**
  *
@@ -115,12 +117,12 @@ public class WebsocketEndpoint {
         }
 
         final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
-        final ClientManager cm = ClientManager.createClient();
+        final WebSocketContainer webSocketContainer = ContainerProvider.getWebSocketContainer();
         new Thread() {
             @Override
             public void run() {
                 try {
-                    cm.connectToServer(new Endpoint() {
+                    webSocketContainer.connectToServer(new Endpoint() {
                         @Override
                         public void onOpen(final Session session, EndpointConfig config) {
                             synchronized (WebsocketEndpoint.this) {
@@ -132,7 +134,6 @@ public class WebsocketEndpoint {
 
                                     @Override
                                     public void close() {
-                                        cm.shutdown();
                                     }
                                 };
                                 WebsocketEndpoint.this.websocket.setMessageListener(new MessageListener() {
@@ -190,6 +191,8 @@ public class WebsocketEndpoint {
                         }
 
                     }, cec, endpoint);
+                } catch (DeploymentException ex) {
+                    LOGGER.log(Level.SEVERE, "Websocket deployment failed " + endpoint + ". " + ex.getMessage());
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 } finally {
@@ -199,7 +202,6 @@ public class WebsocketEndpoint {
                 }
             }
         }.start();
-
     }
 
     private synchronized void sendRequest(RpcRequest request, boolean enqueueIfNotAvailable) {
