@@ -25,19 +25,19 @@ import org.brutusin.rpc.spi.ServerRuntime;
  */
 public final class RpcConfig {
 
-    public static final String ENV_PROP_PATH = "org.brutusin.rpc.http-path";
-    public static final String ENV_PROP_SERVER_URI_ENC = "org.brutusin.rpc.server-uri-encoding";
-    public static final String ENV_PROP_UPLOAD_FOLDER = "org.brutusin.rpc.upload.folder";
-    public static final String ENV_PROP_MAX_FILE_SIZE = "org.brutusin.rpc.upload.max-file-size";
-    public static final String ENV_PROP_MAX_WSK_QUEUE_SIZE = "org.brutusin.rpc.wskt.max-queue-size";
-    public static final String ENV_PROP_MAX_REQUEST_SIZE = "org.brutusin.rpc.upload.max-request-size";
-    public static final String ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST = "org.brutusin.rpc.cors-host";
-    public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "org.brutusin.rpc.include-builtin-services";
-    public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "org.brutusin.rpc.include-env-service";
-    public static final String ENV_PROP_TEST_MODE = "org.brutusin.rpc.test-mode";
-    public static final String ENV_PROP_LINK_SOURCE_CODE = "org.brutusin.rpc.link-source-code";
+    public static final String ENV_PROP_PATH = "BRUTUSIN_RPC_PATH";
+    public static final String ENV_PROP_SERVER_URI_ENC = "BRUTUSIN_RPC_URI_ENCODING";
+    public static final String ENV_PROP_UPLOAD_FOLDER = "BRUTUSIN_RPC_UPLOAD_FOLDER";
+    public static final String ENV_PROP_MAX_FILE_SIZE = "BRUTUSIN_RPC_UPLOAD_MAX_FILE_SIZE";
+    public static final String ENV_PROP_MAX_REQUEST_SIZE = "BRUTUSIN_RPC_UPLOAD_MAX_REQUEST_SIZE";
+    public static final String ENV_PROP_MAX_WSK_QUEUE_SIZE = "BRUTUSIN_RPC_WSKT_MAX_QUEUE";
+    public static final String ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST = "BRUTUSIN_RPC_CORS_HOST";
+    public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "BRUTUSIN_RPC_INCLUDE_BUILTIN_SERVICES";
+    public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "BRUTUSIN_RPC_INCLUDE_ENV-SERVICE";
+    public static final String ENV_PROP_TEST_MODE = "BRUTUSIN_RPC_TEST_MODE";
+    public static final String ENV_PROP_LINK_SOURCE_CODE = "BRUTUSIN_RPC_LINK_SOURCE";
 
-    public static final String SYSTEM_ENV_TO_PROP_PREFIX = "org.brutusin.rpc.*";
+    public static final String SYSTEM_ENV_TO_PROP_PREFIX = "BRUTUSIN_RPC_*";
 
     private static final RpcConfig INSTANCE = new RpcConfig();
 
