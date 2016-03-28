@@ -33,7 +33,7 @@ public final class RpcConfig {
     public static final String ENV_PROP_MAX_WSK_QUEUE_SIZE = "BRUTUSIN_RPC_WSKT_MAX_QUEUE";
     public static final String ENV_PROP_ACCESS_CONTROL_ORIGIN_HOST = "BRUTUSIN_RPC_CORS_HOST";
     public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "BRUTUSIN_RPC_INCLUDE_BUILTIN_SERVICES";
-    public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "BRUTUSIN_RPC_INCLUDE_ENV-SERVICE";
+    public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "BRUTUSIN_RPC_INCLUDE_ENV_SERVICE";
     public static final String ENV_PROP_TEST_MODE = "BRUTUSIN_RPC_TEST_MODE";
     public static final String ENV_PROP_LINK_SOURCE_CODE = "BRUTUSIN_RPC_LINK_SOURCE";
 
