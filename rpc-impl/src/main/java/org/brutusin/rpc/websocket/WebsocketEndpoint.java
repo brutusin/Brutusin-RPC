@@ -41,7 +41,7 @@ import org.springframework.security.core.context.SecurityContext;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class WebsocketEndpoint extends Endpoint {
-    
+
     private final Map<String, WebsocketContext> contextMap = Collections.synchronizedMap(new HashMap());
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
@@ -64,7 +64,7 @@ public class WebsocketEndpoint extends Endpoint {
         final SessionImpl sessionImpl = new SessionImpl(session, websocketContext);
         sessionImpl.init();
         wrapperMap.put(session.getId(), sessionImpl);
-        
+
         session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
                 WebsocketActionSupportImpl.setInstance(new WebsocketActionSupportImpl(sessionImpl));
@@ -79,11 +79,11 @@ public class WebsocketEndpoint extends Endpoint {
             }
         });
     }
-    
+
     public Map<String, WebsocketContext> getContextMap() {
         return contextMap;
     }
-    
+
     @Override
     public void onClose(Session session, CloseReason closeReason) {
         contextMap.remove(session.getRequestParameterMap().get("requestId").get(0));
@@ -104,12 +104,14 @@ public class WebsocketEndpoint extends Endpoint {
             }
         }
     }
-    
+
     @Override
     public void onError(Session session, Throwable thr) {
-        thr.printStackTrace();
+        if (!(thr instanceof IOException)) {
+            thr.printStackTrace();
+        }
     }
-    
+
     protected boolean allowAccess(Session session, WebsocketContext websocketContext) {
         final RpcSpringContext rpcCtx = websocketContext.getSpringContext();
         if (rpcCtx.getParent() != null) {
