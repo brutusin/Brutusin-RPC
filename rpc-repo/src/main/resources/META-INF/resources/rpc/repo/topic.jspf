@@ -9,10 +9,18 @@
             desc = "";
         }
         document.getElementById("topicDesc").innerHTML = desc;
+        var sourceCode;
+        if (topic.sourceCode) {
+            var hostname = parseUrl(topic.sourceCode)["hostname"];
+            sourceCode = markdown.toHTML("*Source code available at [" + hostname + "](" + topic.sourceCode + ")*");
+        } else {
+            sourceCode = "";
+        }
+        document.getElementById("topicSource").innerHTML = sourceCode;
         document.getElementById("topicId").innerHTML = topic.id;
         wskt.exec({service: "rpc.topics.schema",
-            load: function  (response) {
-                    if (response === null) {
+            load: function (response) {
+                if (response === null) {
                     location.reload();
                     return;
                 }
@@ -63,6 +71,7 @@
     <h4><span id="topicId"></span></h4>
     <span class="label label-primary">Topic</span>
     <p id="topicDesc" style="padding-top: 10px"></p>
+    <p id="topicSource" style="padding-top: 10px"></p>
 </div>
 <div role="tabpanel">
     <!-- Nav tabs -->
