@@ -27,7 +27,7 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Return the **schema** of the messages of a topic. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/TopicSchemaAction.java)]*")
+@Description("Return the **schema** of the messages of a topic.")
 public class TopicSchemaAction extends WebsocketAction<TopicIdInput, JsonSchema> {
 
     @Override

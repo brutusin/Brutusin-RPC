@@ -15,8 +15,12 @@
  */
 package org.brutusin.rpc;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.util.Enumeration;
+import org.brutusin.commons.utils.Miscellaneous;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -56,9 +60,9 @@ public abstract class RpcComponent {
     }
 
     /**
-     * 
+     *
      * @param rt
-     * @return 
+     * @return
      */
     protected static Type getType(final ResolvableType rt) {
         if (!rt.hasGenerics()) {
@@ -82,5 +86,30 @@ public abstract class RpcComponent {
                 }
             };
         }
+    }
+
+    public URL getSourceCode() {
+        try {
+            URL jarUrl = getClass().getProtectionDomain().getCodeSource().getLocation();
+            Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/source-repo.txt");
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                if (url.getFile().contains(jarUrl.getFile())) {
+                    String baseUrl = Miscellaneous.toString(url.openStream(), "UTF-8");
+                    Class clazz = getClass().getDeclaringClass();
+                    if (clazz == null) {
+                        clazz = getClass();
+                    }
+                    StringBuilder sb = new StringBuilder(baseUrl);
+                    if(!baseUrl.endsWith("/")){
+                        sb.append("/");
+                    }
+                    return new URL(sb.append(clazz.getName().replace('.', '/')).append(".java").toString());
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
     }
 }

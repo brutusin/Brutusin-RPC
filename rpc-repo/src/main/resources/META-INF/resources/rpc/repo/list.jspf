@@ -41,6 +41,16 @@
             } else {
                 tr.appendChild(createElement("td"));
             }
+            if (httpServices[i].sourceCode) {
+                var span = createElement("span", null, "glyphicon glyphicon-list-alt", "color:#777");
+                span.title = "Source code available";
+                if (httpServices[i].framework) {
+                    span.style.color = "silver";
+                }
+                tr.appendChild(createElement("td", span));
+            } else {
+                tr.appendChild(createElement("td"));
+            }
             var a = createElement("a", httpServices[i].id, null, "cursor: pointer");
             a.index = i;
             a.onclick = function () {
@@ -204,7 +214,7 @@
         <div class="panel panel-default" style="margin: 0px">
             <table class="table table-striped table-responsive">
                 <thead>
-                    <tr><th class="right" style="width: 30px">#</th><th style="width: 30px"></th><th class="left">Service id</th><th class="left">Safety</th><th class="left">Idempotence</th><th class="left">Request</th><th class="left" style="width: 100px">Response</th></tr>
+                    <tr><th class="right" style="width: 30px">#</th><th style="width: 30px"></th><th style="width: 30px"></th><th class="left">Service id</th><th class="left">Safety</th><th class="left">Idempotence</th><th class="left">Request</th><th class="left" style="width: 100px">Response</th></tr>
                 </thead>
                 <tbody id="httpServicesTableBody"><tbody>  
             </table>

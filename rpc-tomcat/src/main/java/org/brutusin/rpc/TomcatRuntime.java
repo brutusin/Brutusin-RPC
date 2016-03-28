@@ -108,7 +108,6 @@ public class TomcatRuntime extends ServerRuntime {
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
         StandardJarScanner jarScanner = (StandardJarScanner) ctx.getJarScanner();
-        jarScanner.setScanClassPath(true);
         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
             LOGGER.info("Disabling TLD scanning");
             StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();

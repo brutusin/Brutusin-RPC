@@ -25,7 +25,7 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("**Unsubscribes** current websocket session from the specified topic. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/UnsubscribeAction.java)]*")
+@Description("**Unsubscribes** current websocket session from the specified topic.")
 public class UnsubscribeAction extends WebsocketAction<TopicIdInput, Void> {
 
     @Override

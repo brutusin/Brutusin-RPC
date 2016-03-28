@@ -35,6 +35,7 @@ public final class RpcConfig {
     public static final String ENV_PROP_INCLUDE_BUITIN_SERVICES = "org.brutusin.rpc.include-builtin-services";
     public static final String ENV_PROP_INCLUDE_ENV_SERVICE = "org.brutusin.rpc.include-env-service";
     public static final String ENV_PROP_TEST_MODE = "org.brutusin.rpc.test-mode";
+    public static final String ENV_PROP_LINK_SOURCE_CODE = "org.brutusin.rpc.link-source-code";
 
     public static final String SYSTEM_ENV_TO_PROP_PREFIX = "org.brutusin.rpc.*";
 
@@ -50,6 +51,7 @@ public final class RpcConfig {
     private boolean includeBuiltinServices;
     private boolean includeEnvService;
     private boolean testMode;
+    private boolean linkSourceCode;
 
     private RpcConfig() {
         trasformEnvToSystemProperties();
@@ -69,6 +71,7 @@ public final class RpcConfig {
         this.includeBuiltinServices = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_BUITIN_SERVICES, "true"));
         this.includeEnvService = Boolean.valueOf(getEnv(ENV_PROP_INCLUDE_ENV_SERVICE, "true"));
         this.testMode = Boolean.valueOf(getEnv(ENV_PROP_TEST_MODE, "false"));
+        this.linkSourceCode = Boolean.valueOf(getEnv(ENV_PROP_LINK_SOURCE_CODE, "false"));
     }
 
     public static RpcConfig getInstance() {
@@ -172,5 +175,13 @@ public final class RpcConfig {
 
     public void setTestMode(boolean testMode) {
         this.testMode = testMode;
+    }
+
+    public boolean isLinkSourceCode() {
+        return linkSourceCode;
+    }
+
+    public void setLinkSourceCode(boolean linkSourceCode) {
+        this.linkSourceCode = linkSourceCode;
     }
 }

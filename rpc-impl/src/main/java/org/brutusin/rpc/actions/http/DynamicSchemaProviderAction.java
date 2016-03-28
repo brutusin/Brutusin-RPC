@@ -27,7 +27,7 @@ import org.brutusin.rpc.http.SafeAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the [**dynamic schema**](https://github.com/brutusin/Brutusin-RPC/blob/master/README.md#dynamic-schemas) of other `HTTP` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/http/DynamicSchemaProviderAction.java)]*")
+@Description("This descriptor service returns the [**dynamic schema**](https://github.com/brutusin/Brutusin-RPC/blob/master/README.md#dynamic-schemas) of other `HTTP` services.")
 public class DynamicSchemaProviderAction extends SafeAction<DynamicSchemaProviderInput, Map<String, JsonSchema>> {
 
     @Override

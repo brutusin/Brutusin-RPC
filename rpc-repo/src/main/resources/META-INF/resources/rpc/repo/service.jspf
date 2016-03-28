@@ -3,6 +3,18 @@
     var outputSchema;
     var execFunction;
     var bf;
+    function parseUrl(href) {
+        var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)(\/[^?#]*)(\?[^#]*|)(#.*|)$/);
+        return match && {
+            protocol: match[1],
+            host: match[2],
+            hostname: match[3],
+            port: match[4],
+            pathname: match[5],
+            search: match[6],
+            hash: match[7]
+        }
+    }
     renderService = function () {
         var responseDiv = document.getElementById("responseDiv");
         responseDiv.className = "hidden";
@@ -16,6 +28,13 @@
             desc = markdown.toHTML(service.description);
         } else {
             desc = "";
+        }
+        var sourceCode;
+        if (service.sourceCode) {
+            var hostname = parseUrl(service.sourceCode)["hostname"];
+            sourceCode = markdown.toHTML("*Source code available at [" + hostname + "](" + service.sourceCode + ")*");
+        } else {
+            sourceCode = "";
         }
         var servTypeSpan = document.getElementById("servTypeSpan");
         var safetySpan = document.getElementById("safetySpan");
@@ -84,6 +103,7 @@
             schemaServiceName = "rpc.wskt.schema";
         }
         document.getElementById("srvDesc").innerHTML = desc;
+        document.getElementById("srvSource").innerHTML = sourceCode;
 
         execFunction({service: schemaServiceName,
             load: function (response) {
@@ -196,6 +216,7 @@
     <h4><span id="srvId"></span></h4>
     <span id="servTypeSpan"></span> <span id="safetySpan"></span> <span id="idempotenceSpan"></span> <span id="dynamicSpan"></span> <span id="uploadSpan"></span> <span id="responseTypeSpan"></span>
     <p id="srvDesc" style="padding-top: 10px"></p>
+    <p id="srvSource" style="padding-top: 10px"></p>
 </div>
 <div role="tabpanel">
     <!-- Nav tabs -->

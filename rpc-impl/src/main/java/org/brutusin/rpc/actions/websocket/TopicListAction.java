@@ -17,8 +17,9 @@ package org.brutusin.rpc.actions.websocket;
 
 import java.util.Map;
 import org.brutusin.rpc.Description;
+import org.brutusin.rpc.RpcComponent;
 import org.brutusin.rpc.RpcUtils;
-import org.brutusin.rpc.actions.ResourceItem;
+import org.brutusin.rpc.actions.ComponentItem;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
@@ -27,20 +28,21 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("This descriptor service returns the **list** of the availabe **topics**. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/TopicListAction.java)]*")
-public class TopicListAction extends WebsocketAction<Void, ResourceItem[]> {
+@Description("This descriptor service returns the **list** of the availabe **topics**.")
+public class TopicListAction extends WebsocketAction<Void, ComponentItem[]> {
 
     @Override
-    public ResourceItem[] execute(Void input) throws Exception {
+    public ComponentItem[] execute(Void input) throws Exception {
          Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
-        ResourceItem[] topicItems = new ResourceItem[topics.size()];
+        ComponentItem[] topicItems = new ComponentItem[topics.size()];
         int i = 0;
         for (Map.Entry<String, Topic> entrySet : topics.entrySet()) {
             String id = entrySet.getKey();
             Topic topic = entrySet.getValue();
-            ResourceItem ti = new ResourceItem();
+            ComponentItem ti = new ComponentItem();
             ti.setId(id);
             ti.setDescription(RpcUtils.getDescription(topic));
+            ti.setSourceCode(topic.getSourceCode());
             topicItems[i++] = ti;
         }
         return topicItems;

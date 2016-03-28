@@ -26,7 +26,7 @@ import org.brutusin.rpc.http.SafeAction;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns the input/output **JSON schema** of the deployed `HTTP` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/http/SchemaAction.java)]*")
+@Description("Returns the input/output **JSON schema** of the deployed `HTTP` services.")
 public class SchemaAction extends SafeAction<SchemaActionInput, JsonSchema> {
 
     @Override

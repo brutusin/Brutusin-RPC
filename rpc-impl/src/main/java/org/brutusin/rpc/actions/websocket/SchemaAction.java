@@ -25,7 +25,7 @@ import org.brutusin.rpc.websocket.WebsocketActionSupport;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns the input/output **JSON schema** of the deployed `websocket` services. *[See action source code at [github](https://github.com/brutusin/rpc-impl/blob/master/src/main/java/org/brutusin/rpc/actions/websocket/SchemaAction.java)]*")
+@Description("Returns the input/output **JSON schema** of the deployed `websocket` services.")
 public class SchemaAction extends WebsocketAction<ServiceSchemaActionInput, JsonSchema> {
 
     @Override

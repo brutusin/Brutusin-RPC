@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Ignacio del Valle Alles idelvall@brutusin.org.
+ * Copyright 2016 Ignacio del Valle Alles idelvall@brutusin.org.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.rpc.actions;
+package org.brutusin.rpc.client.http;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public class ServiceItem extends ComponentItem {
-
-    private boolean framework;
-
-    public boolean isFramework() {
-        return framework;
-    }
-
-    public void setFramework(boolean framework) {
-        this.framework = framework;
-    }
+public class HttpEndpoint {
+    
 }
