@@ -39,8 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.brutusin.commons.io.MetaDataInputStream;
 import org.brutusin.commons.utils.CryptoUtils;
 import org.brutusin.commons.utils.Miscellaneous;
@@ -258,7 +260,7 @@ public final class RpcServlet extends HttpServlet {
      * @throws Exception
      */
     private Map<String, InputStream> getStreams(HttpServletRequest req, RpcRequest rpcRequest, HttpAction service) throws Exception {
-        if (!ServletFileUpload.isMultipartContent(req)) {
+        if (!FileUploadBase.isMultipartContent(new ServletRequestContext(req))) {
             return null;
         }
         int streamsNumber = getInputStreamsNumber(rpcRequest, service);
@@ -397,8 +399,17 @@ public final class RpcServlet extends HttpServlet {
             if (streams != null) {
                 for (Map.Entry<String, InputStream> entrySet : streams.entrySet()) {
                     InputStream stream = entrySet.getValue();
+                    // ensureStreamRead(stream);
                     stream.close();
                 }
+            }
+        }
+    }
+
+    private void ensureStreamRead(InputStream stream) throws IOException {
+        if (stream != null) {
+            byte[] buffer = new byte[1024];
+            while (stream.read(buffer) != -1) {
             }
         }
     }
@@ -432,6 +443,7 @@ public final class RpcServlet extends HttpServlet {
             }
         } catch (Throwable th) {
             throwable = th;
+            ensureStreamRead(req.getInputStream());
         }
         String reqETag = getETag(req);
         addFixedHeaders(resp);
