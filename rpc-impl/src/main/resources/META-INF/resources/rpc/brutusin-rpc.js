@@ -183,9 +183,6 @@ if (typeof brutusin === "undefined") {
 
         function ajax(load, service, input, files, httpMethod, responseType, progress) {
             var req = createRpcRequest(service, input);
-            if (files) {
-                httpMethod = "POST";
-            }
             if (!responseType) {
                 responseType = 'json';
             }
