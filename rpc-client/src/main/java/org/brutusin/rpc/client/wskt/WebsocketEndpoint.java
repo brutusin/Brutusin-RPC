@@ -62,7 +62,7 @@ public class WebsocketEndpoint {
     private Websocket websocket;
     private boolean reconnecting;
 
-    public WebsocketEndpoint(URI endpoint, final int pingSeconds) {
+    public WebsocketEndpoint(URI endpoint, final Configuration cfg) {
         this.endpoint = endpoint;
         doExec(new Callback() {
             public void call(JsonNode response) {
@@ -86,7 +86,7 @@ public class WebsocketEndpoint {
             public void run() {
                 while (!isInterrupted()) {
                     try {
-                        Thread.sleep(1000 * pingSeconds);
+                        Thread.sleep(1000 * cfg.getPingSeconds());
                         doExec(new Callback() {
                             public void call(JsonNode response) {
                                 if (response.get("error") != null) {
@@ -111,7 +111,11 @@ public class WebsocketEndpoint {
         }
         reconnecting = true;
         if (this.websocket != null) {
-            this.websocket.close();
+            try {
+                this.websocket.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             this.websocket.setMessageListener(null);
             this.websocket = null;
         }
@@ -133,7 +137,8 @@ public class WebsocketEndpoint {
                                     }
 
                                     @Override
-                                    public void close() {
+                                    public void close() throws IOException {
+                                        session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, null));
                                     }
                                 };
                                 WebsocketEndpoint.this.websocket.setMessageListener(new MessageListener() {
@@ -276,10 +281,23 @@ public class WebsocketEndpoint {
         }
     }
 
-    public void close() {
+    public void close() throws IOException {
         this.pingThread.interrupt();
         if (this.websocket != null) {
             this.websocket.close();
+        }
+    }
+
+    public static class Configuration {
+
+        private final int pingSeconds;
+
+        public Configuration(int pingSeconds) {
+            this.pingSeconds = pingSeconds;
+        }
+
+        public int getPingSeconds() {
+            return pingSeconds;
         }
     }
 }

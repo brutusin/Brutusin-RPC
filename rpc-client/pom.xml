@@ -11,7 +11,9 @@
     <packaging>jar</packaging>   
     <version>1.4.4-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
-    
+    <properties>
+        <http-client-version>4.5.2</http-client-version>
+    </properties>
     <description>Brutusin-RPC java client</description>
    
     <dependencies>
@@ -30,9 +32,16 @@
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
+            <artifactId>httpclient-cache</artifactId>
+            <version>${http-client-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${http-client-version}</version>
+        </dependency>
+
+
     </dependencies>
     <build>
         <resources>

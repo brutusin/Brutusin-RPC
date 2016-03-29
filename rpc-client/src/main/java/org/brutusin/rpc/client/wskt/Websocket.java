@@ -28,7 +28,7 @@ abstract class Websocket {
     
     public abstract void send(String message) throws IOException;
     
-    public abstract void close();
+    public abstract void close() throws IOException;
 
     public final MessageListener getMessageListener() {
         return messageListener;
