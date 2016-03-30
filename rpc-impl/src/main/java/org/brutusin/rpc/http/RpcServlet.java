@@ -52,12 +52,14 @@ import org.brutusin.rpc.RpcConfig;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.InvalidHttpMethodException;
 import org.brutusin.rpc.exception.InvalidRequestException;
-import org.brutusin.rpc.exception.RpcErrorCode;
+import org.brutusin.rpc.RpcErrorCode;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.ParseException;
+import org.brutusin.json.ValidationException;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
+import org.brutusin.rpc.exception.ErrorFactory;
 
 /**
  *
@@ -457,7 +459,7 @@ public final class RpcServlet extends HttpServlet {
                 if (rpcRequest != null) {
                     rpcResp.setId(rpcRequest.getId());
                 }
-                rpcResp.setError(RpcResponse.Error.from(throwable));
+                rpcResp.setError(ErrorFactory.getError(throwable));
                 rpcResp.setResult(result);
                 serviceJsonResponse(reqETag, req, resp, rpcResp, cachingInfo);
             }

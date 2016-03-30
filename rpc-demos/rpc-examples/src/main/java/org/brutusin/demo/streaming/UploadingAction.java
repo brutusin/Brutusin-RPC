@@ -25,6 +25,11 @@ import org.brutusin.rpc.http.UnsafeAction;
 public class UploadingAction extends UnsafeAction<UploadingActionInput, String> {
 
     @Override
+    public boolean isIdempotent() {
+        return true;
+    }
+
+    @Override
     public String execute(UploadingActionInput input) throws Exception {
         MetaDataInputStream[] inputStreams = input.getInputStreams();
         return "Sucessfully uploaded " + inputStreams.length + " files";

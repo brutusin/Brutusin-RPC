@@ -32,6 +32,7 @@ import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
+import org.brutusin.rpc.exception.ErrorFactory;
 import org.brutusin.rpc.exception.InvalidRequestException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.core.context.SecurityContext;
@@ -153,7 +154,7 @@ public class WebsocketEndpoint extends Endpoint {
         if (req != null) {
             resp.setId(req.getId());
         }
-        resp.setError(RpcResponse.Error.from(throwable));
+        resp.setError(ErrorFactory.getError(throwable));
         resp.setResult(result);
         return JsonCodec.getInstance().transform(resp);
     }
