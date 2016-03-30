@@ -36,7 +36,9 @@ import org.brutusin.commons.Trie;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonNode;
-import org.brutusin.rpc.client.RpcRequest;
+import org.brutusin.rpc.RpcRequest;
+import org.brutusin.rpc.RpcResponse;
+import org.brutusin.rpc.client.RpcCallback;
 
 /**
  *
@@ -51,31 +53,31 @@ public class WebsocketEndpoint {
     private final AtomicInteger reqCounter = new AtomicInteger();
 
     private final Map<String, JsonNode> serviceMap = new HashMap();
-    private final Map<Integer, Callback> rpcCallbacks = new HashMap();
-    private final Map<String, Callback> topicCallbacks = new HashMap();
+    private final Map<Integer, RpcCallback> rpcCallbacks = new HashMap();
+    private final Map<String, TopicCallback> topicCallbacks = new HashMap();
 
     private final LinkedList<RpcRequest> reconnectingQueue = new LinkedList();
-    private final LinkedList<Trie<Callback, String, JsonNode>> initialQueue = new LinkedList();
+    private final LinkedList<Trie<RpcCallback, String, JsonNode>> initialQueue = new LinkedList();
 
     private final Thread pingThread;
 
     private Websocket websocket;
     private boolean reconnecting;
 
-    public WebsocketEndpoint(URI endpoint, final Configuration cfg) {
+    public WebsocketEndpoint(URI endpoint, final Config cfg) {
         this.endpoint = endpoint;
-        doExec(new Callback() {
-            public void call(JsonNode response) {
-                if (response.get("error") != null) {
+        doExec(new RpcCallback() {
+            public void call(RpcResponse<JsonNode> response) {
+                if (response.getError() != null) {
                     LOGGER.severe(response.toString());
                     return;
                 }
-                JsonNode services = response.get("result");
+                JsonNode services = response.getResult();
                 for (int i = 0; i < services.getSize(); i++) {
                     JsonNode service = services.get(i);
                     serviceMap.put(service.get("id").asString(), service);
                 }
-                for (Trie<Callback, String, JsonNode> req : initialQueue) {
+                for (Trie<RpcCallback, String, JsonNode> req : initialQueue) {
                     exec(req.getElement1(), req.getElement2(), req.getElement3());
                 }
                 initialQueue.clear();
@@ -87,9 +89,9 @@ public class WebsocketEndpoint {
                 while (!isInterrupted()) {
                     try {
                         Thread.sleep(1000 * cfg.getPingSeconds());
-                        doExec(new Callback() {
-                            public void call(JsonNode response) {
-                                if (response.get("error") != null) {
+                        doExec(new RpcCallback() {
+                            public void call(RpcResponse<JsonNode> response) {
+                                if (response.getError() != null) {
                                     LOGGER.severe(response.toString());
                                 }
                             }
@@ -147,12 +149,13 @@ public class WebsocketEndpoint {
                                         try {
                                             JsonNode response = JsonCodec.getInstance().parse(message);
                                             if (response.get("jsonrpc") != null) {
-                                                Integer id = response.get("id").asInteger();
-                                                Callback callback = rpcCallbacks.remove(id);
-                                                callback.call(response);
+                                                RpcResponse rpcResponse = JsonCodec.getInstance().load(response, RpcResponse.class);
+                                                Integer id = rpcResponse.getId();
+                                                RpcCallback callback = rpcCallbacks.remove(id);
+                                                callback.call(rpcResponse);
                                             } else {
                                                 String topic = response.get("topic").asString();
-                                                Callback callback = topicCallbacks.get(topic);
+                                                TopicCallback callback = topicCallbacks.get(topic);
                                                 callback.call(response.get("message"));
                                             }
                                         } catch (ParseException ex) {
@@ -229,13 +232,14 @@ public class WebsocketEndpoint {
         }
     }
 
-    private synchronized void doExec(Callback callback, String serviceId, JsonNode input, boolean enqueueIfNotAvailable) {
+    private synchronized void doExec(RpcCallback callback, String serviceId, JsonNode input, boolean enqueueIfNotAvailable) {
         Integer reqId = null;
         if (callback != null) {
             reqId = reqCounter.getAndIncrement();
             rpcCallbacks.put(reqId, callback);
         }
         RpcRequest request = new RpcRequest();
+        request.setJsonrpc("2.0");
         request.setId(reqId);
         request.setParams(input);
         request.setMethod(serviceId);
@@ -243,7 +247,7 @@ public class WebsocketEndpoint {
         sendRequest(request, enqueueIfNotAvailable);
     }
 
-    public synchronized void exec(Callback callback, String serviceId, JsonNode input) {
+    public synchronized void exec(RpcCallback callback, String serviceId, JsonNode input) {
         if (serviceId == null) {
             throw new IllegalArgumentException("execParam.service is required");
         }
@@ -254,15 +258,15 @@ public class WebsocketEndpoint {
             }
             doExec(callback, serviceId, input, true);
         } else {
-            initialQueue.add(new Trie<Callback, String, JsonNode>(callback, serviceId, input));
+            initialQueue.add(new Trie<RpcCallback, String, JsonNode>(callback, serviceId, input));
         }
     }
 
-    public synchronized void subscribe(String topicId, Callback callback) {
+    public synchronized void subscribe(String topicId, TopicCallback callback) {
         topicCallbacks.put(topicId, callback);
         if (this.websocket != null) {
             try {
-                exec(callback, "rpc.topics.subscribe", JsonCodec.getInstance().parse("{\"id\":\"" + topicId + "\"}"));
+                exec(null, "rpc.topics.subscribe", JsonCodec.getInstance().parse("{\"id\":\"" + topicId + "\"}"));
             } catch (ParseException ex) {
                 throw new AssertionError();
             }
@@ -285,19 +289,6 @@ public class WebsocketEndpoint {
         this.pingThread.interrupt();
         if (this.websocket != null) {
             this.websocket.close();
-        }
-    }
-
-    public static class Configuration {
-
-        private final int pingSeconds;
-
-        public Configuration(int pingSeconds) {
-            this.pingSeconds = pingSeconds;
-        }
-
-        public int getPingSeconds() {
-            return pingSeconds;
         }
     }
 }

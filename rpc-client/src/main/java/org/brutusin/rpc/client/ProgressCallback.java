@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.rpc.client.wskt;
-
-import org.brutusin.json.spi.JsonNode;
+package org.brutusin.rpc.client;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-public interface Callback {
-
-    public void call(JsonNode value);
+public interface ProgressCallback {
+    public void progress(float progress);
 }
