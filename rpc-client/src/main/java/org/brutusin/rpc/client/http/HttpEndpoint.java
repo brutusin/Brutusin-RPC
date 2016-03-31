@@ -23,18 +23,18 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -43,11 +43,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.impl.client.cache.CacheConfig;
@@ -71,6 +73,7 @@ import org.brutusin.rpc.client.ProgressCallback;
 public class HttpEndpoint {
 
     public static final String JSON_CONTENT_TYPE = "application/json";
+    private ThreadLocal<HttpClientContext> contexts = new ThreadLocal<HttpClientContext>();
 
     private final URI endpoint;
 
@@ -79,14 +82,23 @@ public class HttpEndpoint {
         GET, POST, PUT
     }
 
-    private final CloseableHttpClient http;
-    private final Map<String, HttpMethod> serviceMap;
+    private final CloseableHttpClient httpClient;
+    private final HttpClientContextFactory clientContextFactory;
 
-    public HttpEndpoint(URI endpoint, Config cfg) throws IOException {
+    private final Map<String, HttpMethod> serviceMap = new HashMap<String, HttpMethod>();
+
+    public HttpEndpoint(URI endpoint) throws IOException {
+        this(endpoint, (Config) null, null);
+    }
+
+    public HttpEndpoint(URI endpoint, HttpClientContextFactory clientContextFactory) throws IOException {
+        this(endpoint, (Config) null, clientContextFactory);
+    }
+
+    public HttpEndpoint(URI endpoint, Config cfg, HttpClientContextFactory clientContextFactory) throws IOException {
         if (endpoint == null) {
             throw new IllegalArgumentException("Endpoint is required");
         }
-        this.endpoint = endpoint;
         if (cfg == null) {
             cfg = new ConfigurationBuilder().build();
         }
@@ -102,17 +114,43 @@ public class HttpEndpoint {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         cm.setMaxTotal(cfg.getMaxConections());
 
-        this.http = CachingHttpClients.custom()
+        this.endpoint = endpoint;
+        this.httpClient = CachingHttpClients.custom()
                 .setCacheConfig(cacheConfig)
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(new StandardHttpRequestRetryHandler())
                 .setConnectionManager(cm)
                 .build();
+        this.clientContextFactory = clientContextFactory;
+        loadServices();
+    }
 
+    public HttpEndpoint(URI endpoint, CloseableHttpClient httpClient) throws IOException {
+        this(endpoint, httpClient, null);
+    }
+
+    public HttpEndpoint(URI endpoint, CloseableHttpClient httpClient, HttpClientContextFactory clientContextFactory) throws IOException {
+        if (endpoint == null) {
+            throw new IllegalArgumentException("Endpoint is required");
+        }
+        if (httpClient == null) {
+            throw new IllegalArgumentException("HttpClient is required");
+        }
+        this.endpoint = endpoint;
+        this.httpClient = httpClient;
+        this.clientContextFactory = clientContextFactory;
+    }
+
+    private void loadServices() throws IOException {
         CloseableHttpResponse servicesResp = doExec("rpc.http.services", null, null, HttpMethod.GET, null);
+        if (servicesResp.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Server returned status code " + servicesResp.getStatusLine().getStatusCode());
+        }
+        if (!servicesResp.getEntity().getContentType().getValue().contains(JSON_CONTENT_TYPE)) {
+            throw new RuntimeException("Server returned response of type " + servicesResp.getEntity().getContentType().getValue() + ":\n" + Miscellaneous.toString(servicesResp.getEntity().getContent(), "UTF-8"));
+        }
         try {
             JsonNode services = JsonCodec.getInstance().parse(Miscellaneous.toString(servicesResp.getEntity().getContent(), "UTF-8")).get("result");
-            this.serviceMap = new HashMap<String, HttpMethod>();
             for (int i = 0; i < services.getSize(); i++) {
                 JsonNode service = services.get(i);
                 HttpMethod method;
@@ -170,7 +208,7 @@ public class HttpEndpoint {
         return null;
     }
 
-    public void exec(final HttpCallback callback, final String serviceId, final JsonNode input, final Map<String, File> files, final ProgressCallback progressCallback) throws IOException {
+    public final void exec(final HttpCallback callback, final String serviceId, final JsonNode input, final Map<String, File> files, final ProgressCallback progressCallback) throws IOException {
         final HttpMethod method = serviceMap.get(serviceId);
         if (method == null) {
             throw new IllegalArgumentException("Invalid service id " + serviceId);
@@ -190,8 +228,13 @@ public class HttpEndpoint {
                             callback.callBinary(is);
                         }
                     } else {
+                        JsonNode responseNode = JsonCodec.getInstance().parse(Miscellaneous.toString(resp.getEntity().getContent(), "UTF-8"));
                         RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
-                        rpcResponse.setResult(JsonCodec.getInstance().parse(Miscellaneous.toString(resp.getEntity().getContent(), "UTF-8")));
+                        if (responseNode.get("error") != null) {
+                            rpcResponse.setError(JsonCodec.getInstance().load(responseNode.get("error"), RpcResponse.Error.class));
+                        }
+                        rpcResponse.setResult(responseNode.get("result"));
+
                         if (callback != null) {
                             callback.call(rpcResponse);
                         }
@@ -259,16 +302,35 @@ public class HttpEndpoint {
             }
             reqBase.setEntity(entity);
         }
-        return this.http.execute(req);
+        HttpClientContext context = contexts.get();
+        if (this.clientContextFactory != null && context == null) {
+            context = clientContextFactory.create();
+            contexts.set(context);
+        }
+        return this.httpClient.execute(req, context);
     }
 
     public void close() throws IOException {
-        this.http.close();
+        this.httpClient.close();
     }
 
     public static void main(String[] args) throws Exception {
         final CountDownLatch counter = new CountDownLatch(1);
-        HttpEndpoint endpoint = new HttpEndpoint(new URI("http://localhost:8080/rpc/http"), null);
+
+        HttpClientContextFactory ctxFact = new HttpClientContextFactory() {
+            public HttpClientContext create() {
+                CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                credsProvider.setCredentials(
+                        new AuthScope("localhost", 8080, AuthScope.ANY_REALM, "basic"),
+                        new UsernamePasswordCredentials("user", "password"));
+                HttpClientContext context = HttpClientContext.create();
+                context.setCredentialsProvider(credsProvider);
+                return context;
+            }
+        };
+
+        HttpEndpoint endpoint = new HttpEndpoint(new URI("http://localhost:8080/rpc/http"), ctxFact);
+
         HttpCallback callback = new HttpCallback() {
             public void callBinary(MetaDataInputStream is) {
                 System.out.println("binary");
@@ -290,7 +352,8 @@ public class HttpEndpoint {
 //                System.out.println(progress);
 //            }
 //        });
-        endpoint.exec(callback, "logo", JsonCodec.getInstance().parse("{\"attachment\":true,\"attachmentName\":\"aaa.jpg\"}"), null, null);
+
+        endpoint.exec(callback, "rpc.http.version", null, null, null);
         counter.await();
     }
 
