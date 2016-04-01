@@ -3,14 +3,14 @@
 <p align="center">
     <img src="https://github.com/brutusin/Brutusin-RPC/wiki/img/brutusin-logo_small.png" alt="Brutusin-RPC shiny logo">
 </p>
-JEE web microframework for creating maintainable JSON-RPC APIs for single-page applications with minimal effort.
+JEE web microframework for creating maintainable JSON-RPC microservices and single-page applications with minimal effort.
 
 ## Features
 
 - JSON-RPC 2.0 over HTTP
 - JSON-RPC 2.0 over websockets
 - Messaging (publish/subscribe) over websockets
-- Javascript client API
+- Java & Javascript client API
 - Builtin descriptive services and functional testing module
 - Spring-security integration
 
