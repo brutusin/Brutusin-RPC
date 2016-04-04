@@ -92,7 +92,7 @@ El primer paso consiste en crear la estructura del proyecto utilizando el siguie
 
 Para ello, en el directorio de tu elección, ejecuta el siguiente comando maven:
 ```properties
-mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-war -DarchetypeVersion=${version} -DgroupId=org.brutusin -DartifactId=rpc-chat -Dversion=1.0.0-SNAPSHOT
+mvn archetype:generate -B -DarchetypeGroupId=org.brutusin -DarchetypeArtifactId=rpc-tomcat-jar -DarchetypeVersion=${version} -DgroupId=org.brutusin -DartifactId=rpc-chat -Dversion=1.0.0-SNAPSHOT
 ```
 
 Siendo:
