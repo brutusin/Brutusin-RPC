@@ -35,8 +35,8 @@
         <commons-version>1.5.0</commons-version>
         <json-version>1.3.1</json-version>
         <json-provider-version>2.4.1</json-provider-version>
-        <spring-version>4.2.4.RELEASE</spring-version>
-        <spring-security-version>4.0.3.RELEASE</spring-security-version>
+        <spring-version>4.2.5.RELEASE</spring-version>
+        <spring-security-version>4.0.4.RELEASE</spring-security-version>
         <fileupload-version>1.3.1</fileupload-version>
     </properties>
     

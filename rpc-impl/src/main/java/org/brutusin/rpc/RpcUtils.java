@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.servlet.ServletContext;
 import org.brutusin.commons.utils.Miscellaneous;
-import org.brutusin.rpc.actions.http.VersionAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 
@@ -41,7 +40,15 @@ public class RpcUtils {
 
     public static String getVersion() {
         try {
-            return Miscellaneous.toString(VersionAction.class.getClassLoader().getResourceAsStream("brutusin-rpc.version"), "UTF-8");
+            return Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.version"), "UTF-8");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static String getDescription() {
+        try {
+            return Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.md"), "UTF-8");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

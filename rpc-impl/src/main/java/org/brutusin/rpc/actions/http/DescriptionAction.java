@@ -16,26 +16,19 @@
 package org.brutusin.rpc.actions.http;
 
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcAction;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.SafeAction;
 import org.brutusin.rpc.RpcUtils;
-import org.springframework.core.GenericTypeResolver;
 
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
-@Description("Returns the version of the microservice.")
-public class VersionAction extends SafeAction<Void, String> {
+@Description("Returns the [markdown](https://daringfireball.net/projects/markdown/) description of this microservice API.")
+public class DescriptionAction extends SafeAction<Void, String> {
 
     @Override
     public Cacheable<String> execute(Void input) throws Exception {
-        return Cacheable.never(RpcUtils.getVersion());
-    }
-    
-    public static void main(String[] args) {
-        Class<?> resolveTypeArgument = GenericTypeResolver.resolveTypeArgument(VersionAction.class, RpcAction.class);
-        System.out.println(resolveTypeArgument);
+        return Cacheable.never(RpcUtils.getDescription());
     }
 }

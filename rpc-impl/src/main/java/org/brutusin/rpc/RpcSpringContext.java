@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.brutusin.rpc.actions.http.DescriptionAction;
 import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
 import org.brutusin.rpc.actions.http.HttpServiceListAction;
 import org.brutusin.rpc.actions.http.LogoutAction;
@@ -106,6 +107,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     private void registerBuiltServices() {
         if (RpcConfig.getInstance().isIncludeBuiltinServices()) {
             registerBuiltinAction(SpringNames.SRV_HTTP_VERSION, new VersionAction());
+            registerBuiltinAction(SpringNames.SRV_HTTP_DESC, new DescriptionAction());
             registerBuiltinAction(SpringNames.SRV_HTTP_SERVICE_LIST, new HttpServiceListAction());
             registerBuiltinAction(SpringNames.SRV_HTTP_SCHEMA, new org.brutusin.rpc.actions.http.SchemaAction());
             registerBuiltinAction(SpringNames.SRV_HTTP_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.http.DynamicSchemaProviderAction());
@@ -114,6 +116,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             registerBuiltinAction(SpringNames.SRV_HTTP_PING, new PingAction());
 
             registerBuiltinAction(SpringNames.SRV_WSKT_VERSION, new org.brutusin.rpc.actions.websocket.VersionAction());
+            registerBuiltinAction(SpringNames.SRV_WSKT_DESC, new org.brutusin.rpc.actions.websocket.DescriptionAction());
             registerBuiltinAction(SpringNames.SRV_WSKT_SERVICE_LIST, new org.brutusin.rpc.actions.websocket.ServiceListAction());
             registerBuiltinAction(SpringNames.SRV_WSKT_SCHEMA, new org.brutusin.rpc.actions.websocket.SchemaAction());
             registerBuiltinAction(SpringNames.SRV_WSKT_SCHEMA_PROVIDER, new org.brutusin.rpc.actions.websocket.DynamicSchemaProviderAction());

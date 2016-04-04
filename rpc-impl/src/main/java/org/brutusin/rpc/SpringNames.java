@@ -25,6 +25,7 @@ public interface SpringNames {
     public static final String CFG_FILE = "classpath*:/brutusin-rpc.xml";
 
     public static final String SRV_HTTP_VERSION = "rpc.http.version";
+    public static final String SRV_HTTP_DESC = "rpc.http.description";
     public static final String SRV_HTTP_ENV = "rpc.http.environment";
     public static final String SRV_HTTP_SERVICE_LIST = "rpc.http.services";
     public static final String SRV_HTTP_SCHEMA = "rpc.http.schema";
@@ -34,6 +35,7 @@ public interface SpringNames {
     public static final String SRV_HTTP_PING = "rpc.http.ping";
 
     public static final String SRV_WSKT_VERSION = "rpc.wskt.version";
+    public static final String SRV_WSKT_DESC = "rpc.wskt.description";
     public static final String SRV_WSKT_SERVICE_LIST = "rpc.wskt.services";
     public static final String SRV_WSKT_SCHEMA = "rpc.wskt.schema";
     public static final String SRV_WSKT_SCHEMA_PROVIDER = "rpc.wskt.schema-provider";
