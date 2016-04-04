@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-demos</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.2</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-demo-jar</artifactId>
     <packaging>jar</packaging>   
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.2</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Demo app for Brutusin-RPC</description>
        
@@ -17,24 +17,24 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-examples</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-tomcat</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-impl</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-repo</artifactId> 
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -62,7 +62,7 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.brutusin.rpc.Main</mainClass>
                                 </transformer>
