@@ -151,13 +151,8 @@ public class TomcatRuntime extends ServerRuntime {
     public void exec(int port) {
         try {
             Tomcat tomcat = createTomcat(port);
-            File rootFolder = getRootFolder();
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
-            if (isWebApp(rootFolder)) {
-                addAutoOpen(stdCtx, "http://localhost:" + port);
-            } else {
-                addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/repo/");
-            }
+            addAutoOpen(stdCtx, "http://localhost:" + port);
             tomcat.start();
             tomcat.getServer().await();
         } catch (Exception ex) {
@@ -187,6 +182,7 @@ public class TomcatRuntime extends ServerRuntime {
                         rpcCtx.register(id, (WebsocketAction) action);
                     }
                 }
+
                 public void contextDestroyed(ServletContextEvent sce) {
 
                 }
