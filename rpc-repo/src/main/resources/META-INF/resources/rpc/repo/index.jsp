@@ -105,6 +105,28 @@ if(hash != null){
                     }
                 }, service: "rpc.http.user"});
 
+            http.ajax({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
+                    if (response.result) {
+                        var versionLabel = document.getElementById("versionLabel");
+                        versionLabel.innerHTML = response.result;
+                    }
+                }, service: "rpc.http.version"});
+
+            http.ajax({load: function (response) {
+                    if (response === null) {
+                        location.reload();
+                        return;
+                    }
+                    if (response.result) {
+                        var descDiv = document.getElementById("descDiv");
+                        descDiv.innerHTML = markdown.toHTML(response.result);
+                    }
+                }, service: "rpc.http.description"});
+
             wskt.exec({load: function (response) {
                     if (response === null) {
                         location.reload();
@@ -114,6 +136,7 @@ if(hash != null){
                     renderWskServices();
                     route();
                 }, service: "rpc.wskt.services"});
+
             wskt.exec({load: function (response) {
                     if (response === null) {
                         location.reload();
@@ -275,12 +298,13 @@ if(hash != null){
             <div style="padding-left: 80px; padding-top: 7px; margin-top:8px; background-color: #ccc; border-radius: 4px; height: 34px">
                 <table style="width: 100%">
                     <tr>
-                        <td style="text-align: left"><label class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label></td>
+                        <td style="text-align: left"><label id="versionLabel" class="label label-default" style="font-size:14px;cursor:pointer" onclick="document.location.hash = '';">brutusin:rpc</label></td>
                         <td style="text-align: right; padding-right: 12px"><label class="label" id="labelUser" style="font-size:12px; margin-right: 10px"></label><a id="github" href="https://github.com/brutusin/Brutusin-RPC"><span class="octicon octicon-mark-github"></span></a></td>
                     </tr>
                 </table>
             </div>
-        </div>     
+        </div>
+
         <div class="container" style="margin-bottom: 20px" >
             <div class="tab-content" style="margin-top: 20px;">
                 <div role="tabpanel" class="tab-pane active" id="list">
