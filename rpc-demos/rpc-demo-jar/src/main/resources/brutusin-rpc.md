@@ -1,1 +1,1 @@
-Edit file `src/main/resources/archetype-resources/src/main/resources/brutusin-rpc.md` to add a awesome [markdown](https://daringfireball.net/projects/markdown/) description of this microservice API!
+Demo application
