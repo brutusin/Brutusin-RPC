@@ -219,7 +219,7 @@
     });
 
 </script>
-<div id="descDiv" class="bs-callout bs-callout-default"></div>
+<div id="descDiv"></div>
 <ul id="mainTabs" class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#http-services" aria-controls="http-services" role="tab" data-toggle="tab">HTTP services <span class="badge" id="httpCounter"></span></a></li>
     <li role="presentation"><a href="#wskt-services" aria-controls="wskt-services" role="tab" data-toggle="tab">Websocket services <span class="badge small" id="wskCounter"></span></a></li>

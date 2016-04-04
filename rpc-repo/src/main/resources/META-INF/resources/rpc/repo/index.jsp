@@ -123,6 +123,7 @@ if(hash != null){
                     }
                     if (response.result) {
                         var descDiv = document.getElementById("descDiv");
+                        descDiv.className = "bs-callout bs-callout-default";
                         descDiv.innerHTML = markdown.toHTML(response.result);
                     }
                 }, service: "rpc.http.description"});
