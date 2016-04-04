@@ -1,5 +1,5 @@
 #!/bin/sh
-# Heroku start script
+# Heroku exec script
 export BRUTUSIN_RPC_LINK_SOURCE=true
 if [ "$TARGET" = "secure" ]; then
   cd rpc-demos/rpc-demo-security-jar
