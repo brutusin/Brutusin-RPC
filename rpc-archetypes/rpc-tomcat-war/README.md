@@ -1,7 +1,7 @@
 #`rpc-tomcat-war` [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-war/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-tomcat-war/)
 
 Maven archetype for creating a Brutusin-RCP war project with embedded Tomcat Runtimes.
-The generated war project can be run as n standalone java application or deployed into a `Servlet 3.0/Websocket 1.1` compliant web container.
+The generated war project can be run as a standalone java application or deployed into a `Servlet 3.0/Websocket 1.1` compliant web container.
 
 ## Usage
 ```properties
