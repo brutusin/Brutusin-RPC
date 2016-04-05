@@ -83,7 +83,8 @@
                                     <mainClass>org.brutusin.rpc.Main</mainClass>
                                 </transformer>
                             </transformers>
-                            <finalName>executable</finalName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>executable</shadedClassifierName>
                         </configuration>
                     </execution>
                 </executions>

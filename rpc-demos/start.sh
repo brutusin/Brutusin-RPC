@@ -8,4 +8,4 @@ elif [ "$TARGET" = "jar" ]; then
 elif [ "$TARGET" = "chat" ]; then
   cd rpc-demos/rpc-chat/target
 fi;
-java -jar executable.jar
+java -jar `ls -l -rt 2>/dev/null | awk ' /-executable.jar$/ {print $9}'`
