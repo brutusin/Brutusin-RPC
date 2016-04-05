@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,23 +36,43 @@ import org.springframework.security.core.context.SecurityContext;
  */
 public class RpcUtils {
 
+    private static final Logger LOGGER = Logger.getLogger(RpcWebInitializer.class.getName());
+    private static final String VERSION = loadVersion();
+    private static final String DESCRIPTION = loadDescription();
+
     private RpcUtils() {
     }
 
-    public static String getVersion() {
+    private static String loadVersion() {
         try {
-            return Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.version"), "UTF-8");
+            String ret = Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.version"), "UTF-8");
+            if (ret == null) {
+                LOGGER.warning("Resource not found: 'brutusin-rpc.version'. Add this resource to improve API documentation");
+            }
+            return ret;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
-    
-    public static String getDescription() {
+
+    private static String loadDescription() {
         try {
-            return Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.md"), "UTF-8");
+            String ret = Miscellaneous.toString(RpcUtils.class.getClassLoader().getResourceAsStream("brutusin-rpc.md"), "UTF-8");
+            if (ret == null) {
+                LOGGER.warning("Resource not found: 'brutusin-rpc.md'. Add this resource to improve API documentation");
+            }
+            return ret;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static String getVersion() {
+        return VERSION;
+    }
+
+    public static String getDescription() {
+        return DESCRIPTION;
     }
 
     public static String getAnnotatedDescription(Class clazz) {
