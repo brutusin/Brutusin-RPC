@@ -2,7 +2,7 @@
 
 Maven archetype for creating a Brutusin-RCP war to be deployed in an external into a `Servlet 3.0/Websocket 1.1` compliant web container.
 
-Projects generated with this archetype can be run in development environments via maven
+Projects generated with this archetype can be run in development environments via maven:
 
 ```sh
 mvn exec:java -Dexec.mainClass=org.brutusin.rpc.Main
