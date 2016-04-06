@@ -62,7 +62,7 @@ if(hash != null){
             }
 
         </style>
-        <script src='https://code.jquery.com/jquery-1.12.0.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.min.js'></script>
         <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/bootstrap-select.min.js'></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/js/i18n/defaults-en_US.min.js'></script>
