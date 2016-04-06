@@ -167,33 +167,34 @@
             var files = bf.getFileMap();
             var btn = document.getElementById("btExecute");
             var params = {service: service.id, input: input, files: files};
-            if (!service.binaryResponse) {
-                BrutusinForms.bootstrap.showLoading(btn);
-                params.load = function (response) {
-                    if (response === null) {
-                        location.reload();
-                        return;
-                    }
-                    BrutusinForms.bootstrap.hideLoading(btn);
-                    var responseDiv = document.getElementById("responseDiv");
-                    if (!response.error) {
-                        responseDiv.className = "panel panel-success";
-                    } else if (response.error.code === -32001) {
-                        responseDiv.className = "panel panel-warning";
-                    } else {
-                        responseDiv.className = "panel panel-danger";
-                    }
-                    var id = "resultDiv";
-                    if (!codeMirrors[id]) {
-                        codeMirrors[id] = CodeMirror(document.getElementById(id), {
-                            mode: "javascript",
-                            lineNumbers: true,
-                            viewportMargin: Infinity,
-                            readOnly: true
-                        });
-                    }
-                    codeMirrors[id].setValue(JSON.stringify(response, null, 2));
+            BrutusinForms.bootstrap.showLoading(btn);
+            params.load = function (response) {
+                if (response === null) {
+                    location.reload();
+                    return;
                 }
+                BrutusinForms.bootstrap.hideLoading(btn);
+                if(response instanceof Blob){
+                    return true;
+                }
+                var responseDiv = document.getElementById("responseDiv");
+                if (!response.error) {
+                    responseDiv.className = "panel panel-success";
+                } else if (response.error.code === -32001) {
+                    responseDiv.className = "panel panel-warning";
+                } else {
+                    responseDiv.className = "panel panel-danger";
+                }
+                var id = "resultDiv";
+                if (!codeMirrors[id]) {
+                    codeMirrors[id] = CodeMirror(document.getElementById(id), {
+                        mode: "javascript",
+                        lineNumbers: true,
+                        viewportMargin: Infinity,
+                        readOnly: true
+                    });
+                }
+                codeMirrors[id].setValue(JSON.stringify(response, null, 2));
             }
             execFunction(params);
         }
