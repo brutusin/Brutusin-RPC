@@ -19,7 +19,6 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -53,24 +52,7 @@ public class TomcatRuntime extends ServerRuntime {
     private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
 
     private static File getRootFolder() {
-        try {
-            File root;
-            String runningJarPath = TomcatRuntime.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replaceAll("\\\\", "/");
-            int lastIndexOf = runningJarPath.lastIndexOf("/target/");
-            if (lastIndexOf < 0) {
-                root = new File("");
-            } else {
-                root = new File(runningJarPath.substring(0, lastIndexOf));
-            }
-            LOGGER.info("Application resolved root folder: " + root.getAbsolutePath());
-            return root;
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static boolean isWebApp(File rootFolder) {
-        return new File(rootFolder.getAbsolutePath(), "src/main/webapp").exists();
+        return new File("");
     }
 
     private static void addAutoOpen(StandardContext ctx, String... openUrls) {
@@ -97,15 +79,15 @@ public class TomcatRuntime extends ServerRuntime {
     }
 
     private static StandardContext addTestApp(final Tomcat tomcat, File rootFolder) throws Exception {
-        String docBase;
-        boolean isWar = isWebApp(rootFolder);
-        if (isWar) {
-            docBase = new File(rootFolder.getAbsolutePath(), "src/main/webapp").getAbsolutePath();
-        } else {
-            docBase = Files.createTempDirectory("default-doc-base").toString();
+        File docBase = new File(rootFolder.getAbsolutePath(), "src/main/webapp");
+        if (!docBase.exists()) {
+            docBase = new File(rootFolder.getAbsolutePath(), "src/main/resources/META-INF/resources");
         }
-        LOGGER.info("Setting application docbase as '" + docBase + "'");
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase);
+        if (!docBase.exists()) {
+            docBase = Files.createTempDirectory("default-doc-base").toFile();
+        }
+        LOGGER.info("Setting application docbase as '" + docBase.getAbsolutePath() + "'");
+        StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase.getAbsolutePath());
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
         StandardJarScanner jarScanner = (StandardJarScanner) ctx.getJarScanner();
         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
