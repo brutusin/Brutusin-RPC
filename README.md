@@ -41,8 +41,10 @@ and automatically your browser will be open with a functional testing client for
 
 ![Service testing client](https://github.com/brutusin/Brutusin-RPC/wiki/img/hello-action-test.png)
 
-## Live demo
-http://demo.rpc.brutusin.org
+## Live demos
+ - http://demo.rpc.brutusin.org
+ - http://secure.demo.rpc.brutusin.org (see [here](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-demo-security-jar) needed credentials)
+ - http://chat.demo.rpc.brutusin.org
 
 ## Support, bugs and requests
 https://github.com/brutusin/Brutusin-RPC/issues
