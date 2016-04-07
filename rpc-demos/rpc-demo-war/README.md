@@ -1,10 +1,6 @@
 # [`org.brutusin:rpc-demo-war`](http://demo.rpc.brutusin.org) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Build Status](https://api.travis-ci.org/brutusin/Brutusin-RPC.svg?branch=master)](https://travis-ci.org/brutusin/Brutusin-RPC) [![Maven Central Latest Version](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo-war/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.brutusin/rpc-demo-war/)
 
-Demo application, war-version of [rpc-demo-jar](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-demo-jar). Can be executed externally (and hence deployed to heroku) in the exact same way. Additionally, the war can be deployed into any Servlet container.
-
-http://demo.rpc.brutusin.org
-
->Hosted at [herokuapp.com](herokuapp.com). First request may take a while until instance is started up.
+Demo application, war-version of [rpc-demo-jar](https://github.com/brutusin/Brutusin-RPC/tree/master/rpc-demos/rpc-demo-jar) to be deployed into an external Servlet container.
 
 ## Support, bugs and requests
 https://github.com/brutusin/Brutusin-RPC/issues
