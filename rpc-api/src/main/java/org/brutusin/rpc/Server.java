@@ -15,6 +15,8 @@
  */
 package org.brutusin.rpc;
 
+import java.io.IOException;
+import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.spi.ServerRuntime;
 import org.brutusin.rpc.websocket.Topic;
 
@@ -25,31 +27,47 @@ import org.brutusin.rpc.websocket.Topic;
 public final class Server {
 
     public static final int DEFAULT_PORT = 8080;
+    
+    private static final String LOGO = loadLogo();
 
     private Server() {
     }
+    
+    private static String loadLogo() {
+        try {
+            return Miscellaneous.toString(Server.class.getClassLoader().getResourceAsStream("brutusin-rpc-logo.txt"), "UTF-8");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     public static void exec() {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().exec();
     }
 
     public static void exec(int port) {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().exec(port);
     }
 
     public static void test(RpcAction action) {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().test(action);
     }
 
     public static void test(int port, RpcAction action) {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().test(port, action);
     }
 
     public static void test(Topic topic) {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().test(topic);
     }
 
     public static void test(int port, Topic topic) {
+        System.out.println(LOGO);
         ServerRuntime.getInstance().test(port, topic);
     }
 }
