@@ -55,7 +55,6 @@ import org.brutusin.rpc.exception.InvalidRequestException;
 import org.brutusin.rpc.RpcErrorCode;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.ParseException;
-import org.brutusin.json.ValidationException;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
 import org.brutusin.rpc.RpcUtils;
@@ -76,7 +75,7 @@ public final class RpcServlet extends HttpServlet {
 
     public static final String PARAM_PAYLOAD = "jsonrpc";
 
-    private AtomicInteger uploadCounter = new AtomicInteger();
+    private final AtomicInteger UPLOAD_COUNTER = new AtomicInteger();
 
     private Map<String, HttpAction> services;
 
@@ -235,7 +234,7 @@ public final class RpcServlet extends HttpServlet {
      */
     private File createTempUploadDirectory() throws IOException {
         synchronized (RpcConfig.getInstance().getUploadFolder()) {
-            File ret = new File(RpcConfig.getInstance().getUploadFolder(), String.valueOf(uploadCounter.incrementAndGet()));
+            File ret = new File(RpcConfig.getInstance().getUploadFolder(), String.valueOf(UPLOAD_COUNTER.incrementAndGet()));
             Miscellaneous.createDirectory(ret);
             return ret;
         }
@@ -357,6 +356,7 @@ public final class RpcServlet extends HttpServlet {
             resp.addHeader("Access-Control-Allow-Origin", RpcConfig.getInstance().getAccessControlOriginHost());
             resp.addHeader("Access-Control-Allow-Methods", "HEAD, GET, POST, PUT, OPTIONS");
             resp.addHeader("Access-Control-Expose-Headers", "Content-Disposition, Content-Type, Content-Length");
+            resp.addHeader("Access-Control-Allow-Headers", "x-requested-with");
             if (!RpcConfig.getInstance().getAccessControlOriginHost().equals("*")) {
                 resp.addHeader("Vary", "Origin");
             }
