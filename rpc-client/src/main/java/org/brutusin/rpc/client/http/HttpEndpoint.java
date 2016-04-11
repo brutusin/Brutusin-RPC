@@ -15,21 +15,24 @@
  */
 package org.brutusin.rpc.client.http;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
@@ -47,7 +50,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -65,6 +68,8 @@ import org.brutusin.rpc.RpcErrorCode;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.RpcResponse;
 import org.brutusin.rpc.client.ProgressCallback;
+import org.brutusin.rpc.http.CachingInfo;
+import org.brutusin.rpc.http.HttpServiceItem;
 
 /**
  *
@@ -72,8 +77,11 @@ import org.brutusin.rpc.client.ProgressCallback;
  */
 public class HttpEndpoint {
 
-    public static final String JSON_CONTENT_TYPE = "application/json";
-    private ThreadLocal<HttpClientContext> contexts = new ThreadLocal<HttpClientContext>();
+    private static final String JSON_CONTENT_TYPE = "application/json";
+    private static final Logger LOGGER = Logger.getLogger(HttpEndpoint.class.getName());
+
+    private final ThreadLocal<HttpClientContext> contexts = new ThreadLocal<HttpClientContext>();
+    private volatile boolean loaded;
 
     private final URI endpoint;
 
@@ -84,8 +92,9 @@ public class HttpEndpoint {
 
     private final CloseableHttpClient httpClient;
     private final HttpClientContextFactory clientContextFactory;
+    private Map<String, HttpServiceItem> services;
 
-    private final Map<String, HttpMethod> serviceMap = new HashMap<String, HttpMethod>();
+    private Thread pingThread;
 
     public HttpEndpoint(URI endpoint) throws IOException {
         this(endpoint, (Config) null, null);
@@ -122,7 +131,7 @@ public class HttpEndpoint {
                 .setConnectionManager(cm)
                 .build();
         this.clientContextFactory = clientContextFactory;
-        loadServices();
+        initPingThread(cfg.getPingSeconds());
     }
 
     public HttpEndpoint(URI endpoint, CloseableHttpClient httpClient) throws IOException {
@@ -139,6 +148,32 @@ public class HttpEndpoint {
         this.endpoint = endpoint;
         this.httpClient = httpClient;
         this.clientContextFactory = clientContextFactory;
+        initPingThread(new ConfigurationBuilder().build().getPingSeconds());
+    }
+
+    private void initPingThread(final int pingSeconds) {
+        this.pingThread = new Thread() {
+            @Override
+            public void run() {
+                while (!isInterrupted()) {
+                    try {
+                        Thread.sleep(1000 * pingSeconds);
+                        try {
+                            CloseableHttpResponse resp = doExec("rpc.http.ping", null, null, HttpMethod.GET, null);
+                            resp.close();
+                        } catch (ConnectException ex) {
+                            LOGGER.log(Level.SEVERE, ex.getMessage());
+                        } catch (IOException ex) {
+                            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                        }
+                    } catch (InterruptedException ie) {
+                        break;
+                    }
+                }
+            }
+        };
+        this.pingThread.setDaemon(true);
+        this.pingThread.start();
     }
 
     private void loadServices() throws IOException {
@@ -149,48 +184,58 @@ public class HttpEndpoint {
         if (!servicesResp.getEntity().getContentType().getValue().contains(JSON_CONTENT_TYPE)) {
             throw new RuntimeException("Server returned response of type " + servicesResp.getEntity().getContentType().getValue() + ":\n" + Miscellaneous.toString(servicesResp.getEntity().getContent(), "UTF-8"));
         }
+        HashMap serviceMap = new HashMap<String, HttpServiceItem>();
         try {
-            JsonNode services = JsonCodec.getInstance().parse(Miscellaneous.toString(servicesResp.getEntity().getContent(), "UTF-8")).get("result");
-            for (int i = 0; i < services.getSize(); i++) {
-                JsonNode service = services.get(i);
-                HttpMethod method;
-                if (service.get("safe").asBoolean()) {
-                    method = HttpMethod.GET;
-                } else {
-                    if (service.get("idempotent").asBoolean()) {
-                        method = HttpMethod.PUT;
-                    } else {
-                        method = HttpMethod.POST;
-                    }
-                }
-                serviceMap.put(service.get("id").asString(), method);
+            JsonNode node = JsonCodec.getInstance().parse(Miscellaneous.toString(servicesResp.getEntity().getContent(), "UTF-8")).get("result");
+            for (int i = 0; i < node.getSize(); i++) {
+                JsonNode service = node.get(i);
+                HttpServiceItem si = JsonCodec.getInstance().load(service, HttpServiceItem.class);
+                serviceMap.put(si.getId(), si);
             }
+            this.services = Collections.unmodifiableMap(serviceMap);
         } catch (ParseException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private static Map<String, File> sortFiles(final Map<String, File> files) {
+    public Map<String, HttpServiceItem> getServices() {
+        if (!loaded) {
+            synchronized (this) {
+                if (!loaded) {
+                    try {
+                        loadServices();
+                    } catch (IOException iOException) {
+                        throw new RuntimeException(iOException);
+                    }
+                    loaded = true;
+                }
+            }
+        }
+        return services;
+    }
+
+    private static Map<String, InputStream> sortFiles(final Map<String, InputStream> files) {
         if (files == null) {
             return null;
         }
+
         Comparator<String> comparator = new Comparator<String>() {
             public int compare(String s1, String s2) {
                 if (s1.equals(s2)) {
                     return 0;
                 }
-                File f1 = files.get(s1);
-                File f2 = files.get(s2);
-                if (f1 == null) {
+                InputStream f1 = files.get(s1);
+                InputStream f2 = files.get(s2);
+                if (f1 == null || !(f1 instanceof MetaDataInputStream) || ((MetaDataInputStream) f1).getLength() == null) {
                     return -1;
                 }
-                if (f2 == null) {
+                if (f2 == null || !(f2 instanceof MetaDataInputStream) || ((MetaDataInputStream) f2).getLength() == null) {
                     return 1;
                 }
-                return Long.compare(f1.length(), f2.length());
+                return Long.compare(((MetaDataInputStream) f1).getLength(), ((MetaDataInputStream) f2).getLength());
             }
         };
-        Map<String, File> ret = new TreeMap<String, File>(comparator);
+        Map<String, InputStream> ret = new TreeMap<String, InputStream>(comparator);
         ret.putAll(files);
         return ret;
     }
@@ -208,59 +253,89 @@ public class HttpEndpoint {
         return null;
     }
 
-    public final void exec(final HttpCallback callback, final String serviceId, final JsonNode input, final Map<String, File> files, final ProgressCallback progressCallback) throws IOException {
-        final HttpMethod method = serviceMap.get(serviceId);
+    private static HttpMethod getMethod(HttpServiceItem si) {
+        if (si.isSafe()) {
+            return HttpMethod.GET;
+        } else {
+            if (si.isIdempotent()) {
+                return HttpMethod.PUT;
+            } else {
+                return HttpMethod.POST;
+            }
+        }
+    }
+
+    public final HttpResponse exec(final String serviceId, final JsonNode input, final Map<String, InputStream> files, final ProgressCallback progressCallback) throws IOException {
+        if (!loaded) {
+            synchronized (this) {
+                if (!loaded) {
+                    loadServices();
+                    loaded = true;
+                }
+            }
+        }
+        final HttpMethod method = getMethod(services.get(serviceId));
         if (method == null) {
             throw new IllegalArgumentException("Invalid service id " + serviceId);
         }
-        Thread t;
-        t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    CloseableHttpResponse resp = doExec(serviceId, input, files, method, progressCallback);
-                    if (resp.getEntity() == null) {
-                        throw new RuntimeException(resp.getStatusLine().toString());
-                    }
-                    if (!resp.getEntity().getContentType().getValue().startsWith(JSON_CONTENT_TYPE)) {
-                        MetaDataInputStream is = new MetaDataInputStream(resp.getEntity().getContent(), getAttachmentFileName(resp.getFirstHeader("Content-Disposition")), resp.getEntity().getContentType().getValue(), resp.getEntity().getContentLength(), null);
-                        if (callback != null) {
-                            callback.callBinary(is);
+        HttpResponse ret = new HttpResponse();
+        try {
+            CloseableHttpResponse resp = doExec(serviceId, input, files, method, progressCallback);
+            if (resp.getEntity() == null) {
+                throw new RuntimeException(resp.getStatusLine().toString());
+            }
+            Header cacheControl = resp.getFirstHeader("Cache-Control");
+            if (cacheControl != null) {
+                HeaderElement[] elements = cacheControl.getElements();
+                if (elements != null) {
+                    for (HeaderElement element : elements) {
+                        if (element.getName().equals("no-cache")) {
+                            break;
                         }
-                    } else {
-                        JsonNode responseNode = JsonCodec.getInstance().parse(Miscellaneous.toString(resp.getEntity().getContent(), "UTF-8"));
-                        RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
-                        if (responseNode.get("error") != null) {
-                            rpcResponse.setError(JsonCodec.getInstance().load(responseNode.get("error"), RpcResponse.Error.class));
+                        if (ret.getCachingInfo() == null) {
+                            ret.setCachingInfo(new CachingInfo(0, true, false));
                         }
-                        rpcResponse.setResult(responseNode.get("result"));
-
-                        if (callback != null) {
-                            callback.call(rpcResponse);
+                        if (element.getName().equals("max-age")) {
+                            ret.getCachingInfo().setMaxAge(Integer.valueOf(element.getValue()));
                         }
-                    }
-                } catch (ConnectException ex) {
-                    RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
-                    rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.connectionError, ex));
-                    if (callback != null) {
-                        callback.call(rpcResponse);
-                    }
-                } catch (Throwable t) {
-                    RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
-                    rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.internalError, t));
-                    if (callback != null) {
-                        callback.call(rpcResponse);
+                        if (element.getName().equals("public")) {
+                            ret.getCachingInfo().setShared(true);
+                        }
+                        if (element.getName().equals("private")) {
+                            ret.getCachingInfo().setShared(false);
+                        }
+                        if (element.getName().equals("no-store")) {
+                            ret.getCachingInfo().setStore(false);
+                        }
                     }
                 }
             }
-        };
+            if (!resp.getEntity().getContentType().getValue().startsWith(JSON_CONTENT_TYPE)) {
+                MetaDataInputStream is = new MetaDataInputStream(resp.getEntity().getContent(), getAttachmentFileName(resp.getFirstHeader("Content-Disposition")), resp.getEntity().getContentType().getValue(), resp.getEntity().getContentLength(), null);
+                ret.setInputStream(is);
+            } else {
+                JsonNode responseNode = JsonCodec.getInstance().parse(Miscellaneous.toString(resp.getEntity().getContent(), "UTF-8"));
+                RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
+                if (responseNode.get("error") != null) {
+                    rpcResponse.setError(JsonCodec.getInstance().load(responseNode.get("error"), RpcResponse.Error.class));
+                }
+                rpcResponse.setResult(responseNode.get("result"));
+                ret.setRpcResponse(rpcResponse);
+            }
+        } catch (ConnectException ex) {
+            RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
+            rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.connectionError, ex.getMessage()));
+            ret.setRpcResponse(rpcResponse);
+        } catch (Throwable t) {
+            RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
+            rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.internalError, t.getMessage()));
+            ret.setRpcResponse(rpcResponse);
+        }
 
-        t.setDaemon(true);
-        t.start();
-
+        return ret;
     }
 
-    private CloseableHttpResponse doExec(String serviceId, JsonNode input, Map<String, File> files, HttpMethod httpMethod, final ProgressCallback progressCallback) throws IOException {
+    private CloseableHttpResponse doExec(String serviceId, JsonNode input, Map<String, InputStream> files, HttpMethod httpMethod, final ProgressCallback progressCallback) throws IOException {
         files = sortFiles(files);
         RpcRequest request = new RpcRequest();
         request.setJsonrpc("2.0");
@@ -290,10 +365,15 @@ public class HttpEndpoint {
                 MultipartEntityBuilder builder = MultipartEntityBuilder.create();
                 builder.setMode(HttpMultipartMode.STRICT);
                 builder.addPart("jsonrpc", new StringBody(payload, ContentType.APPLICATION_JSON));
-                for (Map.Entry<String, File> entrySet : files.entrySet()) {
+                for (Map.Entry<String, InputStream> entrySet : files.entrySet()) {
                     String key = entrySet.getKey();
-                    File value = entrySet.getValue();
-                    builder.addPart(key, new FileBody(value));
+                    InputStream is = entrySet.getValue();
+                    if (is instanceof MetaDataInputStream) {
+                        MetaDataInputStream mis = (MetaDataInputStream) is;
+                        builder.addPart(key, new InputStreamBody(mis, mis.getName()));
+                    } else {
+                        builder.addPart(key, new InputStreamBody(is, key));
+                    }
                 }
                 entity = builder.build();
                 if (progressCallback != null) {
@@ -310,12 +390,16 @@ public class HttpEndpoint {
         return this.httpClient.execute(req, context);
     }
 
+    public URI getEndpoint() {
+        return endpoint;
+    }
+
     public void close() throws IOException {
+        this.pingThread.interrupt();
         this.httpClient.close();
     }
 
     public static void main(String[] args) throws Exception {
-        final CountDownLatch counter = new CountDownLatch(1);
 
         HttpClientContextFactory ctxFact = new HttpClientContextFactory() {
             public HttpClientContext create() {
@@ -331,30 +415,12 @@ public class HttpEndpoint {
 
         HttpEndpoint endpoint = new HttpEndpoint(new URI("http://localhost:8080/rpc/http"), ctxFact);
 
-        HttpCallback callback = new HttpCallback() {
-            public void callBinary(MetaDataInputStream is) {
-                System.out.println("binary");
-                System.out.println(is.getName());
-                counter.countDown();
-            }
-
-            public void call(RpcResponse<JsonNode> response) {
-                System.out.println(response.getResult());
-                counter.countDown();
-            }
-        };
-//        HashMap<String, File> files = new HashMap<String, File>();
-//        files.put("file1", new File("C:/temp/1.fastq"));
-//        files.put("file2", new File("C:/temp/1.chr5.sam"));
-//        files.put("file3", new File("C:/temp/4.pileup"));
-//        endpoint.doExec(callback, "upload", JsonCodec.getInstance().parse("{\"inputStreams\":[\"file1\",\"file2\"]}"), files, HttpEndpoint.HttpMethod.PUT, new ProgressCallback() {
-//            public void progress(float progress) {
-//                System.out.println(progress);
-//            }
-//        });
-
-        endpoint.exec(callback, "rpc.http.version", null, null, null);
-        counter.await();
+        HttpResponse resp = endpoint.exec("rpc.http.version", null, null, null);
+        if (resp.isIsBinary()) {
+            System.out.println("binary");
+            System.out.println(resp.getInputStream().getName());
+        } else {
+            System.out.println(resp.getRpcResponse().getResult());
+        }
     }
-
 }

@@ -31,6 +31,7 @@ public class SchemaAction extends SafeAction<SchemaActionInput, JsonSchema> {
 
     @Override
     public Cacheable<JsonSchema> execute(SchemaActionInput input) throws Exception {
+        
         return Cacheable.conditionally(SchemaActionHelper.execute(input, HttpActionSupport.getInstance().getHttpServices()));
     }
 }

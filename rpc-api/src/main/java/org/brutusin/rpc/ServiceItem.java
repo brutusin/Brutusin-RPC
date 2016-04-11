@@ -13,32 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.rpc.http;
+package org.brutusin.rpc;
+
+import org.brutusin.rpc.ComponentItem;
 
 /**
- * Used to define business operations considered not <i>safe</i> according to
- * the HTTP definition.
- * <br/><br/><b>Threading issues</b>: Instances of this class will be accessed
- * by several threads concurrently, so implementing subclasses must be
- * thread-safe.
- * <br/><br/>
- * See section 4.2.1 of
- * <a href="http://www.rfc-editor.org/rfc/rfc7231.txt}">rfc7231</a>
- * for more details.
  *
- * @see SafeAction
  * @author Ignacio del Valle Alles idelvall@brutusin.org
- * @param <I> Input POJO class.
- * @param <O> Output POJO class
  */
-public abstract class UnsafeAction<I, O> extends HttpAction<I, O> {
+public class ServiceItem extends ComponentItem {
 
-    @Override
-    public final boolean isSafe(){
-        return false;
+    private boolean framework;
+
+    public boolean isFramework() {
+        return framework;
     }
-    
-    public boolean isIdempotent() {
-        return false;
+
+    public void setFramework(boolean framework) {
+        this.framework = framework;
     }
 }

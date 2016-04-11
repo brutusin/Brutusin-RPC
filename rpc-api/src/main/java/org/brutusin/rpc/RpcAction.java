@@ -16,6 +16,14 @@
 package org.brutusin.rpc;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.brutusin.commons.utils.Miscellaneous;
+import org.brutusin.json.DynamicSchemaProvider;
+import org.brutusin.json.spi.Expression;
+import org.brutusin.json.spi.JsonCodec;
+import org.brutusin.json.spi.JsonNode;
+import org.brutusin.json.spi.JsonSchema;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -40,6 +48,10 @@ public abstract class RpcAction<I, O> extends RpcComponent {
      */
     public abstract O execute(I input) throws Exception;
 
+    public boolean isDynamicInputSchema() {
+        return DynamicSchemaProvider.class.isAssignableFrom(Miscellaneous.getClass(getInputType()));
+    }
+
     public Type getInputType() {
         return getType(ResolvableType.forClass(RpcAction.class, getClass()).getGenerics()[0]);
     }
@@ -48,4 +60,41 @@ public abstract class RpcAction<I, O> extends RpcComponent {
         return getType(ResolvableType.forClass(RpcAction.class, getClass()).getGenerics()[1]);
     }
 
+    public JsonSchema getInputSchema() {
+        return JsonCodec.getInstance().getSchema(getInputType());
+    }
+
+    public Map<String, JsonSchema> getDynamicInputSchemas(String[] fieldNames, JsonNode data) {
+        if (fieldNames == null || fieldNames.length == 0) {
+            throw new IllegalArgumentException("Field names are required");
+        }
+        Map<String, JsonSchema> ret = new LinkedHashMap<String, JsonSchema>();
+
+        DynamicSchemaProvider schemaProvider;
+        Class<?> inputClass = Miscellaneous.getClass(getInputType());
+        if (DynamicSchemaProvider.class.isAssignableFrom(inputClass)) {
+            try {
+                schemaProvider = (DynamicSchemaProvider) inputClass.newInstance();
+            } catch (Exception ex) {
+                throw new Error(ex);
+            }
+            for (String fieldName : fieldNames) {
+                if (!ret.containsKey(fieldName)) {
+                    ret.put(fieldName, schemaProvider.getDynamicSchema(fieldName, data));
+                }
+            }
+        } else {
+            for (String fieldName : fieldNames) {
+                if (!ret.containsKey(fieldName)) {
+                    Expression exp = JsonCodec.getInstance().compile(fieldName);
+                    ret.put(fieldName, exp.projectSchema(JsonCodec.getInstance().getSchema(inputClass)));
+                }
+            }
+        }
+        return ret;
+    }
+
+    public JsonSchema getOutputSchema() {
+        return JsonCodec.getInstance().getSchema(getOutputType());
+    }
 }

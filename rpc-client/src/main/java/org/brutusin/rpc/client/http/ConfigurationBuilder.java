@@ -21,7 +21,7 @@ package org.brutusin.rpc.client.http;
  */
 public class ConfigurationBuilder {
 
-    private int pingSeconds = 30;
+    private int pingSeconds = 5;
     private int maxCacheEntries = 1000;
     private int maxCacheObjectSize = 8192;
     private int connectTimeOutSeconds = 10;

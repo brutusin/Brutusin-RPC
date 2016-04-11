@@ -17,9 +17,8 @@ package org.brutusin.rpc.actions.websocket;
 
 import java.util.Map;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcComponent;
 import org.brutusin.rpc.RpcUtils;
-import org.brutusin.rpc.actions.ComponentItem;
+import org.brutusin.rpc.ComponentItem;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
@@ -41,7 +40,7 @@ public class TopicListAction extends WebsocketAction<Void, ComponentItem[]> {
             Topic topic = entrySet.getValue();
             ComponentItem ti = new ComponentItem();
             ti.setId(id);
-            ti.setDescription(RpcUtils.getDescription(topic));
+            ti.setDescription(topic.getDescription());
             ti.setSourceCode(topic.getSourceCode());
             topicItems[i++] = ti;
         }

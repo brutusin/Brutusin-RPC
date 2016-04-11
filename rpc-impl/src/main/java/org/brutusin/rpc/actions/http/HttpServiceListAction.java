@@ -15,17 +15,14 @@
  */
 package org.brutusin.rpc.actions.http;
 
+import org.brutusin.rpc.http.HttpServiceItem;
 import java.util.Map;
-import org.brutusin.json.DynamicSchemaProvider;
-import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.RpcSpringContext;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.HttpAction;
 import org.brutusin.rpc.http.HttpActionSupport;
 import org.brutusin.rpc.http.SafeAction;
-import org.brutusin.rpc.http.StreamResult;
 
 /**
  *
@@ -45,13 +42,12 @@ public class HttpServiceListAction extends SafeAction<Void, HttpServiceItem[]> {
             HttpAction service = entrySet.getValue();
             HttpServiceItem si = new HttpServiceItem();
             si.setId(id);
-            si.setSafe(service instanceof SafeAction);
+            si.setSafe(service.isSafe());
             si.setIdempotent(service.isIdempotent());
-            si.setDescription(RpcUtils.getDescription(service));
-            Class<?> inputClass = RpcUtils.getClass(service.getInputType());
-            si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
-            si.setBinaryResponse(StreamResult.class.isAssignableFrom(RpcUtils.getClass(service.getOutputType())));
-            si.setUpload(JsonCodec.getInstance().getSchema(inputClass).toString().contains("\"format\":\"inputstream\""));
+            si.setDescription(service.getDescription());
+            si.setDynamicInputSchema(service.isDynamicInputSchema());
+            si.setBinaryResponse(service.isBinaryResponse());
+            si.setUpload(service.isUpload());
             si.setFramework(rpcSpringContext.isFrameworkAction(service));
             si.setSourceCode(service.getSourceCode());
             serviceItems[i++] = si;

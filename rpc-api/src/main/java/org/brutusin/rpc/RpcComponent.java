@@ -59,6 +59,14 @@ public abstract class RpcComponent {
     public void destroy() throws Exception {
     }
 
+    public String getDescription() {
+        Description desc = (Description) getClass().getAnnotation(Description.class);
+        if (desc == null) {
+            return null;
+        }
+        return desc.value();
+    }
+
     /**
      *
      * @param rt
@@ -88,6 +96,7 @@ public abstract class RpcComponent {
         }
     }
 
+  
     public URL getSourceCode() {
         try {
             URL jarUrl = getClass().getProtectionDomain().getCodeSource().getLocation();
@@ -101,7 +110,7 @@ public abstract class RpcComponent {
                         clazz = getClass();
                     }
                     StringBuilder sb = new StringBuilder(baseUrl);
-                    if(!baseUrl.endsWith("/")){
+                    if (!baseUrl.endsWith("/")) {
                         sb.append("/");
                     }
                     return new URL(sb.append(clazz.getName().replace('.', '/')).append(".java").toString());

@@ -60,6 +60,11 @@ public abstract class SafeAction<I, O> extends HttpAction<I, Cacheable<O>> {
     }
 
     @Override
+    public final boolean isSafe(){
+        return true;
+    }
+    
+    @Override
     public Type getOutputType() {
         // Don't show Cacheable in the output type
         Type type = super.getOutputType();

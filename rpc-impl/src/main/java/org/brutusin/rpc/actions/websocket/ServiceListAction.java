@@ -15,12 +15,10 @@
  */
 package org.brutusin.rpc.actions.websocket;
 
-import org.brutusin.rpc.actions.ServiceItem;
+import org.brutusin.rpc.ServiceItem;
 import java.util.Map;
-import org.brutusin.json.DynamicSchemaProvider;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.RpcSpringContext;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupport;
 
@@ -42,9 +40,8 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
             WebsocketAction service = entrySet.getValue();
             ServiceItem si = new ServiceItem();
             si.setId(id);
-            si.setDescription(RpcUtils.getDescription(service));
-            Class<?> inputClass = RpcUtils.getClass(service.getInputType());
-            si.setDynamicInputSchema(DynamicSchemaProvider.class.isAssignableFrom(inputClass));
+            si.setDescription(service.getDescription());
+            si.setDynamicInputSchema(service.isDynamicInputSchema());
             si.setFramework(rpcSpringContext.isFrameworkAction(service));
             si.setSourceCode(service.getSourceCode());
             serviceItems[i++] = si;

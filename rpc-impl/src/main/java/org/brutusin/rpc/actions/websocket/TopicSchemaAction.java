@@ -16,7 +16,6 @@
 package org.brutusin.rpc.actions.websocket;
 
 import java.util.Map;
-import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.Description;
 import org.brutusin.rpc.websocket.Topic;
@@ -37,6 +36,6 @@ public class TopicSchemaAction extends WebsocketAction<TopicIdInput, JsonSchema>
         if (topic == null) {
             throw new IllegalArgumentException("Topic not found");
         }
-        return JsonCodec.getInstance().getSchema(topic.getMessageType());
+        return topic.getMessageSchema();
     }
 }

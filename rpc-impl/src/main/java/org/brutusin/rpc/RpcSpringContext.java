@@ -153,7 +153,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         for (Map.Entry<String, E> entry : beans.entrySet()) {
             String id = entry.getKey();
             E component = entry.getValue();
-            if (RpcUtils.getDescription(component) == null) {
+            if (component.getDescription() == null) {
                 LOGGER.warning("Component '" + id + "' is not documented. For maintainability reasons, document '" + component.getClass() + "' class with @Description");
             }
         }

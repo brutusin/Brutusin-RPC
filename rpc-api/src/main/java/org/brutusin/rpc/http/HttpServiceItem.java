@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.brutusin.rpc.actions.http;
+package org.brutusin.rpc.http;
 
-import org.brutusin.rpc.actions.ServiceItem;
+import org.brutusin.rpc.ServiceItem;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.brutusin.rpc.actions.ServiceItem;
 public class HttpServiceItem extends ServiceItem {
 
     private boolean safe;
-    private Boolean idempotent;
+    private boolean idempotent;
     private boolean binaryResponse;
     private boolean upload;
 
@@ -36,7 +36,7 @@ public class HttpServiceItem extends ServiceItem {
         this.safe = safe;
     }
 
-    public Boolean getIdempotent() {
+    public boolean isIdempotent() {
         return idempotent;
     }
 

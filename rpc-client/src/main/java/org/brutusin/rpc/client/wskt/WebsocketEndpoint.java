@@ -16,6 +16,7 @@
 package org.brutusin.rpc.client.wskt;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +40,6 @@ import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import org.brutusin.commons.Trie;
-import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonNode;
@@ -108,6 +108,8 @@ public class WebsocketEndpoint {
                                     }
                                 }
                             }, "rpc.wskt.ping", null, false);
+                        } catch (ConnectException ex) {
+                            LOGGER.log(Level.SEVERE, ex.getMessage());
                         } catch (IOException ex) {
                             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                         }

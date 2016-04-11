@@ -75,38 +75,6 @@ public class RpcUtils {
         return DESCRIPTION;
     }
 
-    public static String getAnnotatedDescription(Class clazz) {
-        Description desc = (Description) clazz.getAnnotation(Description.class);
-        if (desc == null) {
-            return null;
-        }
-        return desc.value();
-    }
-
-    public static String getDescription(Object obj) {
-        if (obj instanceof Descriptible) {
-            Descriptible dObj = (Descriptible) obj;
-            return dObj.getDescription();
-        }
-        return getAnnotatedDescription(obj.getClass());
-    }
-
-    /**
-     *
-     * @param type
-     * @return
-     */
-    public static Class getClass(Type type) {
-        if (type instanceof Class) {
-            return (Class) type;
-        }
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            return getClass(pt.getRawType());
-        }
-        return Object.class;
-    }
-
     /**
      *
      * @param sc

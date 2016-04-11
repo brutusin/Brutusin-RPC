@@ -15,6 +15,8 @@
  */
 package org.brutusin.rpc.http;
 
+import org.brutusin.commons.utils.Miscellaneous;
+import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.RpcAction;
 
 /**
@@ -29,6 +31,8 @@ import org.brutusin.rpc.RpcAction;
  * @param <O> Output POJO class
  */
 public abstract class HttpAction<I, O> extends RpcAction<I, O> {
+    
+    public abstract boolean isSafe();
 
     /**
      * Action idempotence
@@ -37,5 +41,13 @@ public abstract class HttpAction<I, O> extends RpcAction<I, O> {
      * @return
      */
     public abstract boolean isIdempotent();
-
+    
+    public boolean isBinaryResponse() {
+        return StreamResult.class.isAssignableFrom(Miscellaneous.getClass(getOutputType()));
+    }
+    
+    public boolean isUpload() {
+        return JsonCodec.getInstance().getSchema(Miscellaneous.getClass(getInputType())).toString().contains("\"format\":\"inputstream\"");
+    }
+    
 }

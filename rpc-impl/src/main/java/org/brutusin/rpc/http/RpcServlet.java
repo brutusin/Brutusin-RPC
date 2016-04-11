@@ -265,7 +265,7 @@ public final class RpcServlet extends HttpServlet {
             return null;
         }
         int streamsNumber = getInputStreamsNumber(rpcRequest, service);
-        boolean isResponseStreamed = StreamResult.class.isAssignableFrom(RpcUtils.getClass(service.getOutputType()));
+        boolean isResponseStreamed = service.isBinaryResponse();
         FileItemIterator iter = (FileItemIterator) req.getAttribute(REQ_ATT_MULTIPART_ITERATOR);
         int count = 0;
         final Map<String, InputStream> map = new HashMap();
@@ -393,7 +393,7 @@ public final class RpcServlet extends HttpServlet {
             JsonSchema inputSchema = JsonCodec.getInstance().getSchema(inputType);
             inputSchema.validate(request.getParams());
             streams = getStreams(req, request, service);
-            input = JsonCodec.getInstance().parse(request.getParams().toString(), RpcUtils.getClass(inputType), streams).getElement1();
+            input = JsonCodec.getInstance().parse(request.getParams().toString(), Miscellaneous.getClass(inputType), streams).getElement1();
         }
         try {
             return service.execute(input);
@@ -417,7 +417,7 @@ public final class RpcServlet extends HttpServlet {
     }
 
     private int getInputStreamsNumber(RpcRequest rpcRequest, HttpAction service) throws ParseException {
-        Class<?> inputClass = RpcUtils.getClass(service.getInputType());
+        Class<?> inputClass = Miscellaneous.getClass(service.getInputType());
         return JsonCodec.getInstance().parse(rpcRequest.getParams().toString(), inputClass, null).getElement2();
     }
 
@@ -454,6 +454,8 @@ public final class RpcServlet extends HttpServlet {
         try {
             if (result != null && StreamResult.class.isAssignableFrom(result.getClass())) {
                 serviceStream(reqETag, req, resp, (StreamResult) result, cachingInfo);
+            } else if (result instanceof RpcResponse) {
+                serviceJsonResponse(reqETag, req, resp, (RpcResponse) result, cachingInfo);
             } else {
                 RpcResponse rpcResp = new RpcResponse();
                 if (rpcRequest != null) {

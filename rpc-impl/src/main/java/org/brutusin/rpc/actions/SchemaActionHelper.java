@@ -16,7 +16,6 @@
 package org.brutusin.rpc.actions;
 
 import java.util.Map;
-import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcAction;
 import org.brutusin.rpc.actions.SchemaActionInput.SchemaMode;
@@ -31,9 +30,9 @@ public class SchemaActionHelper {
         A service = validateAndGetService(input, services);
         JsonSchema value;
         if (input.getMode() == SchemaMode.I) {
-            value = JsonCodec.getInstance().getSchema(service.getInputType());
+            value = service.getInputSchema();
         } else {
-            value = JsonCodec.getInstance().getSchema(service.getOutputType());
+            value = service.getOutputSchema();
         }
         return value;
     }

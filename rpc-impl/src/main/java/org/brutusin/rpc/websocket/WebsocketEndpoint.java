@@ -25,6 +25,7 @@ import javax.websocket.Endpoint;
 import javax.websocket.Session;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
+import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.RpcResponse;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
@@ -150,12 +151,17 @@ public class WebsocketEndpoint extends Endpoint {
         if (req != null && req.getId() == null) {
             return null;
         }
-        RpcResponse resp = new RpcResponse();
-        if (req != null) {
-            resp.setId(req.getId());
+        RpcResponse resp;
+        if (result instanceof RpcResponse) {
+            resp = (RpcResponse) result;
+        } else {
+            resp = new RpcResponse();
+            if (req != null) {
+                resp.setId(req.getId());
+            }
+            resp.setError(ErrorFactory.getError(throwable));
+            resp.setResult(result);
         }
-        resp.setError(ErrorFactory.getError(throwable));
-        resp.setResult(result);
         return JsonCodec.getInstance().transform(resp);
     }
 
@@ -184,7 +190,7 @@ public class WebsocketEndpoint extends Endpoint {
             if (inputType.equals(Object.class)) {
                 input = request.getParams();
             } else {
-                input = JsonCodec.getInstance().load(request.getParams(), RpcUtils.getClass(inputType));
+                input = JsonCodec.getInstance().load(request.getParams(), Miscellaneous.getClass(inputType));
             }
         }
         return service.execute(input);
