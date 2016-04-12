@@ -3,10 +3,10 @@
 <p align="center">
     <img src="https://github.com/brutusin/Brutusin-RPC/wiki/img/brutusin-logo_small.png" alt="Brutusin-RPC shiny logo">
 </p>
-JEE web microframework for creating maintainable JSON-RPC microservices and single-page applications with minimal effort.
+JEE web framework for creating maintainable JSON-RPC microservices and single-page applications with minimal effort.
 
 ## Features
-
+- Embedded server runtimes
 - JSON-RPC 2.0 over HTTP
 - JSON-RPC 2.0 over websockets
 - Messaging (publish/subscribe) over websockets
