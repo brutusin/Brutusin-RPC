@@ -9,7 +9,7 @@
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-root</artifactId>
     <packaging>pom</packaging>   
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.3</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Brutusin-RPC parent module</description>
     <url>https://github.com/brutusin/Brutusin-RPC</url>
@@ -28,7 +28,7 @@
         <url>https://github.com/brutusin/Brutusin-RPC</url>
         <connection>scm:git:https://github.com/brutusin/Brutusin-RPC.git</connection>
         <developerConnection>scm:git:https://github.com/brutusin/Brutusin-RPC.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.6.3</tag>
     </scm>
     
     <properties>
