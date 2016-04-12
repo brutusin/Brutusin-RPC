@@ -16,7 +16,6 @@
 package org.brutusin.rpc.client.action;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,14 +51,7 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
 
     @Override
     public Cacheable<Object> execute(JsonNode input) throws Exception {
-        Map<String, InputStream> map;
-        if (input != null) {
-            map = new HashMap<String, InputStream>();
-            JsonCodec.getInstance().parse(input.toString(), map);
-        } else {
-            map = null;
-        }
-        HttpResponse httpResponse = this.endpoint.exec(targetId, input, map, null);
+        HttpResponse httpResponse = this.endpoint.exec(targetId, input, null);
         if (httpResponse.isIsBinary()) {
             StreamResult sr = new StreamResult(httpResponse.getInputStream());
             return new Cacheable(sr, httpResponse.getCachingInfo());
@@ -90,7 +82,7 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
             HttpResponse exec = endpoint.exec("rpc.http.schema-provider", JsonCodec.getInstance().parse(
                     "{\"id\":\"" + targetId + "\","
                     + "\"fieldNames\":" + JsonCodec.getInstance().transform(fieldNames) + ","
-                    + "\"input\":" + JsonCodec.getInstance().transform(data) + "}"), null, null);
+                    + "\"input\":" + JsonCodec.getInstance().transform(data) + "}"), null);
             JsonNode result = exec.getRpcResponse().getResult();
             Map<String, JsonSchema> ret = new HashMap<String, JsonSchema>();
             Iterator<String> properties = result.getProperties();
@@ -166,7 +158,7 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
 
     private JsonSchema querySchema(boolean input) throws IOException {
         try {
-            HttpResponse exec = endpoint.exec("rpc.http.schema", JsonCodec.getInstance().parse("{\"mode\":\"" + (input ? "I" : "O") + "\",\"id\":\"" + targetId + "\"}"), null, null);
+            HttpResponse exec = endpoint.exec("rpc.http.schema", JsonCodec.getInstance().parse("{\"mode\":\"" + (input ? "I" : "O") + "\",\"id\":\"" + targetId + "\"}"), null);
             JsonNode result = exec.getRpcResponse().getResult();
             return JsonCodec.getInstance().parseSchema(result.toString());
         } catch (ParseException ex) {

@@ -59,13 +59,16 @@ public class RpcResponse<E> {
     public static class Error {
 
         @JsonProperty(required = true)
-        private final int code;
+        private int code;
         @JsonProperty(required = true)
-        private final String message;
+        private String message;
         @JsonProperty(required = true)
-        private final String meaning;
-        private final Object data;
+        private String meaning;
+        private Object data;
 
+        public Error() {
+        }
+        
         public Error(RpcErrorCode error) {
             this(error, null);
         }
@@ -91,6 +94,22 @@ public class RpcResponse<E> {
 
         public Object getData() {
             return data;
+        }
+
+        public void setCode(int code) {
+            this.code = code;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public void setMeaning(String meaning) {
+            this.meaning = meaning;
+        }
+
+        public void setData(Object data) {
+            this.data = data;
         }
     }
 }

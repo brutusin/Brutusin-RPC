@@ -33,8 +33,8 @@
     
     <properties>
         <commons-version>1.5.1</commons-version>
-        <json-version>1.3.1</json-version>
-        <json-provider-version>2.4.1</json-provider-version>
+        <json-version>1.4.0</json-version>
+        <json-provider-version>2.5.0</json-provider-version>
         <spring-version>4.2.5.RELEASE</spring-version>
         <spring-security-version>4.0.4.RELEASE</spring-security-version>
         <fileupload-version>1.3.1</fileupload-version>

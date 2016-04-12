@@ -55,9 +55,9 @@ import org.brutusin.rpc.exception.InvalidRequestException;
 import org.brutusin.rpc.RpcErrorCode;
 import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.ParseException;
+import org.brutusin.json.spi.JsonNode;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.ErrorFactory;
 
 /**
@@ -393,7 +393,8 @@ public final class RpcServlet extends HttpServlet {
             JsonSchema inputSchema = JsonCodec.getInstance().getSchema(inputType);
             inputSchema.validate(request.getParams());
             streams = getStreams(req, request, service);
-            input = JsonCodec.getInstance().parse(request.getParams().toString(), Miscellaneous.getClass(inputType), streams).getElement1();
+            JsonNode params = JsonCodec.getInstance().parse(request.getParams().toString(), streams);
+            input = JsonCodec.getInstance().load(params, Miscellaneous.getClass(inputType));
         }
         try {
             return service.execute(input);
@@ -417,8 +418,7 @@ public final class RpcServlet extends HttpServlet {
     }
 
     private int getInputStreamsNumber(RpcRequest rpcRequest, HttpAction service) throws ParseException {
-        Class<?> inputClass = Miscellaneous.getClass(service.getInputType());
-        return JsonCodec.getInstance().parse(rpcRequest.getParams().toString(), inputClass, null).getElement2();
+        return JsonCodec.getInstance().getReferencedStreamCount(rpcRequest.getParams(), service.getInputSchema());
     }
 
     /**

@@ -15,8 +15,6 @@
  */
 package org.brutusin.rpc;
 
-import org.brutusin.rpc.ComponentItem;
-
 /**
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org

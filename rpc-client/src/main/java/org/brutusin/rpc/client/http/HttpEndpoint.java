@@ -159,7 +159,7 @@ public class HttpEndpoint {
                     try {
                         Thread.sleep(1000 * pingSeconds);
                         try {
-                            CloseableHttpResponse resp = doExec("rpc.http.ping", null, null, HttpMethod.GET, null);
+                            CloseableHttpResponse resp = doExec("rpc.http.ping", null, HttpMethod.GET, null);
                             resp.close();
                         } catch (ConnectException ex) {
                             LOGGER.log(Level.SEVERE, ex.getMessage());
@@ -177,7 +177,7 @@ public class HttpEndpoint {
     }
 
     private void loadServices() throws IOException {
-        CloseableHttpResponse servicesResp = doExec("rpc.http.services", null, null, HttpMethod.GET, null);
+        CloseableHttpResponse servicesResp = doExec("rpc.http.services", null, HttpMethod.GET, null);
         if (servicesResp.getStatusLine().getStatusCode() != 200) {
             throw new RuntimeException("Server returned status code " + servicesResp.getStatusLine().getStatusCode());
         }
@@ -265,7 +265,15 @@ public class HttpEndpoint {
         }
     }
 
-    public final HttpResponse exec(final String serviceId, final JsonNode input, final Map<String, InputStream> files, final ProgressCallback progressCallback) throws IOException {
+    /**
+     *
+     * @param serviceId
+     * @param input supports inputstreams
+     * @param progressCallback
+     * @return
+     * @throws IOException
+     */
+    public final HttpResponse exec(final String serviceId, final JsonNode input, final ProgressCallback progressCallback) throws IOException {
         if (!loaded) {
             synchronized (this) {
                 if (!loaded) {
@@ -280,7 +288,7 @@ public class HttpEndpoint {
         }
         HttpResponse ret = new HttpResponse();
         try {
-            CloseableHttpResponse resp = doExec(serviceId, input, files, method, progressCallback);
+            CloseableHttpResponse resp = doExec(serviceId, input, method, progressCallback);
             if (resp.getEntity() == null) {
                 throw new RuntimeException(resp.getStatusLine().toString());
             }
@@ -335,8 +343,7 @@ public class HttpEndpoint {
         return ret;
     }
 
-    private CloseableHttpResponse doExec(String serviceId, JsonNode input, Map<String, InputStream> files, HttpMethod httpMethod, final ProgressCallback progressCallback) throws IOException {
-        files = sortFiles(files);
+    private CloseableHttpResponse doExec(String serviceId, JsonNode input, HttpMethod httpMethod, final ProgressCallback progressCallback) throws IOException {
         RpcRequest request = new RpcRequest();
         request.setJsonrpc("2.0");
         request.setMethod(serviceId);
@@ -357,14 +364,12 @@ public class HttpEndpoint {
             }
             req = reqBase;
             HttpEntity entity;
-            if (files == null) {
-                List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-                nvps.add(new BasicNameValuePair("jsonrpc", payload));
-                entity = new UrlEncodedFormEntity(nvps);
-            } else {
-                MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-                builder.setMode(HttpMultipartMode.STRICT);
-                builder.addPart("jsonrpc", new StringBody(payload, ContentType.APPLICATION_JSON));
+            Map<String, InputStream> files = JsonCodec.getInstance().getStreams(input);
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setMode(HttpMultipartMode.STRICT);
+            builder.addPart("jsonrpc", new StringBody(payload, ContentType.APPLICATION_JSON));
+            if (files != null && !files.isEmpty()) {
+                files = sortFiles(files);
                 for (Map.Entry<String, InputStream> entrySet : files.entrySet()) {
                     String key = entrySet.getKey();
                     InputStream is = entrySet.getValue();
@@ -375,10 +380,10 @@ public class HttpEndpoint {
                         builder.addPart(key, new InputStreamBody(is, key));
                     }
                 }
-                entity = builder.build();
-                if (progressCallback != null) {
-                    entity = new ProgressHttpEntityWrapper(entity, progressCallback);
-                }
+            }
+            entity = builder.build();
+            if (progressCallback != null) {
+                entity = new ProgressHttpEntityWrapper(entity, progressCallback);
             }
             reqBase.setEntity(entity);
         }
@@ -415,7 +420,7 @@ public class HttpEndpoint {
 
         HttpEndpoint endpoint = new HttpEndpoint(new URI("http://localhost:8080/rpc/http"), ctxFact);
 
-        HttpResponse resp = endpoint.exec("rpc.http.version", null, null, null);
+        HttpResponse resp = endpoint.exec("rpc.http.version", null, null);
         if (resp.isIsBinary()) {
             System.out.println("binary");
             System.out.println(resp.getInputStream().getName());
