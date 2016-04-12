@@ -102,7 +102,7 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
             synchronized (this) {
                 if (outputSchema == null) {
                     try {
-                        outputSchema = querySchema(true);
+                        outputSchema = querySchema(false);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
