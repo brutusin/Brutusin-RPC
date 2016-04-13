@@ -32,7 +32,7 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
     @Override
     public ServiceItem[] execute(Void input) throws Exception {
         Map<String, WebsocketAction> services = WebsocketActionSupport.getInstance().getWebSocketServices();
-         RpcSpringContext rpcSpringContext = (RpcSpringContext)WebsocketActionSupport.getInstance().getSpringContext();
+        RpcSpringContext rpcSpringContext = (RpcSpringContext) WebsocketActionSupport.getInstance().getSpringContext();
         ServiceItem[] serviceItems = new ServiceItem[services.size()];
         int i = 0;
         for (Map.Entry<String, WebsocketAction> entrySet : services.entrySet()) {
@@ -40,10 +40,15 @@ public class ServiceListAction extends WebsocketAction<Void, ServiceItem[]> {
             WebsocketAction service = entrySet.getValue();
             ServiceItem si = new ServiceItem();
             si.setId(id);
-            si.setDescription(service.getDescription());
-            si.setDynamicInputSchema(service.isDynamicInputSchema());
-            si.setFramework(rpcSpringContext.isFrameworkAction(service));
-            si.setSourceCode(service.getSourceCode());
+            if (service.isActive()) {
+                si.setActive(true);
+                si.setDescription(service.getDescription());
+                si.setDynamicInputSchema(service.isDynamicInputSchema());
+                si.setFramework(rpcSpringContext.isFrameworkAction(service));
+                si.setSourceCode(service.getSourceCode());
+            } else {
+                si.setActive(false);
+            }
             serviceItems[i++] = si;
         }
         return serviceItems;

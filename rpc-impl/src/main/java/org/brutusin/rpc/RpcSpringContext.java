@@ -72,9 +72,9 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         cleanRpc();
         threadFactory = new ThreadFactory();
         registerBuiltServices();
-        this.httpServices = loadComponents(HttpAction.class);
-        this.webSocketServices = loadComponents(WebsocketAction.class);
-        this.webSocketTopics = loadComponents(Topic.class);
+        this.httpServices = getBeansOfType(HttpAction.class);
+        this.webSocketServices = getBeansOfType(WebsocketAction.class);
+        this.webSocketTopics = getBeansOfType(Topic.class);
         initHttpActions();
         initWsktActions();
         initTopics();
@@ -148,24 +148,15 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         }
     }
 
-    private <E extends RpcComponent> Map<String, E> loadComponents(Class<E> clazz) {
-        Map<String, E> beans = getBeansOfType(clazz);
-        for (Map.Entry<String, E> entry : beans.entrySet()) {
-            String id = entry.getKey();
-            E component = entry.getValue();
-            if (component.getDescription() == null) {
-                LOGGER.warning("Component '" + id + "' is not documented. For maintainability reasons, document '" + component.getClass() + "' class with @Description");
-            }
-        }
-        return beans;
-    }
-
     private void initHttpActions() {
         Map<String, HttpAction> beans = getBeansOfType(HttpAction.class);
         for (Map.Entry<String, HttpAction> entry : beans.entrySet()) {
             String id = entry.getKey();
             HttpAction action = entry.getValue();
             init(action, id);
+            if (action.isActive() && action.getDescription() == null) {
+                LOGGER.warning("Action '" + id + "' is not documented. For maintainability reasons, document '" + action.getClass() + "' class with @Description");
+            }
         }
     }
 
@@ -175,6 +166,9 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             String id = entry.getKey();
             WebsocketAction action = entry.getValue();
             init(action, id);
+            if (action.isActive() && action.getDescription() == null) {
+                LOGGER.warning("Action '" + id + "' is not documented. For maintainability reasons, document '" + action.getClass() + "' class with @Description");
+            }
         }
     }
 
@@ -207,6 +201,9 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             Topic topic = entry.getValue();
             try {
                 topic.init(id);
+                if (topic.isActive() && topic.getDescription() == null) {
+                    LOGGER.warning("Topic '" + id + "' is not documented. For maintainability reasons, document '" + topic.getClass() + "' class with @Description");
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }

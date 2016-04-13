@@ -17,7 +17,6 @@ package org.brutusin.rpc.actions.websocket;
 
 import java.util.Map;
 import org.brutusin.rpc.Description;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.ComponentItem;
 import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
@@ -32,7 +31,7 @@ public class TopicListAction extends WebsocketAction<Void, ComponentItem[]> {
 
     @Override
     public ComponentItem[] execute(Void input) throws Exception {
-         Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
+        Map<String, Topic> topics = WebsocketActionSupport.getInstance().getTopics();
         ComponentItem[] topicItems = new ComponentItem[topics.size()];
         int i = 0;
         for (Map.Entry<String, Topic> entrySet : topics.entrySet()) {
@@ -40,8 +39,13 @@ public class TopicListAction extends WebsocketAction<Void, ComponentItem[]> {
             Topic topic = entrySet.getValue();
             ComponentItem ti = new ComponentItem();
             ti.setId(id);
-            ti.setDescription(topic.getDescription());
-            ti.setSourceCode(topic.getSourceCode());
+            if (topic.isActive()) {
+                ti.setActive(true);
+                ti.setDescription(topic.getDescription());
+                ti.setSourceCode(topic.getSourceCode());
+            } else {
+                ti.setActive(false);
+            }
             topicItems[i++] = ti;
         }
         return topicItems;
