@@ -51,47 +51,56 @@
             } else {
                 tr.appendChild(createElement("td"));
             }
-            var a = createElement("a", httpServices[i].id, null, "cursor: pointer");
-            a.index = i;
-            a.onclick = function () {
-                document.location.hash = "#http-services/" + httpServices[this.index].id;
-                //selectService(this.index, true);
-            };
-            if (httpServices[i].framework) {
-                a.style.color = "silver";
-            }
-            tr.appendChild(createElement("td", a, "left"));
-            if (httpServices[i].safe) {
-                var span = createElement("span", "Safe", "label label-success");
-                tr.appendChild(createElement("td", span, "left"));
-            } else {
-                var span = createElement("span", "Unsafe", "label label-warning");
-                tr.appendChild(createElement("td", span, "left"));
-            }
-            if (httpServices[i].idempotent) {
-                var span = createElement("span", "Idempotent", "label label-success");
-                tr.appendChild(createElement("td", span, "left"));
-            } else {
-                var span = createElement("span", "Non-idempotent", "label label-warning");
-                tr.appendChild(createElement("td", span, "left"));
-            }
-            var td = createElement("td", null, "left");
+            if (httpServices[i].active) {
+                var a = createElement("a", httpServices[i].id, null, "cursor: pointer");
+                a.index = i;
+                a.onclick = function () {
+                    document.location.hash = "#http-services/" + httpServices[this.index].id;
+                    //selectService(this.index, true);
+                };
+                if (httpServices[i].framework) {
+                    a.style.color = "silver";
+                }
+                tr.appendChild(createElement("td", a, "left"));
+                if (httpServices[i].safe) {
+                    var span = createElement("span", "Safe", "label label-success");
+                    tr.appendChild(createElement("td", span, "left"));
+                } else {
+                    var span = createElement("span", "Unsafe", "label label-warning");
+                    tr.appendChild(createElement("td", span, "left"));
+                }
+                if (httpServices[i].idempotent) {
+                    var span = createElement("span", "Idempotent", "label label-success");
+                    tr.appendChild(createElement("td", span, "left"));
+                } else {
+                    var span = createElement("span", "Non-idempotent", "label label-warning");
+                    tr.appendChild(createElement("td", span, "left"));
+                }
+                var td = createElement("td", null, "left");
 
-            if (httpServices[i].upload) {
-                var span = createElement("span", "Upload", "label label-danger");
-                td.appendChild(span);
-            }
-            if (httpServices[i].dynamicInputSchema) {
-                var span = createElement("span", "Dynamic", "label label-info");
-                td.appendChild(span);
-            }
-            tr.appendChild(td);
-            if (httpServices[i].binaryResponse) {
-                var span = createElement("span", "Binary", "label label-primary");
-                tr.appendChild(createElement("td", span, "left"));
+                if (httpServices[i].upload) {
+                    var span = createElement("span", "Upload", "label label-danger");
+                    td.appendChild(span);
+                }
+                if (httpServices[i].dynamicInputSchema) {
+                    var span = createElement("span", "Dynamic", "label label-info");
+                    td.appendChild(span);
+                }
+                tr.appendChild(td);
+                if (httpServices[i].binaryResponse) {
+                    var span = createElement("span", "Binary", "label label-primary");
+                    tr.appendChild(createElement("td", span, "left"));
+                } else {
+                    var span = createElement("span", "JSON", "label label-default");
+                    tr.appendChild(createElement("td", span, "left"));
+                }
             } else {
-                var span = createElement("span", "JSON", "label label-default");
-                tr.appendChild(createElement("td", span, "left"));
+                var strike = createElement("strike", httpServices[i].id);
+                tr.appendChild(createElement("td", strike, "left"));
+                tr.appendChild(createElement("td"));
+                tr.appendChild(createElement("td"));
+                tr.appendChild(createElement("td"));
+                tr.appendChild(createElement("td"));
             }
         }
         createHelpTooltips();
@@ -128,20 +137,26 @@
             } else {
                 tr.appendChild(createElement("td"));
             }
-            var a = createElement("a", wsServices[i].id, null, "cursor: pointer");
-            a.index = i;
-            a.onclick = function () {
-                document.location.hash = "#wskt-services/" + wsServices[this.index].id;
-                //selectService(this.index, false);
-            };
-            if (wsServices[i].framework) {
-                a.style.color = "silver";
-            }
-            tr.appendChild(createElement("td", a, "left"));
-            if (wsServices[i].dynamicInputSchema) {
-                var span = createElement("span", "Dynamic", "label label-info");
-                tr.appendChild(createElement("td", span, "left"));
+            if (wsServices[i].active) {
+                var a = createElement("a", wsServices[i].id, null, "cursor: pointer");
+                a.index = i;
+                a.onclick = function () {
+                    document.location.hash = "#wskt-services/" + wsServices[this.index].id;
+                    //selectService(this.index, false);
+                };
+                if (wsServices[i].framework) {
+                    a.style.color = "silver";
+                }
+                tr.appendChild(createElement("td", a, "left"));
+                if (wsServices[i].dynamicInputSchema) {
+                    var span = createElement("span", "Dynamic", "label label-info");
+                    tr.appendChild(createElement("td", span, "left"));
+                } else {
+                    tr.appendChild(createElement("td"));
+                }
             } else {
+                var strike = createElement("strike", wsServices[i].id);
+                tr.appendChild(createElement("td", strike, "left"));
                 tr.appendChild(createElement("td"));
             }
         }
@@ -190,16 +205,22 @@
             } else {
                 tr.appendChild(createElement("td"));
             }
-            var a = createElement("a", topic.id, null, "cursor: pointer");
-            a.index = i;
-            a.onclick = function () {
-                document.location.hash = "#topics/" + topics[this.index].id;
-                // selectTopic(this.index);
-            };
-            tr.appendChild(createElement("td", a, "left"));
-            var span = createElement("span", "0", "badge");
-            span.id = activityId;
-            tr.appendChild(createElement("td", span, "left"));
+            if (topic.active) {
+                var a = createElement("a", topic.id, null, "cursor: pointer");
+                a.index = i;
+                a.onclick = function () {
+                    document.location.hash = "#topics/" + topics[this.index].id;
+                    // selectTopic(this.index);
+                };
+                tr.appendChild(createElement("td", a, "left"));
+                var span = createElement("span", "0", "badge");
+                span.id = activityId;
+                tr.appendChild(createElement("td", span, "left"));
+            } else {
+                var strike = createElement("strike", topic.id);
+                tr.appendChild(createElement("td", strike, "left"));
+                tr.appendChild(createElement("td"));
+            }
         }
         createHelpTooltips();
     }
@@ -259,11 +280,11 @@
         </div>
     </div>
 </div>
-            <script>     $(function () {
-            $('#mainTabs a').click(function (e) {
+<script>     $(function () {
+        $('#mainTabs a').click(function (e) {
             //$(this).tab('show');
             var scrollmem = $('body').scrollTop();
-    window.location.hash = this.hash;
+            window.location.hash = this.hash;
             $('html,body').scrollTop(scrollmem);
         });
     });
