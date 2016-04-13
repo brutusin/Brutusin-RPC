@@ -24,6 +24,7 @@ import java.net.URL;
 public class ComponentItem {
 
     private String id;
+    private boolean active;
     private String description;
     private boolean dynamicInputSchema;
     private URL sourceCode;
@@ -58,5 +59,13 @@ public class ComponentItem {
 
     public final void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

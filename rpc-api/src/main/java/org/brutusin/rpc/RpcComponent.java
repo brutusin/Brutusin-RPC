@@ -67,6 +67,10 @@ public abstract class RpcComponent {
         return desc.value();
     }
 
+    public boolean isActive() {
+        return true;
+    }
+
     /**
      *
      * @param rt
@@ -96,7 +100,6 @@ public abstract class RpcComponent {
         }
     }
 
-  
     public URL getSourceCode() {
         try {
             URL jarUrl = getClass().getProtectionDomain().getCodeSource().getLocation();
