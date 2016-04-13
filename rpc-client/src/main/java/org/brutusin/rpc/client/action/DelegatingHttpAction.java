@@ -43,10 +43,28 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
     private volatile HttpServiceItem si;
     private volatile JsonSchema inputSchema;
     private volatile JsonSchema outputSchema;
+    private volatile boolean loaded;
 
     public DelegatingHttpAction(HttpEndpoint endpoint, String targetId) {
         this.endpoint = endpoint;
         this.targetId = targetId;
+    }
+
+    @Override
+    public boolean isActive() {
+        if (!loaded) {
+            synchronized (this) {
+                if (!loaded) {
+                    try {
+                        getServiceItem();
+                        loaded = true;
+                    } catch (Exception e) {
+                        loaded = false;
+                    }
+                }
+            }
+        }
+        return loaded;
     }
 
     @Override
@@ -146,9 +164,13 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
         if (si == null) {
             synchronized (this) {
                 if (si == null) {
-                    si = endpoint.getServices().get(targetId);
-                    if (si == null) {
-                        throw new Error("Service '" + targetId + "' not found in " + endpoint.getEndpoint());
+                    try {
+                        si = endpoint.getServices().get(targetId);
+                        if (si == null) {
+                            throw new Error("Service '" + targetId + "' not found in " + endpoint.getEndpoint());
+                        }
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
             }
