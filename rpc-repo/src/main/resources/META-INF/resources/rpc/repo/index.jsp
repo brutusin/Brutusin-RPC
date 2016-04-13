@@ -295,7 +295,7 @@ if(hash != null){
             <a href="#topic" aria-controls="topic" role="tab" data-toggle="tab"></a>
         </div>
         <div class="container" style="margin-top:10px">
-            <img style="position: absolute; z-index: 2;cursor:pointer" src="img/brutusin-logo_small.png" onclick="showList()" />
+            <img style="position: absolute; z-index: 2;cursor:pointer" src="img/brutusin-logo_small.png" onclick="document.location.hash=''" />
             <div style="padding-left: 80px; padding-top: 7px; margin-top:8px; background-color: #ccc; border-radius: 4px; height: 34px">
                 <table style="width: 100%">
                     <tr>
