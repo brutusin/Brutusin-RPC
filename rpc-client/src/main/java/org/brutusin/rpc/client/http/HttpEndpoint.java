@@ -96,15 +96,15 @@ public class HttpEndpoint {
 
     private Thread pingThread;
 
-    public HttpEndpoint(URI endpoint) throws IOException {
+    public HttpEndpoint(URI endpoint) {
         this(endpoint, (Config) null, null);
     }
 
-    public HttpEndpoint(URI endpoint, HttpClientContextFactory clientContextFactory) throws IOException {
+    public HttpEndpoint(URI endpoint, HttpClientContextFactory clientContextFactory)  {
         this(endpoint, (Config) null, clientContextFactory);
     }
 
-    public HttpEndpoint(URI endpoint, Config cfg, HttpClientContextFactory clientContextFactory) throws IOException {
+    public HttpEndpoint(URI endpoint, Config cfg, HttpClientContextFactory clientContextFactory){
         if (endpoint == null) {
             throw new IllegalArgumentException("Endpoint is required");
         }

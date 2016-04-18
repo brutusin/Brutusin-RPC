@@ -59,6 +59,7 @@ public class TomcatRuntime extends ServerRuntime {
         if (openUrls != null) {
             final String[] urls = openUrls;
             ctx.addApplicationLifecycleListener(new ServletContextListener() {
+                @Override
                 public void contextInitialized(ServletContextEvent sce) {
                     if (Desktop.isDesktopSupported()) {
                         try {
@@ -71,8 +72,8 @@ public class TomcatRuntime extends ServerRuntime {
                     }
                 }
 
+                @Override
                 public void contextDestroyed(ServletContextEvent sce) {
-
                 }
             });
         }
@@ -156,6 +157,7 @@ public class TomcatRuntime extends ServerRuntime {
             }
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
+                @Override
                 public void contextInitialized(ServletContextEvent sce) {
                     RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
                     if (action instanceof HttpAction) {
@@ -165,8 +167,8 @@ public class TomcatRuntime extends ServerRuntime {
                     }
                 }
 
+                @Override
                 public void contextDestroyed(ServletContextEvent sce) {
-
                 }
             });
             addAutoOpen(stdCtx, url);
@@ -186,12 +188,14 @@ public class TomcatRuntime extends ServerRuntime {
             final PublishAction publishAction = new PublishAction(topic);
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
+                @Override
                 public void contextInitialized(ServletContextEvent sce) {
                     RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
                     rpcCtx.register("publish-service", publishAction);
                     rpcCtx.register(topicId, topic);
                 }
 
+                @Override
                 public void contextDestroyed(ServletContextEvent sce) {
                 }
             });

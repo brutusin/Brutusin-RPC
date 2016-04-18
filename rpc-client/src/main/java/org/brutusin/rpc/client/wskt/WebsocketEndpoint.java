@@ -71,7 +71,7 @@ public class WebsocketEndpoint {
     private Websocket websocket;
     private boolean reconnecting;
 
-    public WebsocketEndpoint(URI endpoint, Config cfg) throws IOException {
+    public WebsocketEndpoint(URI endpoint, Config cfg) {
         if (cfg == null) {
             cfg = new ConfigurationBuilder().build();
         }
@@ -100,19 +100,13 @@ public class WebsocketEndpoint {
                 while (!isInterrupted()) {
                     try {
                         Thread.sleep(1000 * pingSeconds);
-                        try {
-                            doExec(new RpcCallback() {
-                                public void call(RpcResponse<JsonNode> response) {
-                                    if (response.getError() != null) {
-                                        LOGGER.severe(response.toString());
-                                    }
+                        doExec(new RpcCallback() {
+                            public void call(RpcResponse<JsonNode> response) {
+                                if (response.getError() != null) {
+                                    LOGGER.severe(response.toString());
                                 }
-                            }, "rpc.wskt.ping", null, false);
-                        } catch (ConnectException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage());
-                        } catch (IOException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-                        }
+                            }
+                        }, "rpc.wskt.ping", null, false);
                     } catch (InterruptedException ie) {
                         break;
                     }
@@ -124,7 +118,7 @@ public class WebsocketEndpoint {
 
     }
 
-    private synchronized void reconnect() throws IOException {
+    private synchronized void reconnect() {
         if (reconnecting) {
             return;
         }
@@ -274,7 +268,7 @@ public class WebsocketEndpoint {
         }.start();
     }
 
-    private synchronized void sendRequest(RpcRequest request, boolean enqueueIfNotAvailable) throws IOException {
+    private synchronized void sendRequest(RpcRequest request, boolean enqueueIfNotAvailable) {
         if (this.websocket == null) {
             if (enqueueIfNotAvailable) {
                 reconnectingQueue.add(request);
@@ -294,7 +288,7 @@ public class WebsocketEndpoint {
         }
     }
 
-    private synchronized void doExec(RpcCallback callback, String serviceId, JsonNode input, boolean enqueueIfNotAvailable) throws IOException {
+    private synchronized void doExec(RpcCallback callback, String serviceId, JsonNode input, boolean enqueueIfNotAvailable) {
         Integer reqId = null;
         if (callback != null) {
             reqId = reqCounter.getAndIncrement();
@@ -318,11 +312,7 @@ public class WebsocketEndpoint {
             if (service == null) {
                 throw new IllegalArgumentException("Service not found: '" + serviceId + "'");
             }
-            try {
-                doExec(callback, serviceId, input, true);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            doExec(callback, serviceId, input, true);
         } else {
             initialQueue.add(new Trie<RpcCallback, String, JsonNode>(callback, serviceId, input));
         }
