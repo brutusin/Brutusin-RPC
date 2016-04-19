@@ -20,11 +20,9 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -34,12 +32,10 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -58,7 +54,6 @@ import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.impl.client.cache.CacheConfig;
 import org.apache.http.impl.client.cache.CachingHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.brutusin.commons.io.MetaDataInputStream;
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.json.ParseException;
@@ -100,11 +95,11 @@ public class HttpEndpoint {
         this(endpoint, (Config) null, null);
     }
 
-    public HttpEndpoint(URI endpoint, HttpClientContextFactory clientContextFactory)  {
+    public HttpEndpoint(URI endpoint, HttpClientContextFactory clientContextFactory) {
         this(endpoint, (Config) null, clientContextFactory);
     }
 
-    public HttpEndpoint(URI endpoint, Config cfg, HttpClientContextFactory clientContextFactory){
+    public HttpEndpoint(URI endpoint, Config cfg, HttpClientContextFactory clientContextFactory) {
         if (endpoint == null) {
             throw new IllegalArgumentException("Endpoint is required");
         }
@@ -254,6 +249,9 @@ public class HttpEndpoint {
     }
 
     private static HttpMethod getMethod(HttpServiceItem si) {
+        if (si == null) {
+            return null;
+        }
         if (si.isSafe()) {
             return HttpMethod.GET;
         } else {
