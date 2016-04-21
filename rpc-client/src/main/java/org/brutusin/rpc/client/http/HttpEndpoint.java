@@ -157,9 +157,9 @@ public class HttpEndpoint {
                             CloseableHttpResponse resp = doExec("rpc.http.ping", null, HttpMethod.GET, null);
                             resp.close();
                         } catch (ConnectException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage());
+                            LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")");
                         } catch (IOException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                            LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")", ex);
                         }
                     } catch (InterruptedException ie) {
                         break;
