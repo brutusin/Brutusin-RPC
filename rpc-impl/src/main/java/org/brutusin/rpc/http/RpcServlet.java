@@ -505,7 +505,16 @@ public final class RpcServlet extends HttpServlet {
         if (rpcResponse.getError() != null) {
             setStatusCode(rpcResponse.getError(), resp);
         }
-        String json = JsonCodec.getInstance().transform(rpcResponse);
+        String json;
+        try {
+            json = JsonCodec.getInstance().transform(rpcResponse);
+        } catch (Throwable th) {
+            RpcResponse errorResponse = new RpcResponse();
+            errorResponse.setId(rpcResponse.getId());
+            errorResponse.setError(ErrorFactory.getError(th));
+            json = JsonCodec.getInstance().transform(errorResponse);
+            cachingInfo = null;
+        }
         resp.setContentType(JSON_CONTENT_TYPE);
 
         String eTag = null;
