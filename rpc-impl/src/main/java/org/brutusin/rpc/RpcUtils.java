@@ -16,8 +16,6 @@
 package org.brutusin.rpc;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
