@@ -23,11 +23,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import javax.servlet.ServletContext;
 
@@ -38,6 +40,7 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.ExceptionUtils;
+import org.apache.tomcat.util.buf.UriUtil;
 import org.apache.tomcat.util.res.StringManager;
 
 /**
@@ -122,67 +125,70 @@ public class StandardJarScanner implements JarScanner {
     public void setJarScanFilter(JarScanFilter jarScanFilter) {
         this.jarScanFilter = jarScanFilter;
     }
-    
+
     /**
-     * Returns the search path of URLs for loading classes and resources for the 
-     * specified class loader, including those referenced in the 
-     * {@code Class-path} header of the manifest of a executable jar, in the 
-     * case of class loader being the system class loader. 
-     * <p>
-     * Note: These last jars are not returned by 
-     * {@link java.net.URLClassLoader#getURLs()}.
-     * </p>
+     * Returns the URLS of all jars managed directly or indirectly (given
+     * "Class-Path" manifest relationships) by the class loader
+     *
      * @param cl
-     * @return 
+     * @return
      */
     public static URL[] getURLs(URLClassLoader cl) {
-        if (cl.getParent() == null || !(cl.getParent() 
-                instanceof URLClassLoader)) {
-            return cl.getURLs();
-        }
-        Set<URL> urlSet = new LinkedHashSet();
+        HashSet<URL> visited = new HashSet<>();
         URL[] urLs = cl.getURLs();
-        URL[] urlsFromManifest = getJarUrlsFromManifests(cl);
-        URLClassLoader parentCl = (URLClassLoader) cl.getParent();
-        URL[] ancestorUrls = getJarUrlsFromManifests(parentCl);
-        
-        for (int i = 0; i < urlsFromManifest.length; i++) {
-            urlSet.add(urlsFromManifest[i]);
-        }
-        for (int i = 0; i < ancestorUrls.length; i++) {
-            urlSet.remove(ancestorUrls[i]);
-        }
-        for (int i = 0; i < urLs.length; i++) {
-            urlSet.add(urLs[i]);
-        }
-        return urlSet.toArray(new URL[urlSet.size()]);
-    }
-    
-    /**
-     * Returns the URLs of those jar managed by this classloader (or its 
-     * ascendant classloaders) that have a manifest
-     * @param cl
-     * @return 
-     */
-    private static URL[] getJarUrlsFromManifests(ClassLoader cl) {
-        try {
-            Set<URL> urlSet = new LinkedHashSet();
-            Enumeration<URL> manifestUrls = 
-                    cl.getResources("META-INF/MANIFEST.MF");
-            while (manifestUrls.hasMoreElements()) {
+        if (urLs != null) {
+            for (URL urL : urLs) {
                 try {
-                    URL manifestUrl = manifestUrls.nextElement();
-                    if(manifestUrl.getProtocol().equals("jar")) {
-                        urlSet.add(new URL(manifestUrl.getFile().substring(0, 
-                                manifestUrl.getFile().lastIndexOf("!"))));
-                    }
-                } catch (MalformedURLException ex) {
-                    throw new AssertionError();
+                    visitJar(visited, urL);
+                } catch (IOException iOException) {
+                    throw new RuntimeException(iOException);
                 }
             }
-            return urlSet.toArray(new URL[urlSet.size()]);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        }
+        URL[] ret = new URL[visited.size()];
+        int i = 0;
+        for (URL url : visited) {
+            ret[i++] = url;
+        }
+        return ret;
+    }
+
+    /**
+     * Performs a DFS traversal over the graph of jars given the "Class-Path"
+     * reference
+     *
+     * @param visited
+     * @param jar
+     * @throws IOException
+     */
+    public static void visitJar(Set<URL> visited, URL jar) throws IOException {
+        File file = new File(jar.getFile());
+        if (!file.exists()) {
+            return;
+        }
+        visited.add(jar);
+
+        try {
+            try (ZipFile zipFile = new ZipFile(file)) {
+                ZipEntry manifestEntry = zipFile.getEntry("META-INF/MANIFEST.MF");
+                if (manifestEntry == null) {
+                    return;
+                }
+                Manifest manifest = new Manifest(zipFile.getInputStream(manifestEntry));
+                String classPath = manifest.getMainAttributes().getValue("Class-Path");
+                if (classPath == null) {
+                    return;
+                }
+                String[] entries = classPath.split(" ");
+                for (String entry : entries) {
+                        URL u = new File(file.getParentFile(), entry).toURI().toURL();
+                    if (!visited.contains(u)) {
+                        visitJar(visited, u);
+                    }
+                }
+            }
+        } catch (ZipException zex) {
+            // not a zip file. log message?
         }
     }
 
@@ -300,7 +306,7 @@ public class StandardJarScanner implements JarScanner {
                                 scanType == JarScanType.PLUGGABILITY ||
                                 isScanAllDirectories()) &&
                                         getJarScanFilter().check(scanType,
-                                                cpe.getName())) {
+                                        cpe.getName())) {
                             if (log.isDebugEnabled()) {
                                 log.debug(sm.getString(
                                         "jarScan.classloaderJarScan", urls[i]));
@@ -310,7 +316,7 @@ public class StandardJarScanner implements JarScanner {
                             } catch (IOException ioe) {
                                 log.warn(sm.getString(
                                         "jarScan.classloaderFail", urls[i]),
-                                                ioe);
+                                        ioe);
                             }
                         } else {
                             // JAR / directory has been skipped
@@ -373,7 +379,7 @@ public class StandardJarScanner implements JarScanner {
             String urlStr = url.toString();
             if (urlStr.startsWith("file:") || urlStr.startsWith("http:") || urlStr.startsWith("https:")) {
                 if (urlStr.endsWith(Constants.JAR_EXT)) {
-                    URL jarURL = new URL("jar:" + urlStr + "!/");
+                    URL jarURL = UriUtil.buildJarUrl(urlStr);
                     callback.scan((JarURLConnection) jarURL.openConnection(),
                             webappPath, isWebapp);
                 } else {
@@ -382,7 +388,7 @@ public class StandardJarScanner implements JarScanner {
                         f = new File(url.toURI());
                         if (f.isFile() && isScanAllFiles()) {
                             // Treat this file as a JAR
-                            URL jarURL = new URL("jar:" + urlStr + "!/");
+                            URL jarURL = UriUtil.buildJarUrl(f);
                             callback.scan(
                                     (JarURLConnection) jarURL.openConnection(),
                                     webappPath, isWebapp);
