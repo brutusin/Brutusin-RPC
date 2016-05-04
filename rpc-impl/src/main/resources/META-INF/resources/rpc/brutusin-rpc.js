@@ -182,7 +182,7 @@ if (typeof brutusin === "undefined") {
                 xhr.upload.addEventListener("progress", progress);
             }
             if (httpMethod === "GET") {
-                var urlparam = "?jsonrpc=" + JSON.stringify(req);
+                var urlparam = "?jsonrpc=" + encodeURIComponent(JSON.stringify(req));
                 xhr.open(httpMethod, endpoint + urlparam, true);
             } else {
                 data = new FormData();

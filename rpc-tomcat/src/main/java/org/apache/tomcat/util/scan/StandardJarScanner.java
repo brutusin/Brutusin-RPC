@@ -163,7 +163,7 @@ public class StandardJarScanner implements JarScanner {
      */
     public static void visitJar(Set<URL> visited, URL jar) throws IOException {
         File file = new File(jar.getFile());
-        if (!file.exists()) {
+        if (!file.exists() || file.isDirectory()) {
             return;
         }
         visited.add(jar);
