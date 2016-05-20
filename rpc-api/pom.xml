@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-root</artifactId>
-        <version>1.7.0</version>
+        <version>1.7.1-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-api</artifactId>
     <packaging>jar</packaging>   
-    <version>1.7.0</version>
+    <version>1.7.1-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     
     <description>Brutusin-RPC developer API</description>
