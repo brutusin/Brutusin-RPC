@@ -26,8 +26,6 @@ import org.brutusin.rpc.websocket.Topic;
  */
 public final class Server {
 
-    public static final int DEFAULT_PORT = 8080;
-    
     private static final String LOGO = loadLogo();
 
     private Server() {
@@ -46,7 +44,7 @@ public final class Server {
         ServerRuntime.getInstance().exec();
     }
 
-    public static void exec(int port) {
+    public static void exec(Integer port) {
         System.out.println(LOGO);
         ServerRuntime.getInstance().exec(port);
     }
@@ -56,7 +54,7 @@ public final class Server {
         ServerRuntime.getInstance().test(action);
     }
 
-    public static void test(int port, RpcAction action) {
+    public static void test(Integer port, RpcAction action) {
         System.out.println(LOGO);
         ServerRuntime.getInstance().test(port, action);
     }
@@ -66,7 +64,7 @@ public final class Server {
         ServerRuntime.getInstance().test(topic);
     }
 
-    public static void test(int port, Topic topic) {
+    public static void test(Integer port, Topic topic) {
         System.out.println(LOGO);
         ServerRuntime.getInstance().test(port, topic);
     }

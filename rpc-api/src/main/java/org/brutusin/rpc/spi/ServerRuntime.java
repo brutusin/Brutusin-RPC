@@ -17,7 +17,6 @@ package org.brutusin.rpc.spi;
 
 import org.brutusin.commons.utils.Miscellaneous;
 import org.brutusin.rpc.RpcAction;
-import static org.brutusin.rpc.Server.DEFAULT_PORT;
 import org.brutusin.rpc.websocket.Topic;
 
 /**
@@ -47,22 +46,22 @@ public abstract class ServerRuntime {
     }
 
     public final void exec() {
-        exec(DEFAULT_PORT);
+        exec(null);
     }
 
     public final void test(RpcAction action) {
-        test(DEFAULT_PORT, action);
+        test(null, action);
     }
 
     public final void test(Topic topic) {
-        test(DEFAULT_PORT, topic);
+        test(null, topic);
     }
 
     public abstract String getURIEncoding();
 
-    public abstract void test(int port, Topic topic);
+    public abstract void test(Integer port, Topic topic);
 
-    public abstract void exec(int port);
+    public abstract void exec(Integer port);
 
-    public abstract void test(int port, RpcAction action);
+    public abstract void test(Integer port, RpcAction action);
 }

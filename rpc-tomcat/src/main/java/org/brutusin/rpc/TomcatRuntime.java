@@ -34,7 +34,6 @@ import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.Constants;
-import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
@@ -92,9 +91,9 @@ public class TomcatRuntime extends ServerRuntime {
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
         StandardJarScanner jarScanner = (StandardJarScanner) ctx.getJarScanner();
         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
-            LOGGER.info("Disabling TLD scanning");
-            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
-            jarScanFilter.setTldSkip("*");
+//            LOGGER.info("Disabling TLD scanning");
+//            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
+//            jarScanFilter.setTldSkip("*");
         }
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
@@ -111,7 +110,8 @@ public class TomcatRuntime extends ServerRuntime {
         return ctx;
     }
 
-    protected Tomcat createTomcat(int port) throws IOException {
+    protected Tomcat createTomcat(Integer port) throws IOException {
+        port = getPort(port);
         System.setProperty("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE", "true");
         Tomcat tomcat = new Tomcat();
         Path tempPath = Files.createTempDirectory("brutusin-rcp-tests");
@@ -131,8 +131,9 @@ public class TomcatRuntime extends ServerRuntime {
     }
 
     @Override
-    public void exec(int port) {
+    public void exec(Integer port) {
         try {
+            port = getPort(port);
             Tomcat tomcat = createTomcat(port);
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             addAutoOpen(stdCtx, "http://localhost:" + port);
@@ -144,7 +145,8 @@ public class TomcatRuntime extends ServerRuntime {
     }
 
     @Override
-    public void test(final int port, final RpcAction action) {
+    public void test(Integer port, final RpcAction action) {
+        port = getPort(port);
         try {
             RpcConfig.getInstance().setTestMode(true);
             Tomcat tomcat = createTomcat(port);
@@ -179,8 +181,16 @@ public class TomcatRuntime extends ServerRuntime {
         }
     }
 
+    private static Integer getPort(Integer port) {
+        if (port != null) {
+            return port;
+        }
+        return RpcConfig.getInstance().getPort();
+    }
+
     @Override
-    public void test(final int port, final Topic topic) {
+    public void test(Integer port, final Topic topic) {
+        port = getPort(port);
         try {
             RpcConfig.getInstance().setTestMode(true);
             Tomcat tomcat = createTomcat(port);
