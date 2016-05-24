@@ -18,7 +18,9 @@ package org.brutusin.rpc;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -34,6 +36,7 @@ import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.EmptyResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.Constants;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.brutusin.rpc.actions.websocket.PublishAction;
 import org.brutusin.rpc.http.HttpAction;
@@ -84,16 +87,23 @@ public class TomcatRuntime extends ServerRuntime {
             docBase = new File(rootFolder.getAbsolutePath(), "src/main/resources/META-INF/resources");
         }
         if (!docBase.exists()) {
-            docBase = Files.createTempDirectory("default-doc-base").toFile();
+            Path docBasePath = Files.createTempDirectory("default-doc-base");
+            docBase = docBasePath.toFile();
+            InputStream webStream = TomcatRuntime.class.getClassLoader().getResourceAsStream("META-INF/resources/WEB-INF/web.xml");
+            if (webStream != null) {
+                Path webInf = Files.createDirectory(FileSystems.getDefault().getPath(docBase.getAbsolutePath(), "WEB-INF"));
+                Files.copy(webStream, FileSystems.getDefault().getPath(webInf.toString(), "web.xml"));
+            }
         }
+
         LOGGER.info("Setting application docbase as '" + docBase.getAbsolutePath() + "'");
         StandardContext ctx = (StandardContext) tomcat.addWebapp("", docBase.getAbsolutePath());
         ctx.setParentClassLoader(TomcatRuntime.class.getClassLoader());
         StandardJarScanner jarScanner = (StandardJarScanner) ctx.getJarScanner();
         if (System.getProperty(Constants.SKIP_JARS_PROPERTY) == null && System.getProperty(Constants.SCAN_JARS_PROPERTY) == null) {
-//            LOGGER.info("Disabling TLD scanning");
-//            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
-//            jarScanFilter.setTldSkip("*");
+            LOGGER.info("Disabling TLD scanning");
+            StandardJarScanFilter jarScanFilter = (StandardJarScanFilter) jarScanner.getJarScanFilter();
+            jarScanFilter.setTldSkip("*");
         }
         WebResourceRoot resources = new StandardRoot(ctx);
         WebResourceSet resourceSet;
