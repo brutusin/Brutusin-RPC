@@ -16,7 +16,6 @@
 package org.brutusin.rpc.client.wskt;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,30 +51,57 @@ import org.brutusin.rpc.client.RpcCallback;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public class WebsocketEndpoint {
-
+    
     private static final Logger LOGGER = Logger.getLogger(WebsocketEndpoint.class.getName());
-
+    
     private final URI endpoint;
-
+    
     private final AtomicInteger reqCounter = new AtomicInteger();
-
+    
     private final Map<String, JsonNode> serviceMap = new HashMap();
     private final Map<Integer, RpcCallback> rpcCallbacks = new HashMap();
     private final Map<String, TopicCallback> topicCallbacks = new HashMap();
-
+    
     private final LinkedList<RpcRequest> reconnectingQueue = new LinkedList();
     private final LinkedList<Trie<RpcCallback, String, JsonNode>> initialQueue = new LinkedList();
-
+    private final MessageListener messageListener;
+    
     private final Thread pingThread;
-
+    
     private Websocket websocket;
     private boolean reconnecting;
-
+    private AtomicInteger reconnectionCounter = new AtomicInteger();
+    
     public WebsocketEndpoint(URI endpoint, Config cfg) {
         if (cfg == null) {
             cfg = new ConfigurationBuilder().build();
         }
         this.endpoint = endpoint;
+        this.messageListener = new MessageListener() {
+            @Override
+            public void onMessage(String message) {
+                try {
+                    JsonNode response = JsonCodec.getInstance().parse(message);
+                    if (response.get("jsonrpc") != null) {
+                        RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
+                        if (response.get("error") != null) {
+                            rpcResponse.setError(JsonCodec.getInstance().load(response.get("error"), RpcResponse.Error.class));
+                        }
+                        rpcResponse.setResult(response.get("result"));
+                        Integer id = response.get("id").asInteger();
+                        rpcResponse.setId(id);
+                        RpcCallback callback = rpcCallbacks.remove(id);
+                        callback.call(rpcResponse);
+                    } else {
+                        String topic = response.get("topic").asString();
+                        TopicCallback callback = topicCallbacks.get(topic);
+                        callback.call(response.get("message"));
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(WebsocketEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
         final int pingSeconds = cfg.getPingSeconds();
         doExec(new RpcCallback() {
             public void call(RpcResponse<JsonNode> response) {
@@ -115,54 +141,57 @@ public class WebsocketEndpoint {
         };
         pingThread.setDaemon(true);
         pingThread.start();
-
+        
     }
-
+    
     private synchronized void reconnect() {
         if (reconnecting) {
             return;
         }
         reconnecting = true;
+        int counter = reconnectionCounter.incrementAndGet();
+        if (counter > 1) {
+            LOGGER.warning("Reconnecting websocket client to " + endpoint);
+        }
         if (this.websocket != null) {
             try {
                 this.websocket.close();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            this.websocket.setMessageListener(null);
             this.websocket = null;
         }
-
+        
         final ClientEndpointConfig cec = new ClientEndpointConfig() {
-
+            
             public List<String> getPreferredSubprotocols() {
                 return Collections.EMPTY_LIST;
             }
-
+            
             public List<Extension> getExtensions() {
                 return Collections.EMPTY_LIST;
             }
-
+            
             public List<Class<? extends Encoder>> getEncoders() {
                 return Collections.EMPTY_LIST;
             }
-
+            
             public List<Class<? extends Decoder>> getDecoders() {
                 return Collections.EMPTY_LIST;
             }
-
+            
             public Map<String, Object> getUserProperties() {
                 return new HashMap<String, Object>();
             }
-
+            
             public ClientEndpointConfig.Configurator getConfigurator() {
                 return new Configurator() {
                     @Override
                     public void beforeRequest(Map<String, List<String>> headers) {
-
+                        
                         System.out.println(headers);
                     }
-
+                    
                     @Override
                     public void afterResponse(HandshakeResponse hr) {
                         super.afterResponse(hr);
@@ -185,50 +214,26 @@ public class WebsocketEndpoint {
                                         public void send(String message) throws IOException {
                                             session.getBasicRemote().sendText(message);
                                         }
-
+                                        
                                         @Override
                                         public void close() throws IOException {
                                             session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, null));
                                         }
                                     };
-                                    WebsocketEndpoint.this.websocket.setMessageListener(new MessageListener() {
-                                        @Override
-                                        public void onMessage(String message) {
-                                            try {
-                                                JsonNode response = JsonCodec.getInstance().parse(message);
-                                                if (response.get("jsonrpc") != null) {
-                                                    RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
-                                                    if (response.get("error") != null) {
-                                                        rpcResponse.setError(JsonCodec.getInstance().load(response.get("error"), RpcResponse.Error.class));
-                                                    }
-                                                    rpcResponse.setResult(response.get("result"));
-                                                    Integer id = response.get("id").asInteger();
-                                                    rpcResponse.setId(id);
-                                                    RpcCallback callback = rpcCallbacks.remove(id);
-                                                    callback.call(rpcResponse);
-                                                } else {
-                                                    String topic = response.get("topic").asString();
-                                                    TopicCallback callback = topicCallbacks.get(topic);
-                                                    callback.call(response.get("message"));
-                                                }
-                                            } catch (ParseException ex) {
-                                                Logger.getLogger(WebsocketEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-                                            }
-                                        }
-                                    });
                                     session.addMessageHandler(new MessageHandler.Whole<String>() {
                                         @Override
                                         public void onMessage(String message) {
-                                            MessageListener messageListener = WebsocketEndpoint.this.websocket.getMessageListener();
                                             if (message != null) {
                                                 messageListener.onMessage(message);
                                             }
                                         }
                                     });
-                                    for (RpcRequest req : reconnectingQueue) {
+                                    List<RpcRequest> list = new LinkedList(reconnectingQueue);
+                                    reconnectingQueue.clear();
+                                    for (RpcRequest req : list) {
                                         sendRequest(req, true);
                                     }
-                                    reconnectingQueue.clear();
+                                    
                                     for (String topic : topicCallbacks.keySet()) {
                                         try {
                                             doExec(null, "rpc.topics.subscribe", JsonCodec.getInstance().parse("{\"id\":\"" + topic + "\"}"), true);
@@ -241,24 +246,24 @@ public class WebsocketEndpoint {
                                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                             }
                         }
-
+                        
                         @Override
                         public void onClose(Session session, CloseReason closeReason) {
                             synchronized (WebsocketEndpoint.this) {
                                 WebsocketEndpoint.this.websocket = null;
                             }
                         }
-
+                        
                         @Override
                         public void onError(Session session, Throwable thr) {
                             Logger.getLogger(WebsocketEndpoint.class.getName()).log(Level.SEVERE, null, thr);
                         }
-
+                        
                     }, cec, endpoint);
                 } catch (DeploymentException ex) {
                     LOGGER.log(Level.SEVERE, "Websocket deployment failed " + endpoint + ". " + ex.getMessage());
-                } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                } catch (Throwable th) {
+                    LOGGER.log(Level.SEVERE, th.getMessage(), th);
                 } finally {
                     synchronized (WebsocketEndpoint.this) {
                         reconnecting = false;
@@ -267,7 +272,7 @@ public class WebsocketEndpoint {
             }
         }.start();
     }
-
+    
     private synchronized void sendRequest(RpcRequest request, boolean enqueueIfNotAvailable) {
         if (this.websocket == null) {
             if (enqueueIfNotAvailable) {
@@ -287,7 +292,7 @@ public class WebsocketEndpoint {
             }
         }
     }
-
+    
     private synchronized void doExec(RpcCallback callback, String serviceId, JsonNode input, boolean enqueueIfNotAvailable) {
         Integer reqId = null;
         if (callback != null) {
@@ -299,10 +304,10 @@ public class WebsocketEndpoint {
         request.setId(reqId);
         request.setParams(input);
         request.setMethod(serviceId);
-
+        
         sendRequest(request, enqueueIfNotAvailable);
     }
-
+    
     public synchronized void exec(RpcCallback callback, String serviceId, JsonNode input) {
         if (serviceId == null) {
             throw new IllegalArgumentException("execParam.service is required");
@@ -317,7 +322,7 @@ public class WebsocketEndpoint {
             initialQueue.add(new Trie<RpcCallback, String, JsonNode>(callback, serviceId, input));
         }
     }
-
+    
     public synchronized void subscribe(String topicId, TopicCallback callback) {
         topicCallbacks.put(topicId, callback);
         if (this.websocket != null) {
@@ -328,7 +333,7 @@ public class WebsocketEndpoint {
             }
         }
     }
-
+    
     public synchronized void unsubscribe(String topicId) {
         if (!topicCallbacks.containsKey(topicId)) {
             throw new IllegalArgumentException("Not subscribed to topic " + topicId);
@@ -340,7 +345,7 @@ public class WebsocketEndpoint {
             throw new AssertionError();
         }
     }
-
+    
     public void close() throws IOException {
         this.pingThread.interrupt();
         if (this.websocket != null) {

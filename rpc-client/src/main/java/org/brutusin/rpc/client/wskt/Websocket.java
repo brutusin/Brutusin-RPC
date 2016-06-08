@@ -24,17 +24,9 @@ import java.io.IOException;
  */
 abstract class Websocket {
 
-    private MessageListener messageListener;
     
     public abstract void send(String message) throws IOException;
     
     public abstract void close() throws IOException;
 
-    public final MessageListener getMessageListener() {
-        return messageListener;
-    }
-
-    public final void setMessageListener(MessageListener messageListener) {
-        this.messageListener = messageListener;
-    }
 }
