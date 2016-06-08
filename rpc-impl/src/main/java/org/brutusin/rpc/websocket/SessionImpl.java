@@ -15,7 +15,6 @@
  */
 package org.brutusin.rpc.websocket;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.LinkedList;
 import java.util.Map;
@@ -47,8 +46,8 @@ public final class SessionImpl<M> implements WritableSession<M> {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    while (true) {
+                while (true) {
+                    try {
                         if (Thread.interrupted()) {
                             break;
                         }
@@ -59,14 +58,10 @@ public final class SessionImpl<M> implements WritableSession<M> {
                             }
                             message = messageQueue.pop();
                         }
-                        try {
-                            SessionImpl.this.session.getBasicRemote().sendText(message);
-                        } catch (IOException ex) {
-                            LOGGER.log(Level.WARNING, ex.getMessage(), ex);
-                        }
+                        SessionImpl.this.session.getBasicRemote().sendText(message);
+                    } catch (Throwable th) {
+                        LOGGER.log(Level.WARNING, th.getMessage(), th);
                     }
-                } catch (InterruptedException ie) {
-                    // Interrupted by close()
                 }
             }
         };
