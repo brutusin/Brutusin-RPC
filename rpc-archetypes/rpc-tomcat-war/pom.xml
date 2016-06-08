@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-archetypes</artifactId>
-        <version>1.7.2</version>
+        <version>1.7.3-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-tomcat-war</artifactId>
     <packaging>jar</packaging>   
-    <version>1.7.2</version>
+    <version>1.7.3-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Maven archetype for creation of Brutusin-RPC (standalone and deployable) war projects with a Tomcat runtime available for standalone scenarios</description>
        
