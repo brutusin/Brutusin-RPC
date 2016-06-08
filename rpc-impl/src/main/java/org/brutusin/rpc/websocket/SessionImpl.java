@@ -59,6 +59,7 @@ public final class SessionImpl<M> implements WritableSession<M> {
                             message = messageQueue.pop();
                         }
                         SessionImpl.this.session.getBasicRemote().sendText(message);
+                    } catch (InterruptedException ex) {
                     } catch (Throwable th) {
                         LOGGER.log(Level.WARNING, th.getMessage(), th);
                     }
