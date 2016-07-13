@@ -60,6 +60,7 @@ public final class SessionImpl<M> implements WritableSession<M> {
                         }
                         SessionImpl.this.session.getBasicRemote().sendText(message);
                     } catch (InterruptedException ex) {
+                        break;
                     } catch (Throwable th) {
                         LOGGER.log(Level.WARNING, th.getMessage(), th);
                     }

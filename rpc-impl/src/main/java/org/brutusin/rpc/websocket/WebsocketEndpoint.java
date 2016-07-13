@@ -32,7 +32,6 @@ import org.brutusin.rpc.exception.ServiceNotFoundException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonSchema;
 import org.brutusin.rpc.RpcSpringContext;
-import org.brutusin.rpc.RpcUtils;
 import org.brutusin.rpc.exception.ErrorFactory;
 import org.brutusin.rpc.exception.InvalidRequestException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
