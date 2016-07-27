@@ -44,7 +44,7 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
 
     private static final Logger LOGGER = Logger.getLogger(RpcSpringContext.class.getName());
 
-    private Set<RpcAction> frameworkActions = new HashSet<RpcAction>();
+    private final Set<RpcAction> frameworkActions = new HashSet<RpcAction>();
     private Map<String, HttpAction> httpServices;
     private Map<String, WebsocketAction> webSocketServices;
     private Map<String, Topic> webSocketTopics;

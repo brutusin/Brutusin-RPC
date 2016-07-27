@@ -76,6 +76,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
             }
 
             public void contextDestroyed(ServletContextEvent sce) {
+                LOGGER.info("Destroying RPC context");
                 rpcCtx.destroy();
             }
         });
