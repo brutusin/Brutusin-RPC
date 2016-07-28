@@ -48,7 +48,6 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     private Map<String, HttpAction> httpServices;
     private Map<String, WebsocketAction> webSocketServices;
     private Map<String, Topic> webSocketTopics;
-    private ThreadFactory threadFactory;
 
     public RpcSpringContext() {
         this(true);
@@ -70,7 +69,6 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     @Override
     public void onRefresh() throws BeansException {
         cleanRpc();
-        threadFactory = new ThreadFactory();
         registerBuiltServices();
         this.httpServices = getBeansOfType(HttpAction.class);
         this.webSocketServices = getBeansOfType(WebsocketAction.class);
@@ -87,9 +85,6 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     }
 
     private void cleanRpc() {
-        if (threadFactory != null) {
-            threadFactory.destroy();
-        }
         if (httpServices != null) {
             destroy(httpServices.values());
             httpServices.clear();
@@ -226,10 +221,6 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         return webSocketTopics;
     }
 
-    public java.util.concurrent.ThreadFactory getThreadFactory() {
-        return threadFactory;
-    }
-
     public void register(String id, HttpAction action) {
         try {
             if (httpServices.get(id) != null) {
@@ -268,31 +259,4 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             throw new RuntimeException(ex);
         }
     }
-
-    private static class ThreadFactory implements java.util.concurrent.ThreadFactory {
-
-        private final ThreadGroup tg = new ThreadGroup("brutusin-rpc-thread-group");
-
-        public Thread newThread(final Runnable r) {
-            Thread t = new Thread(tg, tg.getName()) {
-                @Override
-                public void run() {
-                    r.run();
-                }
-
-                @Override
-                public void interrupt() {
-                    super.interrupt(); //To change body of generated methods, choose Tools | Templates.
-                }
-            };
-            return t;
-        }
-
-        public void destroy() {
-            if (!this.tg.isDestroyed()) {
-                this.tg.destroy();
-            }
-        }
-    }
-
 }
