@@ -67,8 +67,8 @@ public final class SessionImpl<M> implements WritableSession<M> {
                 }
             }
         };
-        t = ctx.getSpringContext().getThreadFactory().newThread(runnable);
-        t.setDaemon(true);
+        this.t = new Thread(runnable);
+        this.t.setDaemon(true);
         this.ctx = ctx;
         this.roles = RpcUtils.getUserRoles(ctx.getSecurityContext());
     }
