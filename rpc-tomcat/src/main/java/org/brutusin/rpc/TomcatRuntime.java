@@ -24,6 +24,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -51,7 +52,12 @@ import org.brutusin.rpc.websocket.WebsocketAction;
  */
 public class TomcatRuntime extends ServerRuntime {
 
-    private static final Logger LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
+    private static final Logger LOGGER;
+
+    static {
+        System.setProperty("java.util.logging.manager", TomcatLogManager.class.getName());
+        LOGGER = Logger.getLogger(TomcatRuntime.class.getName());
+    }
 
     private static File getRootFolder() {
         return new File("");
@@ -127,7 +133,6 @@ public class TomcatRuntime extends ServerRuntime {
         Path tempPath = Files.createTempDirectory("brutusin-rcp-tests");
         tomcat.setBaseDir(tempPath.toString());
         tomcat.setPort(port);
-
         return tomcat;
     }
 
@@ -147,8 +152,7 @@ public class TomcatRuntime extends ServerRuntime {
             Tomcat tomcat = createTomcat(port);
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             addAutoOpen(stdCtx, "http://localhost:" + port);
-            tomcat.start();
-            tomcat.getServer().await();
+            start(tomcat);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -184,11 +188,29 @@ public class TomcatRuntime extends ServerRuntime {
                 }
             });
             addAutoOpen(stdCtx, url);
-            tomcat.start();
-            tomcat.getServer().await();
+            start(tomcat);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private static void start(final Tomcat tomcat) throws Exception {
+        tomcat.start();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    LOGGER.info("Stopping Tomcat instance...");
+                    Thread.sleep(1000);
+                    tomcat.stop();
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                } finally {
+                    TomcatLogManager.resetFinally();
+                }
+            }
+        });
+        tomcat.getServer().await();
     }
 
     private static Integer getPort(Integer port) {
@@ -220,10 +242,30 @@ public class TomcatRuntime extends ServerRuntime {
                 }
             });
             addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
-            tomcat.start();
-            tomcat.getServer().await();
+            start(tomcat);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
+
+        }
+    }
+
+    public static class TomcatLogManager extends LogManager {
+
+        static TomcatLogManager instance;
+
+        public TomcatLogManager() {
+            instance = this;
+        }
+
+        @Override
+        public void reset() { /* don't reset yet. */ }
+
+        private void realReset() {
+            super.reset();
+        }
+
+        public static void resetFinally() {
+            instance.realReset();
         }
     }
 }
