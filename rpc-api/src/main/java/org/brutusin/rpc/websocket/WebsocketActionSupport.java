@@ -50,5 +50,4 @@ public abstract class WebsocketActionSupport extends RpcActionSupport{
         }
         return (Session) session;
     }
-
 }
