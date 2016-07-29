@@ -77,17 +77,10 @@ public final class RpcServlet extends HttpServlet {
 
     private final AtomicInteger UPLOAD_COUNTER = new AtomicInteger();
 
-    private Map<String, HttpAction> services;
+    private RpcSpringContext rpcCtx;
 
-    private final RpcSpringContext rpcCtx;
-
-    public RpcServlet(RpcSpringContext rpcCtx) {
+    public void setRpcCtx(RpcSpringContext rpcCtx) {
         this.rpcCtx = rpcCtx;
-    }
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        services = rpcCtx.getHttpServices();
         try {
             if (RpcConfig.getInstance().getUploadFolder().exists()) {
                 Miscellaneous.cleanDirectory(RpcConfig.getInstance().getUploadFolder());
@@ -96,7 +89,7 @@ public final class RpcServlet extends HttpServlet {
             }
         } catch (Exception ex) {
             Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServletException(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -373,10 +366,10 @@ public final class RpcServlet extends HttpServlet {
             throw new InvalidRequestException("Only JSON-RPC 2.0 supported");
         }
         String serviceId = request.getMethod();
-        if (serviceId == null || !services.containsKey(serviceId)) {
+        if (serviceId == null || !rpcCtx.getHttpServices().containsKey(serviceId)) {
             throw new ServiceNotFoundException();
         }
-        HttpAction service = services.get(serviceId);
+        HttpAction service = rpcCtx.getHttpServices().get(serviceId);
         if (service instanceof UnsafeAction && req.getMethod().equals("GET")) {
             throw new InvalidHttpMethodException("Action is unsafe. Only POST or PUT methods are allowed");
         }

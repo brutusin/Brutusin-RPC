@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpointConfig;
+import org.brutusin.commons.Bean;
 import org.brutusin.commons.io.MetaDataInputStream;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.rpc.http.RpcServlet;
@@ -54,14 +55,14 @@ public class RpcWebInitializer implements WebApplicationInitializer {
     private static final Logger LOGGER = Logger.getLogger(RpcWebInitializer.class.getName());
 
     public void onStartup(final ServletContext ctx) throws ServletException {
-        final RpcSpringContext rpcCtx = new RpcSpringContext(!RpcConfig.getInstance().isTestMode());
-        rpcCtx.refresh();
-        ctx.setAttribute(RpcSpringContext.class.getName(), rpcCtx);
+        final RpcServlet rpcServlet = registerRpcServlet(ctx);
         final WebsocketFilter websocketFilter = new WebsocketFilter();
         FilterRegistration.Dynamic dynamic = ctx.addFilter(WebsocketFilter.class.getName(), websocketFilter);
         dynamic.addMappingForUrlPatterns(null, false, RpcConfig.getInstance().getPath() + "/wskt");
         JsonCodec.getInstance().registerStringFormat(MetaDataInputStream.class, "inputstream");
+        final Bean<RpcSpringContext> rpcCtxBean = new Bean<RpcSpringContext>();
         ctx.addListener(new ServletRequestListener() {
+
             public void requestDestroyed(ServletRequestEvent sre) {
                 GlobalThreadLocal.clear();
             }
@@ -71,13 +72,18 @@ public class RpcWebInitializer implements WebApplicationInitializer {
             }
         });
         ctx.addListener(new ServletContextListener() {
+
             public void contextInitialized(ServletContextEvent sce) {
+                RpcSpringContext rpcCtx = createRpcSpringContext(ctx);
+                rpcCtxBean.setValue(rpcCtx);
+                rpcServlet.setRpcCtx(rpcCtx);
                 initWebsocketRpcRuntime(ctx, rpcCtx);
+                ctx.setAttribute(RpcSpringContext.class.getName(), rpcCtx);
             }
 
             public void contextDestroyed(ServletContextEvent sce) {
                 LOGGER.info("Destroying RPC context");
-                rpcCtx.destroy();
+                rpcCtxBean.getValue().destroy();
             }
         });
         ctx.addListener(new ServletContextAttributeListener() {
@@ -102,7 +108,7 @@ public class RpcWebInitializer implements WebApplicationInitializer {
             private void updateRootContext() {
                 WebApplicationContext rootCtx = WebApplicationContextUtils.getWebApplicationContext(ctx);
                 if (rootCtx != null) {
-                    rpcCtx.setParent(rootCtx);
+                    rpcCtxBean.getValue().setParent(rootCtx);
                     if (rootCtx.containsBean("springSecurityFilterChain")) {
                         LOGGER.info("Moving WebsocketFilter behind springSecurityFilterChain");
                         websocketFilter.disable();
@@ -112,30 +118,34 @@ public class RpcWebInitializer implements WebApplicationInitializer {
                 }
             }
         });
-        initHttpRpcRuntime(ctx, rpcCtx);
     }
 
-    private void initHttpRpcRuntime(ServletContext ctx, RpcSpringContext rpcCtx) {
+    private RpcSpringContext createRpcSpringContext(ServletContext ctx) {
+        ServerContainer sc = (ServerContainer) ctx.getAttribute("javax.websocket.server.ServerContainer");
+        if (sc == null) {
+            throw new Error("ServerContainer not found");
+        }
+        RpcSpringContext rpcCtx = new RpcSpringContext(sc, !RpcConfig.getInstance().isTestMode());
+        return rpcCtx;
+    }
+
+    private RpcServlet registerRpcServlet(ServletContext ctx) {
         LOGGER.info("Starting HTTP RPC runtime");
-        RpcServlet servlet = new RpcServlet(rpcCtx);
+        RpcServlet servlet = new RpcServlet();
         ServletRegistration.Dynamic regInfo = ctx.addServlet(RpcServlet.class.getName(), servlet);
         ServletSecurityElement sec = new ServletSecurityElement(new HttpConstraintElement());
         regInfo.setServletSecurity(sec);
         regInfo.setLoadOnStartup(1);
         regInfo.addMapping(RpcConfig.getInstance().getPath() + "/http");
+        return servlet;
     }
 
     private void initWebsocketRpcRuntime(final ServletContext ctx, final RpcSpringContext rpcCtx) {
         LOGGER.info("Starting Websocket RPC runtime");
-        ServerContainer sc = (ServerContainer) ctx.getAttribute("javax.websocket.server.ServerContainer");
-        if (sc == null) {
-            LOGGER.severe("ServerContainer not found");
-            return;
-        }
         ServerEndpointConfig.Configurator cfg = new WebsocketEndpointConfigurator(ctx, rpcCtx);
         ServerEndpointConfig sec = ServerEndpointConfig.Builder.create(WebsocketEndpoint.class, RpcConfig.getInstance().getPath() + "/wskt").configurator(cfg).build();
         try {
-            sc.addEndpoint(sec);
+            rpcCtx.getWebsocketContainer().addEndpoint(sec);
         } catch (DeploymentException ex) {
             throw new RuntimeException(ex);
         }

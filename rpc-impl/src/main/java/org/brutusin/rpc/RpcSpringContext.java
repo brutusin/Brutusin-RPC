@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.websocket.server.ServerContainer;
 import org.brutusin.rpc.actions.http.DescriptionAction;
 import org.brutusin.rpc.actions.http.EnvironmentPopertiesAction;
 import org.brutusin.rpc.actions.http.HttpServiceListAction;
@@ -34,6 +35,7 @@ import org.brutusin.rpc.websocket.Topic;
 import org.brutusin.rpc.websocket.WebsocketAction;
 import org.brutusin.rpc.websocket.WebsocketActionSupportImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -48,13 +50,16 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
     private Map<String, HttpAction> httpServices;
     private Map<String, WebsocketAction> webSocketServices;
     private Map<String, Topic> webSocketTopics;
+    private final ServerContainer sc;
 
-    public RpcSpringContext() {
-        this(true);
+    public RpcSpringContext(ServerContainer sc) {
+        this(sc, true);
     }
 
-    public RpcSpringContext(boolean loadAppDescriptor) {
-        super(getXmlNames(loadAppDescriptor), false);
+    public RpcSpringContext(ServerContainer sc, boolean loadAppDescriptor) {
+        this.sc = sc;
+        setConfigLocations(getXmlNames(loadAppDescriptor));
+        refresh();
         setClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
@@ -64,6 +69,15 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
         } else {
             return new String[]{SpringNames.CFG_CORE_FILE};
         }
+    }
+
+    @Override
+    protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+        beanFactory.registerSingleton(SpringNames.WSKT_CONTAINER, this.sc);
+    }
+
+    public ServerContainer getWebsocketContainer() {
+        return sc;
     }
 
     @Override
@@ -97,6 +111,14 @@ public class RpcSpringContext extends ClassPathXmlApplicationContext {
             destroy(webSocketTopics.values());
             webSocketTopics.clear();
         }
+    }
+
+    public Map<String, Topic> getWebSocketTopics() {
+        return webSocketTopics;
+    }
+
+    public void setWebSocketTopics(Map<String, Topic> webSocketTopics) {
+        this.webSocketTopics = webSocketTopics;
     }
 
     private void registerBuiltServices() {
