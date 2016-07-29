@@ -17,6 +17,7 @@ package org.brutusin.rpc.client.wskt;
 
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
+import javax.websocket.ContainerProvider;
 import org.brutusin.json.spi.JsonNode;
 import org.brutusin.rpc.RpcResponse;
 import org.brutusin.rpc.client.RpcCallback;
@@ -31,7 +32,7 @@ public class WebsocketEndpointTest {
     @Test
     public void test() throws Exception {
         final CountDownLatch counter = new CountDownLatch(1);
-        final WebsocketEndpoint ws = new WebsocketEndpoint(new URI("ws://localhost:8080/rpc/wskt"), null);
+        final WebsocketEndpoint ws = new WebsocketEndpoint(ContainerProvider.getWebSocketContainer(), new URI("ws://localhost:8080/rpc/wskt"), null);
         ws.exec(new RpcCallback() {
             public void call(RpcResponse<JsonNode> response) {
                 counter.countDown();
