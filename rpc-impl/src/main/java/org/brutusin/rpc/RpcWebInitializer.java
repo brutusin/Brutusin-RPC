@@ -83,7 +83,9 @@ public class RpcWebInitializer implements WebApplicationInitializer {
 
             public void contextDestroyed(ServletContextEvent sce) {
                 LOGGER.info("Destroying RPC context");
-                rpcCtxBean.getValue().destroy();
+                if (rpcCtxBean.getValue() != null) {
+                    rpcCtxBean.getValue().destroy();
+                }
             }
         });
         ctx.addListener(new ServletContextAttributeListener() {
@@ -108,7 +110,9 @@ public class RpcWebInitializer implements WebApplicationInitializer {
             private void updateRootContext() {
                 WebApplicationContext rootCtx = WebApplicationContextUtils.getWebApplicationContext(ctx);
                 if (rootCtx != null) {
-                    rpcCtxBean.getValue().setParent(rootCtx);
+                    if (rpcCtxBean.getValue() != null) {
+                        rpcCtxBean.getValue().setParent(rootCtx);
+                    }
                     if (rootCtx.containsBean("springSecurityFilterChain")) {
                         LOGGER.info("Moving WebsocketFilter behind springSecurityFilterChain");
                         websocketFilter.disable();
