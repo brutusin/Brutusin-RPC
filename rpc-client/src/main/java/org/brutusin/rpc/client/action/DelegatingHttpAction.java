@@ -68,13 +68,20 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
     }
 
     @Override
-    public Cacheable<Object> execute(JsonNode input) throws Exception {
+    public Object execute(JsonNode input) throws Exception {
         HttpResponse httpResponse = this.endpoint.exec(targetId, input, null);
         if (httpResponse.isIsBinary()) {
             StreamResult sr = new StreamResult(httpResponse.getInputStream());
-            return new Cacheable(sr, httpResponse.getCachingInfo());
+            if (si.isSafe()) {
+                return new Cacheable(sr, httpResponse.getCachingInfo());
+            } else {
+                return sr;
+            }
         } else {
-            return new Cacheable(httpResponse.getRpcResponse(), httpResponse.getCachingInfo());
+            if (si.isSafe()) {
+            return new Cacheable(httpResponse.getRpcResponse(), httpResponse.getCachingInfo()); } else {
+                return httpResponse.getRpcResponse();
+            }
         }
     }
 
