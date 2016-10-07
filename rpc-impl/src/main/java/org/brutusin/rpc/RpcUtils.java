@@ -86,13 +86,17 @@ public class RpcUtils {
         Set<String> roleSet = new TreeSet<String>();
         if (securityContext != null) {
             SecurityContext sc = (SecurityContext) securityContext;
-            Collection<? extends GrantedAuthority> authorities = sc.getAuthentication().getAuthorities();
-            for (GrantedAuthority authority : authorities) {
-                String auth = authority.getAuthority();
-                if (auth.startsWith("ROLE_")) {
-                    auth = auth.substring(5);
+            if (sc.getAuthentication() != null) {
+                Collection<? extends GrantedAuthority> authorities = sc.getAuthentication().getAuthorities();
+                if (authorities != null) {
+                    for (GrantedAuthority authority : authorities) {
+                        String auth = authority.getAuthority();
+                        if (auth.startsWith("ROLE_")) {
+                            auth = auth.substring(5);
+                        }
+                        roleSet.add(auth);
+                    }
                 }
-                roleSet.add(auth);
             }
         }
         return Collections.unmodifiableSet(roleSet);
