@@ -285,8 +285,9 @@ public class HttpEndpoint {
             throw new IllegalArgumentException("Invalid service id " + serviceId);
         }
         HttpResponse ret = new HttpResponse();
+        CloseableHttpResponse resp = null;
         try {
-            CloseableHttpResponse resp = doExec(serviceId, input, method, progressCallback);
+            resp = doExec(serviceId, input, method, progressCallback);
             if (resp.getEntity() == null) {
                 throw new RuntimeException(resp.getStatusLine().toString());
             }
@@ -327,15 +328,22 @@ public class HttpEndpoint {
                 }
                 rpcResponse.setResult(responseNode.get("result"));
                 ret.setRpcResponse(rpcResponse);
+                resp.close();
             }
         } catch (ConnectException ex) {
             RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
             rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.connectionError, ex.getMessage()));
             ret.setRpcResponse(rpcResponse);
+            if (resp != null) {
+                resp.close();
+            }
         } catch (Throwable t) {
             RpcResponse<JsonNode> rpcResponse = new RpcResponse<JsonNode>();
             rpcResponse.setError(new RpcResponse.Error(RpcErrorCode.internalError, t.getMessage()));
             ret.setRpcResponse(rpcResponse);
+            if (resp != null) {
+                resp.close();
+            }
         }
 
         return ret;
