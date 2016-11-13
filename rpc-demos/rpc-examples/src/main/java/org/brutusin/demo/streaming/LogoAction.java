@@ -25,6 +25,7 @@ import org.brutusin.rpc.Server;
  *
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
+@Description("Service that returns an image (binary payload) an uses a dynamic input schema.")
 public class LogoAction extends SafeAction<LogoActionInput, StreamResult> {
 
     @Override
