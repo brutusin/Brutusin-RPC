@@ -16,6 +16,7 @@
 package org.brutusin.demo.streaming;
 
 import org.brutusin.commons.io.MetaDataInputStream;
+import org.brutusin.rpc.Description;
 import org.brutusin.rpc.http.Cacheable;
 import org.brutusin.rpc.http.SafeAction;
 import org.brutusin.rpc.http.StreamResult;
