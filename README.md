@@ -3,6 +3,7 @@
 <p align="center">
     <img src="https://github.com/brutusin/Brutusin-RPC/wiki/img/brutusin-logo_small.png" alt="Brutusin-RPC shiny logo">
 </p>
+
 JEE web framework for creating maintainable JSON-RPC microservices and single-page applications with minimal effort.
 
 ## Features
