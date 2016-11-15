@@ -297,7 +297,9 @@ public class TomcatRuntime extends ServerRuntime {
         }
 
         public static void resetFinally() {
-            instance.realReset();
+            if (instance != null) {
+                instance.realReset();
+            }
         }
     }
 }
