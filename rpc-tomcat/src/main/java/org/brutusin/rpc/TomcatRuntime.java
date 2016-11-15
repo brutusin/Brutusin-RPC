@@ -63,27 +63,30 @@ public class TomcatRuntime extends ServerRuntime {
         return new File("");
     }
 
-    private static void addAutoOpen(StandardContext ctx, String... openUrls) {
-        if (openUrls != null) {
-            final String[] urls = openUrls;
+    private static void addAutoOpen(StandardContext ctx, final String... urls) {
+        if (urls != null) {
             ctx.addApplicationLifecycleListener(new ServletContextListener() {
                 @Override
                 public void contextInitialized(ServletContextEvent sce) {
-                    if (Desktop.isDesktopSupported()) {
-                        try {
-                            for (int i = 0; i < urls.length; i++) {
-                                Desktop.getDesktop().browse(new URI(urls[i]));
-                            }
-                        } catch (Exception ex) {
-                            Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
+                    openBrowser(urls);
                 }
 
                 @Override
                 public void contextDestroyed(ServletContextEvent sce) {
                 }
             });
+        }
+    }
+
+    private static void openBrowser(String... urls) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                for (int i = 0; i < urls.length; i++) {
+                    Desktop.getDesktop().browse(new URI(urls[i]));
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -165,7 +168,7 @@ public class TomcatRuntime extends ServerRuntime {
             RpcConfig.getInstance().setTestMode(true);
             Tomcat tomcat = createTomcat(port);
             final String id = action.getClass().getName();
-            String url;
+            final String url;
             if (action instanceof HttpAction) {
                 url = "http://localhost:" + port + "/rpc/repo/?hash=http-services/" + id;
             } else {
@@ -174,20 +177,34 @@ public class TomcatRuntime extends ServerRuntime {
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 @Override
-                public void contextInitialized(ServletContextEvent sce) {
-                    RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
-                    if (action instanceof HttpAction) {
-                        rpcCtx.register(id, (HttpAction) action);
-                    } else {
-                        rpcCtx.register(id, (WebsocketAction) action);
-                    }
+                public void contextInitialized(final ServletContextEvent sce) {
+                    Thread t = new Thread() {
+                        @Override
+                        public void run() {
+                            RpcSpringContext rpcCtx;
+                            while ((rpcCtx = RpcUtils.getSpringContext(sce.getServletContext())) == null) {
+                                try {
+                                    Thread.sleep(50);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            if (action instanceof HttpAction) {
+                                rpcCtx.register(id, (HttpAction) action);
+                            } else {
+                                rpcCtx.register(id, (WebsocketAction) action);
+                            }
+                            openBrowser(url);
+                        }
+                    };
+                    t.start();
                 }
 
                 @Override
                 public void contextDestroyed(ServletContextEvent sce) {
                 }
             });
-            addAutoOpen(stdCtx, url);
+
             start(tomcat);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -228,20 +245,35 @@ public class TomcatRuntime extends ServerRuntime {
             Tomcat tomcat = createTomcat(port);
             final String topicId = topic.getClass().getName();
             final PublishAction publishAction = new PublishAction(topic);
+            final String url = "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId;
             StandardContext stdCtx = addTestApp(tomcat, getRootFolder());
+
             stdCtx.addApplicationLifecycleListener(new ServletContextListener() {
                 @Override
-                public void contextInitialized(ServletContextEvent sce) {
-                    RpcSpringContext rpcCtx = RpcUtils.getSpringContext(sce.getServletContext());
-                    rpcCtx.register("publish-service", publishAction);
-                    rpcCtx.register(topicId, topic);
+                public void contextInitialized(final ServletContextEvent sce) {
+                    Thread t = new Thread() {
+                        @Override
+                        public void run() {
+                            RpcSpringContext rpcCtx;
+                            while ((rpcCtx = RpcUtils.getSpringContext(sce.getServletContext())) == null) {
+                                try {
+                                    Thread.sleep(50);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(TomcatRuntime.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            rpcCtx.register("publish-service", publishAction);
+                            rpcCtx.register(topicId, topic);
+                            openBrowser(url);
+                        }
+                    };
+                    t.start();
                 }
 
                 @Override
                 public void contextDestroyed(ServletContextEvent sce) {
                 }
             });
-            addAutoOpen(stdCtx, "http://localhost:" + port + "/rpc/test/topic.jsp?id=" + topicId);
             start(tomcat);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
