@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-demos</artifactId>
-        <version>1.8.3-SNAPSHOT</version>
+        <version>1.8.3</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-chat</artifactId>
@@ -17,24 +17,24 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-api</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-impl</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-repo</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-tomcat</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
