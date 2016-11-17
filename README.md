@@ -7,13 +7,13 @@
 JEE web framework for creating maintainable JSON-RPC microservices and single-page applications with minimal effort.
 
 ## Features
-- Embedded server runtimes
 - JSON-RPC 2.0 over HTTP
 - JSON-RPC 2.0 over websockets
 - Messaging (publish/subscribe) over websockets
 - Java & Javascript client API
 - Builtin descriptive services and functional testing module
 - Spring-security integration
+- Embedded server runtimes
 
 ## Full Documentation
 
