@@ -26,10 +26,10 @@ Websocket es un protocolo de bajo nivel iniciado desde HTTP pero que posteriorme
 
 Su uso es recomendable para escenarios que requieran bidireccionalidad (HTTP no lo permite), o una alta frecuencia de intercambio de (pequeños) mensajes, en los que la trama HTTP añadiría un considerable overhead al tamaño de estos. 
 
-Como puntos en contra, a parte de se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores como el de AJAX (aunque las últimas versiones de los más utilizados la soportan).
+Como puntos en contra, a parte de que se pierden las caraterísticas de HTTP que comentabamos antes, está el hecho de que esta tecnología es más reciente y su soporte no es tan extendido en los navegadores como el de AJAX (aunque las últimas versiones de los más utilizados la soportan).
 
 ## Mensajería
-Adicionalmente Brutusin-RPC proporciona otro modelo de programación orientado la notificación de mensajes de servidor a cliente, mensajes que, al contrario que el caso de los servicios, no son devueltos en respuesta a una petición del cliente.
+Adicionalmente Brutusin-RPC proporciona otro modelo de programación orientado a la notificación de mensajes de servidor a cliente, mensajes que, al contrario que el caso de los servicios, no son devueltos en respuesta a una petición del cliente.
 
 Se utilizan en este caso los denominados "topics"; unas entidades lógicas definidas originalmente en el patrón de diseño ["publish/subscribe"](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) que permiten desacoplar emisor y receptor(es) y que conceptualmente representan "puntos de interés" para los receptores y "canales de envío" para los emisores.
 
