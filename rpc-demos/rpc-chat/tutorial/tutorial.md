@@ -1,4 +1,4 @@
-# Tutorial creado para http://www.arquitecturajava.com
+# Tutorial Brutusin-RPC: Aplicación de chat sobre websockets
 
 Brutusin-RPC es un nuevo microframework Java orientado a la creación APIs JSON-RPC (2.0) para ser consumidas en aplicaciones "single-page" via AJAX o Websockets y desplegadas en entornos cloud (metodología [“twelve-factor”](http://12factor.net/es/)).
 
