@@ -442,7 +442,7 @@ En esta parte final implementaremos los servicios de subida y descarga de ficher
 
 Este servicio será el encargado de realizar el upload de los fichero seleccionados por el usuario, almacenarlos en un directorio temporal bajo un nombre aleatorio (que no permita su descarga a usuarios que desconozcan su id) y finalmente publicará en el topic un mensaje con la información necesaria para que los receptores puedan descargarlo.
 
-La subida de ficheros en Brutusin-RPC se implementa de manera transparente sólo con utilizar propiedades de `MetadataInputStream` en el input servicios HTTP.
+La subida de ficheros en Brutusin-RPC se implementa de manera transparente sólo con utilizar propiedades de tipo `MetadataInputStream` en el input de los servicios HTTP.
 
 El framework proporciona dos clases base para la creación de servicios sobre HTTP: `SafeAction<I,O>` y `UnsafeAction<I,O>` dependiendo de si la operación se considera "segura" desde el punto de vista HTTP.
 Como esta operación envía y modifica datos en el servidor, se considera "no segura" y, por lo tanto, utilizaremos la segunda opción:
