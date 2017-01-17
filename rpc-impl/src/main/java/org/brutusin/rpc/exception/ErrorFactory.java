@@ -53,7 +53,7 @@ public class ErrorFactory {
             return new RpcResponse.Error(RpcErrorCode.parseError, Miscellaneous.getRootCauseMessage(th));
         }
         if (th instanceof SecurityException) {
-            Logger.getLogger(RpcServlet.class.getName()).log(Level.WARNING, null, th);
+            Logger.getLogger(RpcServlet.class.getName()).log(Level.WARNING, Miscellaneous.getRootCauseMessage(th), th);
             return new RpcResponse.Error(RpcErrorCode.securityError, Miscellaneous.getRootCauseMessage(th));
         }
         if (th instanceof ValidationException) {
@@ -61,13 +61,13 @@ public class ErrorFactory {
             return new RpcResponse.Error(RpcErrorCode.invalidParams, ve.getMessages());
         }
         if (th instanceof RuntimeException) {
-            Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, null, th);
+            Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, Miscellaneous.getRootCauseMessage(th), th);
             return new RpcResponse.Error(RpcErrorCode.internalError, Miscellaneous.getRootCauseMessage(th));
         }
         if (th instanceof Exception) {
             return new RpcResponse.Error(RpcErrorCode.applicationError, Miscellaneous.getRootCauseMessage(th));
         }
-        Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, null, th);
+        Logger.getLogger(RpcServlet.class.getName()).log(Level.SEVERE, Miscellaneous.getRootCauseMessage(th), th);
         return new RpcResponse.Error(RpcErrorCode.internalError, Miscellaneous.getRootCauseMessage(th));
     }
 
