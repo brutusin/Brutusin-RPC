@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-root</artifactId>
-        <version>1.8.4</version>
+        <version>1.8.5-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-impl</artifactId>
     <packaging>jar</packaging>   
-    <version>1.8.4</version>
+    <version>1.8.5-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Brutusin-RPC implementation</description>
         
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-api</artifactId>
-            <version>1.8.4</version>
+            <version>1.8.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
