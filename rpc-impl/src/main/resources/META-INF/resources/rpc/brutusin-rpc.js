@@ -90,8 +90,8 @@ if (typeof brutusin === "undefined") {
         var queue = [];
         var services;
 
-        ajax(function (response, status) {
-            if (status === 200) {
+        ajax(function (response, status, statusText, type) {
+            if (status === 200 && type.startsWith("application/json")) {
                 services = new Object();
                 for (var i = 0; i < response.result.length; i++) {
                     services[response.result[i].id] = response.result[i];
@@ -108,9 +108,10 @@ if (typeof brutusin === "undefined") {
 
 
         setInterval(function () {
-            ajax(function (response, status) {
-                if (status !== 200) {
-                    throw JSON.stringify(response);
+            ajax(function (response, status, statusText, type) {
+                // workaround for session finished redirecting to login
+                if (status !== 200 || !type.startsWith("application/json")) {
+                    window.location.reload(true);
                 }
             }, "rpc.http.ping", null, null, "GET");
         }, ping ? ping : 60000);
@@ -208,7 +209,7 @@ if (typeof brutusin === "undefined") {
                         fileReader.onload = function () {
                             var response;
                             eval("response=" + this.result);
-                            load(response, xhr.status, xhr.statusText);
+                            load(response, xhr.status, xhr.statusText, type);
                         };
                         fileReader.readAsText(this.response);
                     }
@@ -216,7 +217,7 @@ if (typeof brutusin === "undefined") {
                     var blob = new Blob([this.response], {type: type});
                     var doDefault = true;
                     if (load) {
-                        doDefault = load(blob, this.status, this.statusText);
+                        doDefault = load(blob, this.status, this.statusText, type);
                     }
                     if (doDefault) {
                         var filename = getAttachmentFileName(xhr.getResponseHeader('Content-Disposition'));
