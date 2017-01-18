@@ -1,1 +1,2 @@
-Demo application
+**`Demo JSON-RPC API`**. Brutusin-RPC microservices include out-of-the-box a web repository that documents the API, and allows to execute the services using the [javascript API](https://github.com/brutusin/Brutusin-RPC/wiki/Javascript-API).
+This description is defined in the [brutusin-rpc.md](https://github.com/brutusin/Brutusin-RPC/blob/master/rpc-demos/rpc-demo-jar/src/main/resources/brutusin-rpc.md) file.
