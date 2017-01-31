@@ -153,16 +153,15 @@ public class HttpEndpoint {
                 while (!isInterrupted()) {
                     try {
                         Thread.sleep(1000 * pingSeconds);
-                        try {
-                            CloseableHttpResponse resp = doExec("rpc.http.ping", null, HttpMethod.GET, null);
-                            resp.close();
-                        } catch (ConnectException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")");
-                        } catch (IOException ex) {
-                            LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")", ex);
-                        }
+                        CloseableHttpResponse resp = doExec("rpc.http.ping", null, HttpMethod.GET, null);
+                        resp.close();
+                        getServices();
+                    } catch (ConnectException ex) {
+                        LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")");
                     } catch (InterruptedException ie) {
                         break;
+                    } catch (Exception ex) {
+                        LOGGER.log(Level.SEVERE, ex.getMessage() + " (" + HttpEndpoint.this.endpoint + ")", ex);
                     }
                 }
             }
@@ -350,55 +349,65 @@ public class HttpEndpoint {
     }
 
     private CloseableHttpResponse doExec(String serviceId, JsonNode input, HttpMethod httpMethod, final ProgressCallback progressCallback) throws IOException {
-        RpcRequest request = new RpcRequest();
-        request.setJsonrpc("2.0");
-        request.setMethod(serviceId);
-        request.setParams(input);
-        final String payload = JsonCodec.getInstance().transform(request);
-        final HttpUriRequest req;
-        if (httpMethod == HttpMethod.GET) {
-            String urlparam = URLEncoder.encode(payload, "UTF-8");
-            req = new HttpGet(this.endpoint + "?jsonrpc=" + urlparam);
-        } else {
-            HttpEntityEnclosingRequestBase reqBase;
-            if (httpMethod == HttpMethod.POST) {
-                reqBase = new HttpPost(this.endpoint);
-            } else if (httpMethod == HttpMethod.PUT) {
-                reqBase = new HttpPut(this.endpoint);
+        try {
+            RpcRequest request = new RpcRequest();
+            request.setJsonrpc("2.0");
+            request.setMethod(serviceId);
+            request.setParams(input);
+            final String payload = JsonCodec.getInstance().transform(request);
+            final HttpUriRequest req;
+            if (httpMethod == HttpMethod.GET) {
+                String urlparam = URLEncoder.encode(payload, "UTF-8");
+                req = new HttpGet(this.endpoint + "?jsonrpc=" + urlparam);
             } else {
-                throw new AssertionError();
-            }
-            req = reqBase;
-            HttpEntity entity;
-            Map<String, InputStream> files = JsonCodec.getInstance().getStreams(input);
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.STRICT);
-            builder.addPart("jsonrpc", new StringBody(payload, ContentType.APPLICATION_JSON));
-            if (files != null && !files.isEmpty()) {
-                files = sortFiles(files);
-                for (Map.Entry<String, InputStream> entrySet : files.entrySet()) {
-                    String key = entrySet.getKey();
-                    InputStream is = entrySet.getValue();
-                    if (is instanceof MetaDataInputStream) {
-                        MetaDataInputStream mis = (MetaDataInputStream) is;
-                        builder.addPart(key, new InputStreamBody(mis, mis.getName()));
-                    } else {
-                        builder.addPart(key, new InputStreamBody(is, key));
+                HttpEntityEnclosingRequestBase reqBase;
+                if (httpMethod == HttpMethod.POST) {
+                    reqBase = new HttpPost(this.endpoint);
+                } else if (httpMethod == HttpMethod.PUT) {
+                    reqBase = new HttpPut(this.endpoint);
+                } else {
+                    throw new AssertionError();
+                }
+                req = reqBase;
+                HttpEntity entity;
+                Map<String, InputStream> files = JsonCodec.getInstance().getStreams(input);
+                MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+                builder.setMode(HttpMultipartMode.STRICT);
+                builder.addPart("jsonrpc", new StringBody(payload, ContentType.APPLICATION_JSON));
+                if (files != null && !files.isEmpty()) {
+                    files = sortFiles(files);
+                    for (Map.Entry<String, InputStream> entrySet : files.entrySet()) {
+                        String key = entrySet.getKey();
+                        InputStream is = entrySet.getValue();
+                        if (is instanceof MetaDataInputStream) {
+                            MetaDataInputStream mis = (MetaDataInputStream) is;
+                            builder.addPart(key, new InputStreamBody(mis, mis.getName()));
+                        } else {
+                            builder.addPart(key, new InputStreamBody(is, key));
+                        }
                     }
                 }
+                entity = builder.build();
+                if (progressCallback != null) {
+                    entity = new ProgressHttpEntityWrapper(entity, progressCallback);
+                }
+                reqBase.setEntity(entity);
             }
-            entity = builder.build();
-            if (progressCallback != null) {
-                entity = new ProgressHttpEntityWrapper(entity, progressCallback);
+            HttpClientContext context = contexts.get();
+            if (this.clientContextFactory != null && context == null) {
+                context = clientContextFactory.create();
+                contexts.set(context);
             }
-            reqBase.setEntity(entity);
+            CloseableHttpResponse ret = this.httpClient.execute(req, context);
+            return ret;
+        } catch (ConnectException ex) {
+            loaded = false;
+            throw ex;
         }
-        HttpClientContext context = contexts.get();
-        if (this.clientContextFactory != null && context == null) {
-            context = clientContextFactory.create();
-            contexts.set(context);
-        }
-        return this.httpClient.execute(req, context);
+    }
+
+    public boolean isAvailable() {
+        return loaded;
     }
 
     public URI getEndpoint() {

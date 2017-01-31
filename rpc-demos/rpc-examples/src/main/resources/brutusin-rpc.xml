@@ -6,6 +6,7 @@
 
     <!-- <bean id="${serviceId}" class="${actionClass}"/> -->
  
+    <bean id="jcs" class="org.brutusin.demo.ExampleJCSAction"/>
     <bean id="test" class="org.brutusin.demo.TestTopic"/>
     <bean id="fire" class="org.brutusin.demo.FireAction">
         <property name="topic" ref="test"/>

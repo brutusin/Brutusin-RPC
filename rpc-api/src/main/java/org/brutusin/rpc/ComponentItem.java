@@ -29,11 +29,11 @@ public class ComponentItem {
     private boolean dynamicInputSchema;
     private URL sourceCode;
 
-    public final boolean isDynamicInputSchema() {
+    public boolean isDynamicInputSchema() {
         return dynamicInputSchema;
     }
 
-    public final void setDynamicInputSchema(boolean dynamicInputSchema) {
+    public  void setDynamicInputSchema(boolean dynamicInputSchema) {
         this.dynamicInputSchema = dynamicInputSchema;
     }
 

@@ -37,12 +37,13 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
-import org.brutusin.commons.Trie;
 import org.brutusin.json.ParseException;
 import org.brutusin.json.spi.JsonCodec;
 import org.brutusin.json.spi.JsonNode;
+import org.brutusin.rpc.ComponentItem;
 import org.brutusin.rpc.RpcRequest;
 import org.brutusin.rpc.RpcResponse;
+import org.brutusin.rpc.ServiceItem;
 import org.brutusin.rpc.client.RpcCallback;
 
 /**
@@ -58,19 +59,20 @@ public class WebsocketEndpoint {
     private final WebSocketContainer webSocketContainer;
     private final AtomicInteger reqCounter = new AtomicInteger();
 
-    private final Map<String, JsonNode> serviceMap = new HashMap();
+    private final Map<String, ServiceItem> serviceMap = new HashMap();
+    private final Map<String, ComponentItem> topicMap = new HashMap();
+
     private final Map<Integer, RpcCallback> rpcCallbacks = new HashMap();
     private final Map<String, TopicCallback> topicCallbacks = new HashMap();
 
     private final LinkedList<RpcRequest> reconnectingQueue = new LinkedList();
-    private final LinkedList<Trie<RpcCallback, String, JsonNode>> initialQueue = new LinkedList();
     private final MessageListener messageListener;
 
+    private final AtomicInteger reconnectionCounter = new AtomicInteger();
     private final Thread pingThread;
 
     private Websocket websocket;
     private boolean reconnecting;
-    private AtomicInteger reconnectionCounter = new AtomicInteger();
 
     public WebsocketEndpoint(WebSocketContainer webSocketContainer, URI endpoint, Config cfg) {
         if (cfg == null) {
@@ -104,23 +106,7 @@ public class WebsocketEndpoint {
             }
         };
         final int pingSeconds = cfg.getPingSeconds();
-        doExec(new RpcCallback() {
-            public void call(RpcResponse<JsonNode> response) {
-                if (response.getError() != null) {
-                    LOGGER.severe(response.toString());
-                    return;
-                }
-                JsonNode services = response.getResult();
-                for (int i = 0; i < services.getSize(); i++) {
-                    JsonNode service = services.get(i);
-                    serviceMap.put(service.get("id").asString(), service);
-                }
-                for (Trie<RpcCallback, String, JsonNode> req : initialQueue) {
-                    exec(req.getElement1(), req.getElement2(), req.getElement3());
-                }
-                initialQueue.clear();
-            }
-        }, "rpc.wskt.services", null, true);
+
         this.pingThread = new Thread() {
             @Override
             public void run() {
@@ -142,6 +128,14 @@ public class WebsocketEndpoint {
         };
         pingThread.setDaemon(true);
         pingThread.start();
+    }
+
+    public Map<String, ServiceItem> getServices() {
+        return serviceMap;
+    }
+
+    public Map<String, ComponentItem> getTopics() {
+        return topicMap;
     }
 
     private synchronized void reconnect() {
@@ -308,18 +302,7 @@ public class WebsocketEndpoint {
     }
 
     public synchronized void exec(RpcCallback callback, String serviceId, JsonNode input) {
-        if (serviceId == null) {
-            throw new IllegalArgumentException("execParam.service is required");
-        }
-        if (serviceMap.size() > 0) {
-            JsonNode service = serviceMap.get(serviceId);
-            if (service == null) {
-                throw new IllegalArgumentException("Service not found: '" + serviceId + "'");
-            }
-            doExec(callback, serviceId, input, true);
-        } else {
-            initialQueue.add(new Trie<RpcCallback, String, JsonNode>(callback, serviceId, input));
-        }
+        doExec(callback, serviceId, input, true);
     }
 
     public synchronized void subscribe(String topicId, TopicCallback callback) {
@@ -343,6 +326,14 @@ public class WebsocketEndpoint {
         } catch (ParseException ex) {
             throw new AssertionError();
         }
+    }
+
+    public URI getEndpoint() {
+        return endpoint;
+    }
+
+    public boolean isAvailable() {
+        return this.websocket != null;
     }
 
     public void close() throws IOException {

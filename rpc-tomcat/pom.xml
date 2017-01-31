@@ -14,7 +14,7 @@
     <description>Apache Tomcat 8 embedded server provider for Brutusin-RPC</description>
        
     <properties>
-        <tomcat.version>8.0.36</tomcat.version>
+        <tomcat.version>8.0.39</tomcat.version>
     </properties>
     
     <dependencies>

@@ -147,12 +147,12 @@ public abstract class Topic<F, M> extends RpcComponent {
     public Type getMessageType() {
         return getType(ResolvableType.forClass(Topic.class, getClass()).getGenerics()[1]);
     }
-    
-     public JsonSchema getFilterSchema(){
+
+    public JsonSchema getFilterSchema() {
         return JsonCodec.getInstance().getSchema(geFilterType());
     }
-    
-     public JsonSchema getMessageSchema(){
+
+    public JsonSchema getMessageSchema() {
         return JsonCodec.getInstance().getSchema(getMessageType());
     }
 }

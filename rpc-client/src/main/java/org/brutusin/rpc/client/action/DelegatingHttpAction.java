@@ -52,6 +52,10 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
 
     @Override
     public boolean isActive() {
+        if (!endpoint.isAvailable()) {
+            loaded = false;
+            return false;
+        }
         if (!loaded) {
             synchronized (this) {
                 if (!loaded) {
@@ -79,7 +83,8 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
             }
         } else {
             if (si.isSafe()) {
-            return new Cacheable(httpResponse.getRpcResponse(), httpResponse.getCachingInfo()); } else {
+                return new Cacheable(httpResponse.getRpcResponse(), httpResponse.getCachingInfo());
+            } else {
                 return httpResponse.getRpcResponse();
             }
         }
