@@ -26,16 +26,7 @@ public class ComponentItem {
     private String id;
     private boolean active;
     private String description;
-    private boolean dynamicInputSchema;
     private URL sourceCode;
-
-    public boolean isDynamicInputSchema() {
-        return dynamicInputSchema;
-    }
-
-    public  void setDynamicInputSchema(boolean dynamicInputSchema) {
-        this.dynamicInputSchema = dynamicInputSchema;
-    }
 
     public URL getSourceCode() {
         return sourceCode;
