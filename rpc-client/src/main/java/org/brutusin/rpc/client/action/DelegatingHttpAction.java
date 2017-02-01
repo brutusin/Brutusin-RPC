@@ -76,13 +76,13 @@ public class DelegatingHttpAction extends HttpAction<JsonNode, Object> {
         HttpResponse httpResponse = this.endpoint.exec(targetId, input, null);
         if (httpResponse.isIsBinary()) {
             StreamResult sr = new StreamResult(httpResponse.getInputStream());
-            if (si.isSafe()) {
+            if (getServiceItem().isSafe()) {
                 return new Cacheable(sr, httpResponse.getCachingInfo());
             } else {
                 return sr;
             }
         } else {
-            if (si.isSafe()) {
+            if (getServiceItem().isSafe()) {
                 return new Cacheable(httpResponse.getRpcResponse(), httpResponse.getCachingInfo());
             } else {
                 return httpResponse.getRpcResponse();
