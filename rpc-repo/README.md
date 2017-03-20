@@ -2,19 +2,19 @@
 
 Builtin functional testing module for Brutusin-RPC.  
 
-##Usage
-This utility is accessed under the following path:
+## Usage
+This tool is accessed under the following path:
 ```
 http://{$host}:{$port}/{$app}/rpc/repo/
 ```
 
 [![Example](img/example.jpg)](http://demo.rpc.brutusin.org)
 
-##Live demo
+## Live demo
 
 http://demo.rpc.brutusin.org
 
-##Main stack
+## Main stack
 This module could not be possible without:
 * [Bootstrap](http://getbootstrap.com/)
 * [JQuery](http://jquery.com/)
@@ -29,6 +29,6 @@ https://github.com/brutusin/Brutusin-RPC/issues
 
 Contributions are always welcome and greatly appreciated!
 
-##License
+## License
 Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0
