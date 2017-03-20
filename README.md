@@ -56,6 +56,6 @@ https://github.com/brutusin/Brutusin-RPC/issues
 
 Contributions are always welcome and greatly appreciated! Just fork, and send me a pull request.
 
-##License
+## License
 Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0
