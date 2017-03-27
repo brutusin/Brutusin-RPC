@@ -20,6 +20,8 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.Session;
@@ -43,6 +45,7 @@ import org.springframework.security.core.context.SecurityContext;
  */
 public class WebsocketEndpoint extends Endpoint {
 
+    private static final Logger LOGGER = Logger.getLogger(WebsocketEndpoint.class.getName());
     private final Map<String, WebsocketContext> contextMap = Collections.synchronizedMap(new HashMap());
     private final Map<String, SessionImpl> wrapperMap = Collections.synchronizedMap(new HashMap());
 
@@ -74,6 +77,8 @@ public class WebsocketEndpoint extends Endpoint {
                     if (response != null) {
                         sessionImpl.sendToPeerRaw(response);
                     }
+                } catch (Throwable th) {
+                    LOGGER.log(Level.SEVERE, th.getMessage(), th);
                 } finally {
                     WebsocketActionSupportImpl.clear();
                 }

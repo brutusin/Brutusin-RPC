@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +64,8 @@ import org.brutusin.rpc.exception.ErrorFactory;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public final class RpcServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(RpcServlet.class.getName());
 
     public static final String JSON_CONTENT_TYPE = "application/json";
 
@@ -423,44 +424,55 @@ public final class RpcServlet extends HttpServlet {
      */
     private void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        CachingInfo cachingInfo = null;
-        Object result = null;
-        Throwable throwable = null;
-        RpcRequest rpcRequest = null;
         try {
-            HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(rpcCtx, req, resp));
-            rpcRequest = getRequest(req);
-            result = execute(req, rpcRequest);
-            if (result != null && result instanceof Cacheable) {
-                Cacheable cacheable = (Cacheable) result;
-                cachingInfo = cacheable.getCachingInfo();
-                result = cacheable.getValue();
+            CachingInfo cachingInfo = null;
+            Object result = null;
+            Throwable throwable = null;
+            RpcRequest rpcRequest = null;
+            try {
+                HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(rpcCtx, req, resp));
+                rpcRequest = getRequest(req);
+                result = execute(req, rpcRequest);
+                if (result != null && result instanceof Cacheable) {
+                    Cacheable cacheable = (Cacheable) result;
+                    cachingInfo = cacheable.getCachingInfo();
+                    result = cacheable.getValue();
+                }
+            } catch (Throwable th) {
+                throwable = th;
+                ensureStreamRead(req.getInputStream());
+            }
+            String reqETag = getETag(req);
+            addFixedHeaders(resp);
+            resp.setCharacterEncoding("UTF-8");
+
+            try {
+                if (result != null && StreamResult.class.isAssignableFrom(result.getClass())) {
+                    serviceStream(reqETag, req, resp, (StreamResult) result, cachingInfo);
+                } else if (result instanceof RpcResponse) {
+                    serviceJsonResponse(reqETag, req, resp, (RpcResponse) result, cachingInfo);
+                } else {
+                    RpcResponse rpcResp = new RpcResponse();
+                    if (rpcRequest != null) {
+                        rpcResp.setId(rpcRequest.getId());
+                    }
+                    rpcResp.setError(ErrorFactory.getError(throwable));
+                    rpcResp.setResult(result);
+                    serviceJsonResponse(reqETag, req, resp, rpcResp, cachingInfo);
+                }
+            } finally {
+                HttpActionSupportImpl.clear();
+                deleteTempUploadDirectory(req);
             }
         } catch (Throwable th) {
-            throwable = th;
-            ensureStreamRead(req.getInputStream());
-        }
-        String reqETag = getETag(req);
-        addFixedHeaders(resp);
-        resp.setCharacterEncoding("UTF-8");
-
-        try {
-            if (result != null && StreamResult.class.isAssignableFrom(result.getClass())) {
-                serviceStream(reqETag, req, resp, (StreamResult) result, cachingInfo);
-            } else if (result instanceof RpcResponse) {
-                serviceJsonResponse(reqETag, req, resp, (RpcResponse) result, cachingInfo);
-            } else {
-                RpcResponse rpcResp = new RpcResponse();
-                if (rpcRequest != null) {
-                    rpcResp.setId(rpcRequest.getId());
-                }
-                rpcResp.setError(ErrorFactory.getError(throwable));
-                rpcResp.setResult(result);
-                serviceJsonResponse(reqETag, req, resp, rpcResp, cachingInfo);
+            LOGGER.log(Level.SEVERE, th.getMessage(), th);
+            if (th instanceof Error) {
+                throw (Error) th;
+            } else if (th instanceof RuntimeException) {
+                throw (RuntimeException) th;
+            } else if (th instanceof IOException) {
+                throw (IOException) th;
             }
-        } finally {
-            HttpActionSupportImpl.clear();
-            deleteTempUploadDirectory(req);
         }
     }
 
