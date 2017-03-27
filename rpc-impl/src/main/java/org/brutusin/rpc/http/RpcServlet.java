@@ -64,22 +64,22 @@ import org.brutusin.rpc.exception.ErrorFactory;
  * @author Ignacio del Valle Alles idelvall@brutusin.org
  */
 public final class RpcServlet extends HttpServlet {
-
+    
     private static final Logger LOGGER = Logger.getLogger(RpcServlet.class.getName());
-
+    
     public static final String JSON_CONTENT_TYPE = "application/json";
-
+    
     private static final String REQ_ATT_MULTIPART_PARAMS = "multipartParams";
     private static final String REQ_ATT_MULTIPART_ITERATOR = "multipartIterator";
     private static final String REQ_ATT_MULTIPART_CURRENT_ITEM = "multipartCurrentItem";
     private static final String REQ_ATT_TEMPORARY_FOLDER = "tempFolder";
-
+    
     public static final String PARAM_PAYLOAD = "jsonrpc";
-
+    
     private final AtomicInteger UPLOAD_COUNTER = new AtomicInteger();
-
+    
     private RpcSpringContext rpcCtx;
-
+    
     public void setRpcCtx(RpcSpringContext rpcCtx) {
         this.rpcCtx = rpcCtx;
         try {
@@ -110,7 +110,7 @@ public final class RpcServlet extends HttpServlet {
         }
         return contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart");
     }
-
+    
     public RpcSpringContext getRpcCtx() {
         return rpcCtx;
     }
@@ -200,23 +200,23 @@ public final class RpcServlet extends HttpServlet {
             return new String(array[0].getBytes(RpcConfig.getInstance().getServerUriEncoding()), "UTF-8");
         }
     }
-
+    
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         execute(req, resp);
     }
-
+    
     @Override
     protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         execute(req, resp);
     }
-
+    
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         addFixedHeaders(resp);
         super.doOptions(req, resp);
     }
-
+    
     @Override
     protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         execute(req, resp);
@@ -402,7 +402,7 @@ public final class RpcServlet extends HttpServlet {
             }
         }
     }
-
+    
     private void ensureStreamRead(InputStream stream) throws IOException {
         if (stream != null) {
             byte[] buffer = new byte[1024];
@@ -410,7 +410,7 @@ public final class RpcServlet extends HttpServlet {
             }
         }
     }
-
+    
     private int getInputStreamsNumber(RpcRequest rpcRequest, HttpAction service) throws ParseException {
         return JsonCodec.getInstance().getReferencedStreamCount(rpcRequest.getParams(), service.getInputSchema());
     }
@@ -423,12 +423,12 @@ public final class RpcServlet extends HttpServlet {
      * @throws IOException
      */
     private void execute(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
+        
+        CachingInfo cachingInfo = null;
+        Object result = null;
+        Throwable throwable = null;
+        RpcRequest rpcRequest = null;
         try {
-            CachingInfo cachingInfo = null;
-            Object result = null;
-            Throwable throwable = null;
-            RpcRequest rpcRequest = null;
             try {
                 HttpActionSupportImpl.setInstance(new HttpActionSupportImpl(rpcCtx, req, resp));
                 rpcRequest = getRequest(req);
@@ -445,7 +445,7 @@ public final class RpcServlet extends HttpServlet {
             String reqETag = getETag(req);
             addFixedHeaders(resp);
             resp.setCharacterEncoding("UTF-8");
-
+            
             try {
                 if (result != null && StreamResult.class.isAssignableFrom(result.getClass())) {
                     serviceStream(reqETag, req, resp, (StreamResult) result, cachingInfo);
@@ -465,7 +465,9 @@ public final class RpcServlet extends HttpServlet {
                 deleteTempUploadDirectory(req);
             }
         } catch (Throwable th) {
-            LOGGER.log(Level.SEVERE, th.getMessage(), th);
+            if (rpcRequest != null) {
+                LOGGER.log(Level.SEVERE, "Error processing request: " + JsonCodec.getInstance().transform(rpcRequest), th);
+            }
             if (th instanceof Error) {
                 throw (Error) th;
             } else if (th instanceof RuntimeException) {
@@ -521,7 +523,7 @@ public final class RpcServlet extends HttpServlet {
             cachingInfo = null;
         }
         resp.setContentType(JSON_CONTENT_TYPE);
-
+        
         String eTag = null;
         if (cachingInfo != null) {
             if (json == null) {
@@ -553,9 +555,9 @@ public final class RpcServlet extends HttpServlet {
             eTag = CryptoUtils.getHashMD5(String.valueOf(resultStream.getStream().getLastModified()));
         }
         addCacheHeaders(req, resp, cachingInfo, eTag);
-
+        
         MetaDataInputStream stream = null;
-
+        
         if (resultStream != null && resultStream.getStream() != null) {
             stream = resultStream.getStream();
             if (stream.getLength() != null) {

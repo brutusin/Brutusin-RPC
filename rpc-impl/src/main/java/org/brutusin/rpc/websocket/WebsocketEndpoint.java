@@ -78,7 +78,7 @@ public class WebsocketEndpoint extends Endpoint {
                         sessionImpl.sendToPeerRaw(response);
                     }
                 } catch (Throwable th) {
-                    LOGGER.log(Level.SEVERE, th.getMessage(), th);
+                    LOGGER.log(Level.SEVERE, "Error processing request: " + message, th);
                 } finally {
                     WebsocketActionSupportImpl.clear();
                 }
