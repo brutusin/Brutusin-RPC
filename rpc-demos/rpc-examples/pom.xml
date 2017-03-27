@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.brutusin</groupId>
         <artifactId>rpc-demos</artifactId>
-        <version>1.9.2</version>
+        <version>1.9.3-SNAPSHOT</version>
     </parent>
     <groupId>org.brutusin</groupId>
     <artifactId>rpc-examples</artifactId>
     <packaging>jar</packaging>   
-    <version>1.9.2</version>
+    <version>1.9.3-SNAPSHOT</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Examples of Brutusin-RPC component implementations</description>
    
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.brutusin</groupId>
             <artifactId>rpc-api</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
