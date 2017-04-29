@@ -12,6 +12,7 @@ JEE web framework for creating self-descriptive JSON-RPC microservices and singl
 - Messaging (publish/subscribe) over websockets
 - Java & Javascript client API
 - Builtin descriptive services and functional testing module
+- Arbitrary complex input and output description based on JSON Schema
 - Spring-security integration
 - Embedded server runtimes
 
