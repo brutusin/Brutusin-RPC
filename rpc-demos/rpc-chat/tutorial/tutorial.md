@@ -1009,15 +1009,15 @@ Como hemos comentados todas las aplicaciones desarrolladas con el framework incl
 
 <http://localhost:8080/rpc/repo>
 
-##Listados de servicios
+## Listados de servicios
 
 ![Brutusin-RPC chat](img/repo.png)
 
-##Detalle y ejecución de un servicio
+## Detalle y ejecución de un servicio
 
 ![Brutusin-RPC chat](img/upload.png)
 
-##Detalle y visualización de mensajes recibidos del topic
+## Detalle y visualización de mensajes recibidos del topic
 ![Brutusin-RPC chat](img/topic.png)
 
 ## Siguientes pasos
